@@ -38,10 +38,12 @@ export interface UserProfile {
   role: string;
   isModerator: boolean;
   stats: {
+      _id: string;
       credit: number;
       view_count: number;
   };
   premium: {
+      _id: string;
       isPremium: boolean;
       expiresAt: Date | null;
       plan: string;

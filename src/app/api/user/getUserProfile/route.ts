@@ -7,13 +7,43 @@ import UserStats from "@/models/userStats";
 import UserPremium from "@/models/userPremium";
 import { connect } from "@/lib/db";
 import { UserProfile } from "@/types/userTypes";
+import { Session } from "next-auth";
 
 type UserProfileKey = keyof UserProfile;
+
+interface CustomSession extends Session {
+    user: {
+        id: string;
+        name?: string | null;
+        email?: string | null;
+        image?: string | null;
+        bio?: string | null;
+        github_profile_url?: string | null;
+    }
+}
+
+interface UserStatsDocument {
+    _id: string;
+    username?: string;
+    bio?: string;
+    github_profile_url?: string;
+    role?: string;
+    isModerator?: boolean;
+    credit?: number;
+    view_count?: number;
+}
+
+interface UserPremiumDocument {
+    _id: string;
+    premium?: boolean;
+    premium_expires_at?: Date | null;
+    premium_plan?: string;
+}
 
 export async function GET(request: Request) {
     try {
         await connect();
-        const session = await getServerSession(authOptions);
+        const session = await getServerSession(authOptions) as CustomSession;
 
         if (!session) {
             return NextResponse.json(
@@ -31,16 +61,16 @@ export async function GET(request: Request) {
 
         // UserStats ve UserPremium verilerini paralel olarak çek
         const [userStats, userPremium] = await Promise.all([
-            UserStats.findById(userId),
-            UserPremium.findById(userId),
+            UserStats.findOne({ _id: userId.toString() }).lean() as Promise<UserStatsDocument | null>,
+            UserPremium.findOne({ _id: userId.toString() }).lean() as Promise<UserPremiumDocument | null>,
         ]);
 
         // Eğer veriler yoksa oluştur
         if (!userStats) {
-            await UserStats.create({ _id: userId });
+            await UserStats.create({ _id: userId.toString() });
         }
         if (!userPremium) {
-            await UserPremium.create({ _id: userId });
+            await UserPremium.create({ _id: userId.toString() });
         }
 
         // Tüm verileri birleştir
@@ -49,17 +79,19 @@ export async function GET(request: Request) {
             name: session.user.name,
             username: userStats?.username,
             email: session.user.email,
-            bio: userStats?.bio || "",
+            bio: session.user.bio || "",
             image: session.user.image,
-            github_profile_url: userStats?.github_profile_url || "",
+            github_profile_url: session.user.github_profile_url || "",
             avatar_url: session.user.image || "",
             role: userStats?.role || "user",
             isModerator: userStats?.isModerator || false,
             stats: {
+                _id: session.user.id,
                 credit: userStats?.credit || 0,
                 view_count: userStats?.view_count || 0,
             },
             premium: {
+                _id: session.user.id,
                 isPremium: userPremium?.premium || false,
                 expiresAt: userPremium?.premium_expires_at || null,
                 plan: userPremium?.premium_plan || 'free',
