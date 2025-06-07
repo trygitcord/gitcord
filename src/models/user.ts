@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId,
         auto: true,
       },
-      githubId: {
+      github_id: {
         type: String,
         required: true,
         unique: true,
@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema(
         sparse: true,
         match: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
       },
-      githubProfileUrl: {
+      github_profile_url: {
         type: String,
         required: true,
       },

@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const userPremiumSchema = new mongoose.Schema(
     {
-      user_id: {
+      _id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true,
