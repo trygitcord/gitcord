@@ -6,24 +6,50 @@ const userSchema = new mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId,
         auto: true,
       },
+      githubId: {
+        type: String,
+        required: true,
+        unique: true,
+      },
+      name: {
+        type: String,
+        required: true,
+      },
       username: {
         type: String,
         required: true,
         unique: true,
         trim: true,
       },
+      bio: {
+        type: String,
+        default: '',
+      },
       email: {
         type: String,
-        required: true,
+        required: false,
         unique: true,
+        sparse: true,
         match: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
       },
-      password: {
+      githubProfileUrl: {
         type: String,
         required: true,
-        trim: true,
+      },
+      avatar_url: {
+        type: String,
+        required: true,
+      },
+      role: {
+        type: String,
+        default: 'user',
+      },
+      isModerator: {
+        type: Boolean,
+        default: false,
       },
     },
+
     {
       timestamps: true,
     }
