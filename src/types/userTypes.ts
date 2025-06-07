@@ -25,3 +25,25 @@ export interface UserStatsType extends mongoose.Document {
   credit: number;
   view_count: number;
 }
+
+export interface UserProfile {
+  id: string;
+  name: string | null | undefined;
+  username: string | undefined;
+  email: string | null | undefined;
+  bio: string;
+  image: string | null | undefined;
+  github_profile_url: string;
+  avatar_url: string;
+  role: string;
+  isModerator: boolean;
+  stats: {
+      credit: number;
+      view_count: number;
+  };
+  premium: {
+      isPremium: boolean;
+      expiresAt: Date | null;
+      plan: string;
+  };
+}
