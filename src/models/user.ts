@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
+import { UserType } from '@/types/userTypes';
 
-const userSchema = new mongoose.Schema(
+const userSchema = new mongoose.Schema<UserType>(
     {
       _id: {
         type: mongoose.Schema.Types.ObjectId,
