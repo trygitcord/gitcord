@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import Log from "@/models/log";
-import mongoose from "mongoose";
+import { connect } from "@/lib/db";
 
 export async function POST(request: Request) {
     try {
@@ -28,10 +28,8 @@ export async function POST(request: Request) {
             );
         }
 
-        // MongoDB bağlantısını kontrol et
-        if (mongoose.connection.readyState !== 1) {
-            await mongoose.connect(process.env.MONGODB_URI as string);
-        }
+        // Connect to MongoDB using the utility function
+        await connect();
 
         // Log kaydını oluştur
         const log = await Log.create({

@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import Log from "@/models/log";
-import mongoose from "mongoose";
+import { connect } from "@/lib/db";
 
 export async function GET(request: Request) {
     try {
@@ -26,10 +26,8 @@ export async function GET(request: Request) {
         const startDate = searchParams.get("startDate");
         const endDate = searchParams.get("endDate");
 
-        // MongoDB bağlantısını kontrol et
-        if (mongoose.connection.readyState !== 1) {
-            await mongoose.connect(process.env.MONGODB_URI as string);
-        }
+        // Connect to MongoDB using the utility function
+        await connect();
 
         // Filtreleme kriterlerini oluştur
         const filter: any = { userId: session.user.id };
