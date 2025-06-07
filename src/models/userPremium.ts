@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
+import { UserPremiumType } from '@/types/userTypes';
 
-const userPremiumSchema = new mongoose.Schema(
+const userPremiumSchema = new mongoose.Schema<UserPremiumType>(
     {
       _id: {
         type: mongoose.Schema.Types.ObjectId,
