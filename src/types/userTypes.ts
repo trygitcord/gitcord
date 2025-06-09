@@ -28,6 +28,7 @@ export interface UserStatsType extends mongoose.Document {
 
 export interface UserProfile {
   id: string;
+  github_id: string;
   name: string | null | undefined;
   username: string | null | undefined;
   email: string | null | undefined;
