@@ -29,7 +29,7 @@ export interface UserStatsType extends mongoose.Document {
 export interface UserProfile {
   id: string;
   name: string | null | undefined;
-  username: string | undefined;
+  username: string | null | undefined;
   email: string | null | undefined;
   bio: string;
   image: string | null | undefined;

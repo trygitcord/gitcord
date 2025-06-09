@@ -11,7 +11,7 @@ export const getUserProfile = create<sliceTypes>((set) => ({
   fetchData: async (query?: string) => {
     set({ loading: true, error: null });
     try {
-      const response = await axios.get(`${API_URL}/api/user/getUserProfile${query ? `?${query}` : ''}`);
+      const response = await axios.get(`${API_URL}/api/user/getUserProfile${query || ''}`);
       set({ data: response.data, loading: false });
     } catch (error: any) {
       set({ error: error.message, loading: false });

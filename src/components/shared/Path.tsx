@@ -31,7 +31,7 @@ export default function Breadcrumb() {
   return (
     <nav className="mb-4 text-sm text-neutral-300">
       <div className="flex items-center space-x-1">
-        <Link href="/" className="text-[#5BC898] hover:underline">
+        <Link href="/feed" className="text-[#5BC898] hover:underline">
           Gitcord
         </Link>
         {createBreadcrumbs()}
