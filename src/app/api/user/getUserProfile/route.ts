@@ -6,10 +6,10 @@ import { authOptions } from "../../auth/[...nextauth]/route";
 import UserStats from "@/models/userStats";
 import UserPremium from "@/models/userPremium";
 import { connect } from "@/lib/db";
-import { UserProfile } from "@/types/userTypes";
+import { UserProfile, UserType } from "@/types/userTypes";
 import { Session } from "next-auth";
-
-type UserProfileKey = keyof UserProfile;
+import User from "@/models/user";
+import mongoose from "mongoose";
 
 interface CustomSession extends Session {
     user: {
@@ -19,16 +19,12 @@ interface CustomSession extends Session {
         image?: string | null;
         bio?: string | null;
         github_profile_url?: string | null;
+        login?: string | null;
     }
 }
 
 interface UserStatsDocument {
     _id: string;
-    username?: string;
-    bio?: string;
-    github_profile_url?: string;
-    role?: string;
-    isModerator?: boolean;
     credit?: number;
     view_count?: number;
 }
@@ -52,72 +48,73 @@ export async function GET(request: Request) {
             );
         }
 
-        // URL'den query parametrelerini al
-        const { searchParams } = new URL(request.url);
-        const fields = searchParams.get('fields')?.split(',') || [];
-
-        // Kullanıcı ID'sini al
         const userId = session.user.id;
 
-        // UserStats ve UserPremium verilerini paralel olarak çek
-        const [userStats, userPremium] = await Promise.all([
-            UserStats.findOne({ _id: userId.toString() }).lean() as Promise<UserStatsDocument | null>,
-            UserPremium.findOne({ _id: userId.toString() }).lean() as Promise<UserPremiumDocument | null>,
+        const [userStats, userPremium, user] = await Promise.all([
+            UserStats.findOne({ _id: userId }).lean() as Promise<UserStatsDocument | null>,
+            UserPremium.findOne({ _id: userId }).lean() as Promise<UserPremiumDocument | null>,
+            User.findOne({ github_id: userId }).lean() as Promise<UserType | null>
         ]);
 
-        // Eğer veriler yoksa oluştur
+        let statsData: UserStatsDocument;
+        let premiumData: UserPremiumDocument;
+
         if (!userStats) {
-            await UserStats.create({ _id: userId.toString() });
-        }
-        if (!userPremium) {
-            await UserPremium.create({ _id: userId.toString() });
+            statsData = {
+                _id: userId,
+                credit: 0,
+                view_count: 0,
+            };
+
+            const createdStats = await UserStats.create(statsData);
+        } else {
+            statsData = userStats;
         }
 
-        // Tüm verileri birleştir
+        if (!userPremium) {
+            premiumData = {
+                _id: userId,
+                premium: false,
+                premium_expires_at: null,
+                premium_plan: "free",
+            };
+
+            const createdPremium = await UserPremium.create(premiumData);
+        } else {
+            premiumData = userPremium;
+        }
+
+        if (!user) {
+            return NextResponse.json(
+                { error: "User not found" },
+                { status: 404 }
+            );
+        }
+
         const fullProfile: UserProfile = {
-            id: session.user.id,
-            name: session.user.name,
-            username: userStats?.username,
-            email: session.user.email,
-            bio: session.user.bio || "",
-            image: session.user.image,
-            github_profile_url: session.user.github_profile_url || "",
-            avatar_url: session.user.image || "",
-            role: userStats?.role || "user",
-            isModerator: userStats?.isModerator || false,
+            id: user._id.toString(),
+            github_id: user.github_id,
+            name: user.name,
+            username: user.username,
+            email: user.email,
+            bio: user.bio,
+            image: user.avatar_url,
+            github_profile_url: user.github_profile_url,
+            avatar_url: user.avatar_url,
+            role: user.role,
+            isModerator: user.isModerator,
             stats: {
-                _id: session.user.id,
-                credit: userStats?.credit || 0,
-                view_count: userStats?.view_count || 0,
+                _id: statsData._id,
+                credit: statsData.credit || 0,
+                view_count: statsData.view_count || 0,
             },
             premium: {
-                _id: session.user.id,
-                isPremium: userPremium?.premium || false,
-                expiresAt: userPremium?.premium_expires_at || null,
-                plan: userPremium?.premium_plan || 'free',
+                _id: premiumData._id,
+                isPremium: premiumData.premium || false,
+                expiresAt: premiumData.premium_expires_at || null,
+                plan: premiumData.premium_plan || 'free',
             },
         };
-
-        // Eğer fields parametresi varsa, sadece istenen alanları döndür
-        if (fields.length > 0) {
-            const filteredProfile: Record<string, any> = {};
-            fields.forEach(field => {
-                if (field.includes('.')) {
-                    // Nested fields için (örn: stats.credit)
-                    const [parent, child] = field.split('.');
-                    if (parent in fullProfile && child in (fullProfile[parent as UserProfileKey] as object)) {
-                        if (!filteredProfile[parent]) {
-                            filteredProfile[parent] = {};
-                        }
-                        filteredProfile[parent][child] = (fullProfile[parent as UserProfileKey] as any)[child];
-                    }
-                } else if (field in fullProfile) {
-                    const key = field as UserProfileKey;
-                    filteredProfile[field] = fullProfile[key];
-                }
-            });
-            return NextResponse.json(filteredProfile);
-        }
 
         return NextResponse.json(fullProfile);
     } catch (error) {
