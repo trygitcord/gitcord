@@ -1,11 +1,30 @@
 import UserOverview from "@/components/shared/UserOverview";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Info } from "lucide-react";
 import React from "react";
 
 function page() {
   return (
     <div className="w-full h-full">
-      <h1 className="text-lg font-medium">Dashboard</h1>
-      <div className="grid grid-cols-3 gap-4">
+      <h1 className="text-lg font-medium flex items-center gap-2">
+        Dashboard
+        <Tooltip>
+          <TooltipTrigger>
+            <Info className="w-4 h-4 text-neutral-800" />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>
+              The data here comes entirely from github and no data is stored in
+              any way.
+            </p>
+          </TooltipContent>
+        </Tooltip>
+      </h1>
+      <div className="grid grid-cols-3 gap-4 mt-6">
         <div className="col-span-3">
           <UserOverview />
         </div>
