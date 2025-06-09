@@ -5,7 +5,7 @@ import { signIn, signOut } from "next-auth/react";
 
 function Test() {
   const handleGithubLogin = () => {
-    signIn("github", { callbackUrl: "/dashboard" });
+    signIn("github", { callbackUrl: "/feed/dashboard" });
   };
 
   return (
