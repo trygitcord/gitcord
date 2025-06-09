@@ -1,6 +1,13 @@
 "use client";
 
-import { Home, Building2, BookMarked, Crown, Settings } from "lucide-react";
+import {
+  Trello,
+  Building2,
+  BookMarked,
+  Crown,
+  Settings,
+  ChartColumnBig,
+} from "lucide-react";
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -24,7 +31,7 @@ const items = [
   {
     title: "Dashboard",
     url: "/feed/dashboard",
-    icon: Home,
+    icon: Trello,
     live: true,
   },
   {
@@ -54,6 +61,14 @@ const profileItems = [
   },
 ];
 
+const activityItems = [
+  {
+    title: "Activity",
+    url: "/feed/activity",
+    icon: ChartColumnBig,
+  },
+];
+
 export function SidebarNavigation() {
   const pathname = usePathname();
 
@@ -61,7 +76,10 @@ export function SidebarNavigation() {
     <Sidebar className="p-4 border-r-2 border-r-neutral-200">
       <SidebarContent>
         <SidebarGroup>
-          <Image src={Logo} width={30} height={30} alt="Logo" />
+          <Link href="/feed/dashboard" className="flex items-center gap-3">
+            <Image src={Logo} width={28} height={28} alt="Logo" />
+            <h1 className="font-medium">Gitcord</h1>
+          </Link>
         </SidebarGroup>
 
         <SidebarGroupLabel>Overview</SidebarGroupLabel>
@@ -76,14 +94,49 @@ export function SidebarNavigation() {
                       href={item.url}
                       className={`flex items-center gap-2 w-full p-2 rounded-md transition-all ${
                         isActive
-                          ? "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-white"
+                          ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border border-neutral-100"
                           : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
                       }
                       ${!item.live && "cursor-not-allowed"}
                       `}
                     >
-                      <item.icon />
-                      <span>{item.title}</span>
+                      <item.icon
+                        className={`${isActive ? "text-[#5BC898]" : ""}`}
+                      />
+                      <span className={`${isActive ? "text-[#5BC898]" : ""}`}>
+                        {item.title}
+                      </span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              );
+            })}
+          </SidebarMenu>
+        </SidebarGroupContent>
+
+        <SidebarGroupLabel>Codespace</SidebarGroupLabel>
+        <SidebarGroupContent>
+          <SidebarMenu>
+            {activityItems.map((item) => {
+              const isActive = pathname === item.url;
+              return (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <Link
+                      href={item.url}
+                      className={`flex items-center gap-2 w-full p-2 rounded-md transition-all ${
+                        isActive
+                          ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border border-neutral-100"
+                          : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                      }
+                      `}
+                    >
+                      <item.icon
+                        className={`${isActive ? "text-[#5BC898]" : ""}`}
+                      />
+                      <span className={`${isActive ? "text-[#5BC898]" : ""}`}>
+                        {item.title}
+                      </span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
