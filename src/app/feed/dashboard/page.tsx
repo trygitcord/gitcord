@@ -1,3 +1,4 @@
+import UserActivityChart from "@/components/shared/UserActivityChart";
 import UserOverview from "@/components/shared/UserOverview";
 import {
   Tooltip,
@@ -24,9 +25,12 @@ function page() {
           </TooltipContent>
         </Tooltip>
       </h1>
-      <div className="grid grid-cols-3 gap-4 mt-6">
-        <div className="col-span-3">
+      <div className="grid grid-cols-6 gap-4 mt-6">
+        <div className="col-span-6">
           <UserOverview />
+        </div>
+        <div className="col-span-2">
+          <UserActivityChart />
         </div>
       </div>
     </div>

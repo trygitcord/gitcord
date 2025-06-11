@@ -117,7 +117,7 @@ function Card({
       </div>
       <div className="flex flex-col pt-4">
         <div>
-          <p className="text-neutral-800 text-2xl font-medium">{count}</p>
+          <p className="text-neutral-800 text-xl font-medium">{count}</p>
         </div>
         <div>
           <p className="text-sm text-neutral-500">{label}</p>
