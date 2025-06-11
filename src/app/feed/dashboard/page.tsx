@@ -16,8 +16,8 @@ function page() {
       <h1 className="text-lg font-medium flex items-center gap-2">
         Dashboard
         <Tooltip>
-          <TooltipTrigger>
-            <Info className="w-4 h-4 text-neutral-800" />
+          <TooltipTrigger className="dark:text-neutral-300">
+            <Info className="w-4 h-4 text-neutral-800 dark:text-neutral-200" />
           </TooltipTrigger>
           <TooltipContent>
             <p>
@@ -27,17 +27,17 @@ function page() {
           </TooltipContent>
         </Tooltip>
       </h1>
-      <div className="grid grid-cols-6 gap-4 mt-6">
-        <div className="col-span-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mt-6">
+        <div className="col-span-1 md:col-span-2 lg:col-span-6">
           <UserProfileOverview />
         </div>
-        <div className="col-span-6">
+        <div className="col-span-1 md:col-span-2 lg:col-span-6">
           <UserActivityOverview />
         </div>
-        <div className="col-span-2">
+        <div className="col-span-1 md:col-span-1 lg:col-span-2">
           <UserActivityChart />
         </div>
-        <div className="col-span-4">
+        <div className="col-span-1 md:col-span-1 lg:col-span-4">
           <UserRecentActivity />
         </div>
       </div>

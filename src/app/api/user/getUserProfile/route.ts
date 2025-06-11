@@ -9,7 +9,6 @@ import { connect } from "@/lib/db";
 import { UserProfile, UserType } from "@/types/userTypes";
 import { Session } from "next-auth";
 import User from "@/models/user";
-import mongoose from "mongoose";
 
 interface CustomSession extends Session {
     user: {

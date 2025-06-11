@@ -27,7 +27,7 @@ export default function DashboardLayout({
         <SidebarProvider>
           <SidebarNavigation />
 
-          <main className="w-full">
+          <main className="w-full dark:bg-neutral-950">
             <SidebarTrigger />
             <div className="p-8 w-full h-full">
               <Breadcrumb />

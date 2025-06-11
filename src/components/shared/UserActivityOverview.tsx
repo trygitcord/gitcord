@@ -63,33 +63,39 @@ function UserActivityOverview() {
 
   if (isLoading)
     return (
-      <div className="grid grid-cols-3 gap-4 w-full h-full">
-        <Skeleton className="w-full h-36" />
-        <Skeleton className="w-full h-36" />
-        <Skeleton className="w-full h-36" />
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full h-full">
+        <Skeleton className="w-full h-32 sm:h-36" />
+        <Skeleton className="w-full h-32 sm:h-36" />
+        <Skeleton className="w-full h-32 sm:h-36" />
       </div>
     );
 
   return (
-    <div className="w-full h-36">
-      <div className="grid grid-cols-3 gap-4 w-full h-full">
+    <div className="w-full h-auto sm:h-36">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full h-full">
         {/* Push Events */}
         <Card
-          icon={<Clock className="text-neutral-800 w-6 h-6" />}
+          icon={
+            <Clock className="text-neutral-800 w-5 h-5 sm:w-6 sm:h-6 dark:text-neutral-300" />
+          }
           count={counts.PushEvent}
           label="Commits"
         />
 
         {/* Issues */}
         <Card
-          icon={<MessageCircle className="text-neutral-800 w-6 h-6" />}
+          icon={
+            <MessageCircle className="text-neutral-800 w-5 h-5 sm:w-6 sm:h-6 dark:text-neutral-300" />
+          }
           count={counts.IssuesEvent}
           label="Issues"
         />
 
         {/* Pull Requests */}
         <Card
-          icon={<HardDriveUpload className="text-neutral-800 w-6 h-6" />}
+          icon={
+            <HardDriveUpload className="text-neutral-800 w-5 h-5 sm:w-6 sm:h-6 dark:text-neutral-300" />
+          }
           count={counts.PullRequestEvent}
           label="Pull Requests"
         />
@@ -108,19 +114,27 @@ function Card({
   label: string;
 }) {
   return (
-    <div className="w-full h-full bg-neutral-50 rounded-xl col-span-1 px-6 py-4">
+    <div className="w-full h-full bg-neutral-50 rounded-xl col-span-1 px-4 sm:px-6 py-4 dark:bg-neutral-900">
       <div className="flex items-center justify-between w-full">
-        <div className="bg-neutral-100 rounded-lg p-2">{icon}</div>
-        <div className="border-2 border-neutral-100 rounded-lg px-4 py-1.5 hover:cursor-pointer hover:bg-neutral-100 transition-all duration-300">
-          <p className="text-neutral-700 text-sm">View Details</p>
+        <div className="bg-neutral-100 rounded-lg p-2 dark:bg-neutral-800">
+          {icon}
+        </div>
+        <div className="border-2 border-neutral-100 rounded-lg px-3 sm:px-4 py-1.5 hover:cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all duration-300 dark:border-neutral-800">
+          <p className="text-neutral-700 text-xs sm:text-sm dark:text-neutral-300">
+            View Details
+          </p>
         </div>
       </div>
-      <div className="flex flex-col pt-4">
+      <div className="flex flex-col pt-3 sm:pt-4">
         <div>
-          <p className="text-neutral-800 text-xl font-medium">{count}</p>
+          <p className="text-neutral-800 text-lg sm:text-xl font-medium dark:text-neutral-200">
+            {count}
+          </p>
         </div>
         <div>
-          <p className="text-sm text-neutral-500">{label}</p>
+          <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
+            {label}
+          </p>
         </div>
       </div>
     </div>
