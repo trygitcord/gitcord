@@ -38,14 +38,14 @@ function UserRecentActivity() {
     );
 
   return (
-    <div className="w-full h-full bg-neutral-50 rounded-xl px-6 py-4">
+    <div className="w-full h-full bg-neutral-50 rounded-xl px-6 py-4 dark:bg-neutral-900">
       <div>
         <div className="flex items-center gap-4">
-          <div className="bg-neutral-100 rounded-lg p-2">
-            <FileChartColumn className="text-neutral-800 w-6 h-6" />
+          <div className="bg-neutral-100 rounded-lg p-2 dark:bg-neutral-800">
+            <FileChartColumn className="text-neutral-800 w-6 h-6 dark:text-neutral-300" />
           </div>
           <div>
-            <h2 className="text-neutral-800 text-xl font-medium">
+            <h2 className="text-neutral-800 text-xl font-medium dark:text-neutral-200">
               Recent Activities
             </h2>
             <p className="text-sm text-neutral-500">Your recent activities</p>
@@ -85,7 +85,7 @@ function renderActivityCard(event: any) {
                 href={commitUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs font-mono bg-neutral-100 px-2 py-1 rounded hover:underline hover:text-[#5BC898] transition-colors"
+                className="text-xs font-mono bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 px-2 py-1 rounded hover:underline hover:text-[#5BC898] transition-colors"
               >
                 #{commitShortSha}
               </a>
@@ -97,11 +97,13 @@ function renderActivityCard(event: any) {
               height={28}
               className="w-7 h-7 rounded-full"
             />
-            <span className="text-neutral-600">
+            <span className="text-neutral-600 dark:text-neutral-300">
               {event.actor.display_login}
             </span>
-            <span className="text-neutral-500">has been commit to</span>
-            <span className="text-neutral-600">
+            <span className="text-neutral-500 dark:text-neutral-400">
+              has been commit to
+            </span>
+            <span className="text-neutral-600 dark:text-neutral-300">
               <a
                 href={`https://github.com/${event.repo.name}`}
                 target="_blank"
@@ -130,7 +132,7 @@ function renderActivityCard(event: any) {
                 href={prUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs font-mono bg-neutral-100 px-2 py-1 rounded hover:underline hover:text-[#5BC898] transition-colors"
+                className="text-xs font-mono bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 px-2 py-1 rounded hover:underline hover:text-[#5BC898] transition-colors"
               >
                 {prNumber}
               </a>
@@ -142,11 +144,13 @@ function renderActivityCard(event: any) {
               height={28}
               className="w-7 h-7 rounded-full"
             />
-            <span className="text-neutral-600">
+            <span className="text-neutral-600 dark:text-neutral-300">
               {event.actor.display_login}
             </span>
-            <span className="text-neutral-500">opened a pull request in</span>
-            <span className="text-neutral-600">
+            <span className="text-neutral-500 dark:text-neutral-400">
+              opened a pull request in
+            </span>
+            <span className="text-neutral-600 dark:text-neutral-300">
               <a
                 href={`https://github.com/${event.repo.name}`}
                 target="_blank"
@@ -175,7 +179,7 @@ function renderActivityCard(event: any) {
                 href={issueUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs font-mono bg-neutral-100 px-2 py-1 rounded hover:underline hover:text-[#5BC898] transition-colors"
+                className="text-xs font-mono bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300px-2 py-1 rounded hover:underline hover:text-[#5BC898] transition-colors"
               >
                 {issueNumber}
               </a>
@@ -187,11 +191,13 @@ function renderActivityCard(event: any) {
               height={28}
               className="w-7 h-7 rounded-full"
             />
-            <span className="text-neutral-600">
+            <span className="text-neutral-600 dark:text-neutral-300">
               {event.actor.display_login}
             </span>
-            <span className="text-neutral-500">opened an issue in</span>
-            <span className="text-neutral-600">
+            <span className="text-neutral-500 dark:text-neutral-400">
+              opened an issue in
+            </span>
+            <span className="text-neutral-600 dark:text-neutral-300">
               <a
                 href={`https://github.com/${event.repo.name}`}
                 target="_blank"

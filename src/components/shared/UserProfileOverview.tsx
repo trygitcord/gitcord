@@ -23,7 +23,7 @@ function UserProfileOverview() {
   }
 
   return (
-    <div className="w-full bg-neutral-50 rounded-xl">
+    <div className="w-full bg-neutral-50 rounded-xl dark:bg-neutral-900">
       <div className="p-6">
         <div className="flex items-start gap-6">
           {/* Avatar Section */}
@@ -40,11 +40,11 @@ function UserProfileOverview() {
           <div className="flex-1">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <h2 className="text-2xl font-semibold text-neutral-700">
+                <h2 className="text-2xl font-semibold text-neutral-700 dark:text-neutral-200">
                   {userData.name}
                 </h2>
                 {userData.isModerator && (
-                  <span className="px-2 py-1 text-xs font-medium bg-neutral-100 text-[#5BC898] rounded-full">
+                  <span className="px-2 py-1 text-xs font-medium bg-neutral-100 text-[#5BC898] rounded-full dark:bg-neutral-800">
                     Moderator
                   </span>
                 )}
@@ -58,23 +58,25 @@ function UserProfileOverview() {
 
               {/* Profile Views */}
               <div className="flex items-center gap-1.5 text-sm">
-                <Eye className="w-5 h-5 text-neutral-500" />
-                <span className="font-medium text-neutral-500">
+                <Eye className="w-5 h-5 text-neutral-500 dark:text-neutral-300" />
+                <span className="font-medium text-neutral-500 dark:text-neutral-300">
                   {userData.stats?.view_count || 0}
                 </span>
               </div>
             </div>
 
-            <p className="text-neutral-600 mt-1">@{userData.username}</p>
+            <p className="text-neutral-600 mt-1 dark:text-neutral-300">
+              @{userData.username}
+            </p>
 
             {userData.bio && (
-              <p className="text-neutral-700 mt-3 text-sm leading-relaxed">
+              <p className="text-neutral-700 mt-3 text-sm leading-relaxed dark:text-neutral-300">
                 {userData.bio}
               </p>
             )}
 
             {/* Contact Links */}
-            <div className="mt-4 flex items-center gap-4 text-sm text-neutral-600">
+            <div className="mt-4 flex items-center gap-4 text-sm text-neutral-600 dark:text-neutral-400">
               {userData.email && (
                 <a
                   href={`mailto:${userData.email}`}

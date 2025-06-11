@@ -16,8 +16,8 @@ function page() {
       <h1 className="text-lg font-medium flex items-center gap-2">
         Dashboard
         <Tooltip>
-          <TooltipTrigger>
-            <Info className="w-4 h-4 text-neutral-800" />
+          <TooltipTrigger className="dark:text-neutral-300">
+            <Info className="w-4 h-4 text-neutral-800 dark:text-neutral-200" />
           </TooltipTrigger>
           <TooltipContent>
             <p>
