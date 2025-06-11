@@ -19,21 +19,7 @@ function UserProfileOverview() {
   }, []);
 
   if (loading || !userData || error) {
-    return (
-      <div className="w-full bg-neutral-50 rounded-xl">
-        <div className="p-6">
-          <div className="flex items-start gap-6">
-            <Skeleton className="w-24 h-24 rounded-full" />
-            <div className="flex-1 space-y-3">
-              <Skeleton className="h-8 w-48" />
-              <Skeleton className="h-4 w-32" />
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-64" />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <Skeleton className="w-full h-48" />;
   }
 
   return (
