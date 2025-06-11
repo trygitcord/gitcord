@@ -24,10 +24,10 @@ function UserProfileOverview() {
 
   return (
     <div className="w-full bg-neutral-50 rounded-xl dark:bg-neutral-900">
-      <div className="p-6">
-        <div className="flex items-start gap-6">
+      <div className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
           {/* Avatar Section */}
-          <div className="relative w-24 h-24 rounded-full overflow-hidden">
+          <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden">
             <Image
               src={userData.avatar_url}
               alt={`${userData.name}'s avatar`}
@@ -37,27 +37,38 @@ function UserProfileOverview() {
           </div>
 
           {/* User Info Section */}
-          <div className="flex-1">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <h2 className="text-2xl font-semibold text-neutral-700 dark:text-neutral-200">
-                  {userData.name}
-                </h2>
-                {userData.isModerator && (
-                  <span className="px-2 py-1 text-xs font-medium bg-neutral-100 text-[#5BC898] rounded-full dark:bg-neutral-800">
-                    Moderator
-                  </span>
-                )}
-                {userData.premium?.isPremium && (
-                  <span className="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-700 rounded-full flex items-center gap-1">
-                    <Crown className="w-3 h-3" />
-                    Premium
-                  </span>
-                )}
+          <div className="flex-1 w-full">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
+              <div className="flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-3">
+                <div className="flex flex-col sm:flex-row items-center sm:items-center gap-2">
+                  <h2 className="text-xl sm:text-2xl font-semibold text-neutral-700 dark:text-neutral-200">
+                    {userData.name}
+                  </h2>
+                  {/* Profile Views - Mobile Only */}
+                  <div className="flex sm:hidden items-center gap-1.5 text-sm">
+                    <Eye className="w-5 h-5 text-neutral-500 dark:text-neutral-300" />
+                    <span className="font-medium text-neutral-500 dark:text-neutral-300">
+                      {userData.stats?.view_count || 0}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex flex-wrap justify-center sm:justify-start gap-2">
+                  {userData.isModerator && (
+                    <span className="px-2 py-1 text-xs font-medium bg-neutral-100 text-[#5BC898] rounded-full dark:bg-neutral-800">
+                      Moderator
+                    </span>
+                  )}
+                  {userData.premium?.isPremium && (
+                    <span className="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-700 rounded-full flex items-center gap-1">
+                      <Crown className="w-3 h-3" />
+                      Premium
+                    </span>
+                  )}
+                </div>
               </div>
 
-              {/* Profile Views */}
-              <div className="flex items-center gap-1.5 text-sm">
+              {/* Profile Views - Desktop Only */}
+              <div className="hidden sm:flex items-center gap-1.5 text-sm">
                 <Eye className="w-5 h-5 text-neutral-500 dark:text-neutral-300" />
                 <span className="font-medium text-neutral-500 dark:text-neutral-300">
                   {userData.stats?.view_count || 0}
@@ -65,18 +76,18 @@ function UserProfileOverview() {
               </div>
             </div>
 
-            <p className="text-neutral-600 mt-1 dark:text-neutral-300">
+            <p className="text-neutral-600 mt-1 dark:text-neutral-300 text-center sm:text-left">
               @{userData.username}
             </p>
 
             {userData.bio && (
-              <p className="text-neutral-700 mt-3 text-sm leading-relaxed dark:text-neutral-300">
+              <p className="text-neutral-700 mt-3 text-sm leading-relaxed dark:text-neutral-300 text-center sm:text-left">
                 {userData.bio}
               </p>
             )}
 
             {/* Contact Links */}
-            <div className="mt-4 flex items-center gap-4 text-sm text-neutral-600 dark:text-neutral-400">
+            <div className="mt-4 flex flex-wrap justify-center sm:justify-start items-center gap-4 text-sm text-neutral-600 dark:text-neutral-400">
               {userData.email && (
                 <a
                   href={`mailto:${userData.email}`}
