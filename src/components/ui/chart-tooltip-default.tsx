@@ -81,7 +81,7 @@ export function ChartTooltipDefault({ data }: { data: any }) {
       : null;
 
   return (
-    <div className="w-full max-w-[500px]">
+    <div className="w-full h-full">
       <ChartContainer config={chartConfig}>
         <BarChart accessibilityLayer data={chartData || []}>
           <XAxis

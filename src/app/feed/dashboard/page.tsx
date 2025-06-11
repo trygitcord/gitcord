@@ -1,5 +1,6 @@
 import UserActivityChart from "@/components/shared/UserActivityChart";
 import UserOverview from "@/components/shared/UserOverview";
+import UserRecentActivity from "@/components/shared/UserRecentActivity";
 import {
   Tooltip,
   TooltipContent,
@@ -31,6 +32,9 @@ function page() {
         </div>
         <div className="col-span-2">
           <UserActivityChart />
+        </div>
+        <div className="col-span-4">
+          <UserRecentActivity />
         </div>
       </div>
     </div>
