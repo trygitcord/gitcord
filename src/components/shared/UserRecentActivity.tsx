@@ -97,18 +97,18 @@ function renderActivityCard(event: any) {
               height={28}
               className="w-7 h-7 rounded-full"
             />
-            <span className="font-medium text-neutral-700">
+            <span className="text-neutral-600">
               {event.actor.display_login}
             </span>
             <span className="text-neutral-500">has been commit to</span>
-            <span className="font-medium text-neutral-700">
+            <span className="text-neutral-600">
               <a
                 href={`https://github.com/${event.repo.name}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:underline hover:text-[#5BC898] transition-colors"
               >
-                /{event.repo.name}
+                {event.repo.name}
               </a>
             </span>
           </div>
@@ -142,18 +142,18 @@ function renderActivityCard(event: any) {
               height={28}
               className="w-7 h-7 rounded-full"
             />
-            <span className="font-medium text-neutral-700">
+            <span className="text-neutral-600">
               {event.actor.display_login}
             </span>
             <span className="text-neutral-500">opened a pull request in</span>
-            <span className="font-medium text-neutral-700">
+            <span className="text-neutral-600">
               <a
                 href={`https://github.com/${event.repo.name}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:underline hover:text-[#5BC898] transition-colors"
               >
-                /{event.repo.name}
+                {event.repo.name}
               </a>
             </span>
           </div>
@@ -187,18 +187,18 @@ function renderActivityCard(event: any) {
               height={28}
               className="w-7 h-7 rounded-full"
             />
-            <span className="font-medium text-neutral-700">
+            <span className="text-neutral-600">
               {event.actor.display_login}
             </span>
             <span className="text-neutral-500">opened an issue in</span>
-            <span className="font-medium text-neutral-700">
+            <span className="text-neutral-600">
               <a
                 href={`https://github.com/${event.repo.name}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:underline hover:text-[#5BC898] transition-colors"
               >
-                /{event.repo.name}
+                {event.repo.name}
               </a>
             </span>
           </div>

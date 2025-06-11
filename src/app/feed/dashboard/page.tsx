@@ -1,5 +1,6 @@
 import UserActivityChart from "@/components/shared/UserActivityChart";
-import UserOverview from "@/components/shared/UserOverview";
+import UserActivityOverview from "@/components/shared/UserActivityOverview";
+import UserProfileOverview from "@/components/shared/UserProfileOverview";
 import UserRecentActivity from "@/components/shared/UserRecentActivity";
 import {
   Tooltip,
@@ -11,7 +12,7 @@ import React from "react";
 
 function page() {
   return (
-    <div className="w-full h-full">
+    <div className="w-full">
       <h1 className="text-lg font-medium flex items-center gap-2">
         Dashboard
         <Tooltip>
@@ -28,7 +29,10 @@ function page() {
       </h1>
       <div className="grid grid-cols-6 gap-4 mt-6">
         <div className="col-span-6">
-          <UserOverview />
+          <UserProfileOverview />
+        </div>
+        <div className="col-span-6">
+          <UserActivityOverview />
         </div>
         <div className="col-span-2">
           <UserActivityChart />
