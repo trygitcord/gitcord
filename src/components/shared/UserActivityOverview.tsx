@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Clock, MessageCircle, HardDriveUpload } from "lucide-react";
 import { userEventsSlice } from "@/stores/user/eventsSlice";
 
-function UserOverview() {
+function UserActivityOverview() {
   const {
     data: userData,
     loading: userLoading,
@@ -127,4 +127,4 @@ function Card({
   );
 }
 
-export default UserOverview;
+export default UserActivityOverview;
