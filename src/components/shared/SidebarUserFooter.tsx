@@ -4,10 +4,14 @@ import { signOut, useSession } from "next-auth/react";
 import React from "react";
 import Image from "next/image";
 import { LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 function SidebarUserFooter() {
+  const router = useRouter();
+
   async function handleLogout() {
-    await signOut();
+    await signOut({ redirect: false });
+    router.push("/");
   }
 
   const { data: session } = useSession();
@@ -38,7 +42,7 @@ function SidebarUserFooter() {
         onClick={handleLogout}
         className="p-2 text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white transition-colors"
       >
-        <LogOut size={18} />
+        <LogOut size={18} className="hover:cursor-pointer" />
       </button>
     </div>
   );

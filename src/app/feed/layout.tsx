@@ -22,8 +22,8 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={poppins.className}>
-      <body>
+    <html lang="en" className={poppins.className} suppressHydrationWarning>
+      <body suppressHydrationWarning>
         <SidebarProvider>
           <SidebarNavigation />
 

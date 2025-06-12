@@ -71,7 +71,7 @@ const activityItems = [
   },
   {
     title: "Organization",
-    url: "/feed/settings",
+    url: "/feed/organization",
     icon: Building2,
   },
 ];

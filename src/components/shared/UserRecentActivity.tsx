@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { FileChartColumn } from "lucide-react";
 import { userEventsSlice } from "@/stores/user/eventsSlice";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -20,11 +20,15 @@ function UserRecentActivity() {
     fetchData: getUserEvents,
   } = userEventsSlice();
 
+  const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
+    setMounted(true);
     getUserEvents();
   }, []);
 
   const isLoading =
+    !mounted ||
     userEventsLoading ||
     userEventsError ||
     !userEventsData ||
