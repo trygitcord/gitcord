@@ -4,9 +4,10 @@ import {
   Trello,
   Building2,
   BookMarked,
-  Crown,
   Settings,
   ChartColumnBig,
+  Inbox,
+  User,
 } from "lucide-react";
 
 import { usePathname } from "next/navigation";
@@ -16,6 +17,7 @@ import Logo from "@/assets/logo.svg";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -25,6 +27,7 @@ import {
 } from "@/components/ui/sidebar";
 
 import Image from "next/image";
+import SidebarUserFooter from "@/components/shared/SidebarUserFooter";
 
 // Menu items.
 const items = [
@@ -35,24 +38,18 @@ const items = [
     live: true,
   },
   {
-    title: "Repositories",
-    url: "/feed/repositories",
-    icon: BookMarked,
-    live: true,
-  },
-  {
-    title: "Organizations",
-    url: "/feed/organizations",
-    icon: Building2,
+    title: "Inbox",
+    url: "/feed/inbox",
+    icon: Inbox,
     live: true,
   },
 ];
 
 const profileItems = [
   {
-    title: "Premium",
-    url: "/feed/premium",
-    icon: Crown,
+    title: "Profile",
+    url: "/feed/profile",
+    icon: User,
   },
   {
     title: "Settings",
@@ -66,6 +63,16 @@ const activityItems = [
     title: "Activity",
     url: "/feed/activity",
     icon: ChartColumnBig,
+  },
+  {
+    title: "Repositories",
+    url: "/feed/repositories",
+    icon: BookMarked,
+  },
+  {
+    title: "Organization",
+    url: "/feed/organization",
+    icon: Building2,
   },
 ];
 
@@ -114,7 +121,7 @@ export function SidebarNavigation() {
           </SidebarMenu>
         </SidebarGroupContent>
 
-        <SidebarGroupLabel>Codespace</SidebarGroupLabel>
+        <SidebarGroupLabel>Development</SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
             {activityItems.map((item) => {
@@ -145,7 +152,7 @@ export function SidebarNavigation() {
           </SidebarMenu>
         </SidebarGroupContent>
 
-        <SidebarGroupLabel>Profile</SidebarGroupLabel>
+        <SidebarGroupLabel>Account</SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
             {profileItems.map((item) => {
@@ -176,6 +183,9 @@ export function SidebarNavigation() {
           </SidebarMenu>
         </SidebarGroupContent>
       </SidebarContent>
+      <SidebarFooter>
+        <SidebarUserFooter />
+      </SidebarFooter>
     </Sidebar>
   );
 }

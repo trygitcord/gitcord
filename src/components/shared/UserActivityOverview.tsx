@@ -21,19 +21,22 @@ function UserActivityOverview() {
     fetchData: getUserEvents,
   } = userEventsSlice();
 
-  const [countsReady, setCountsReady] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     getUser();
   }, []);
 
   useEffect(() => {
-    if (userData?.username) {
+    if (mounted && userData?.username) {
       getUserEvents(userData?.username);
     }
-  }, [userData]);
+  }, [userData, mounted]);
 
   const counts = useMemo(() => {
+    if (!mounted) return { PushEvent: 0, PullRequestEvent: 0, IssuesEvent: 0 };
+
     const tempCounts = {
       PushEvent: 0,
       PullRequestEvent: 0,
@@ -46,20 +49,19 @@ function UserActivityOverview() {
           tempCounts[event.type as keyof typeof tempCounts]++;
         }
       }
-      setCountsReady(true);
     }
 
     return tempCounts;
-  }, [userEventsData]);
+  }, [userEventsData, mounted]);
 
   const isLoading =
+    !mounted ||
     userLoading ||
     !userData ||
     userError ||
     userEventsLoading ||
     userEventsError ||
-    !userEventsData ||
-    !countsReady;
+    !userEventsData;
 
   if (isLoading)
     return (

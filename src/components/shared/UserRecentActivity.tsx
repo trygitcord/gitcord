@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { FileChartColumn } from "lucide-react";
 import { userEventsSlice } from "@/stores/user/eventsSlice";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -20,11 +20,15 @@ function UserRecentActivity() {
     fetchData: getUserEvents,
   } = userEventsSlice();
 
+  const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
+    setMounted(true);
     getUserEvents();
   }, []);
 
   const isLoading =
+    !mounted ||
     userEventsLoading ||
     userEventsError ||
     !userEventsData ||
@@ -229,7 +233,6 @@ function renderActivityCard(event: any) {
 
 function MessageCard({ events }: { events: any[] }) {
   const shownEvents = events.slice(0, 5);
-  const hasMore = events.length > 5;
 
   return (
     <div className="space-y-4 mt-4">
@@ -241,11 +244,6 @@ function MessageCard({ events }: { events: any[] }) {
           {renderActivityCard(event)}
         </div>
       ))}
-      {hasMore && (
-        <div className="text-center text-2xl text-neutral-400 select-none">
-          ...
-        </div>
-      )}
     </div>
   );
 }
