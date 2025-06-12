@@ -229,7 +229,6 @@ function renderActivityCard(event: any) {
 
 function MessageCard({ events }: { events: any[] }) {
   const shownEvents = events.slice(0, 5);
-  const hasMore = events.length > 5;
 
   return (
     <div className="space-y-4 mt-4">
@@ -241,11 +240,6 @@ function MessageCard({ events }: { events: any[] }) {
           {renderActivityCard(event)}
         </div>
       ))}
-      {hasMore && (
-        <div className="text-center text-2xl text-neutral-400 select-none">
-          ...
-        </div>
-      )}
     </div>
   );
 }
