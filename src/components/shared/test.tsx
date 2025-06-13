@@ -1,9 +1,25 @@
 "use client";
 
-import React from "react";
-import { signIn, signOut } from "next-auth/react";
+import React, { useEffect } from "react";
+import { signIn, signOut, useSession } from "next-auth/react";
+import { getUserProfile } from "@/stores/user/userProfileSlice";
 
 function Test() {
+  const { data: session } = useSession();
+  const { data: userData, fetchData: fetchUserProfile } = getUserProfile();
+
+  useEffect(() => {
+    if (session?.user) {
+      fetchUserProfile();
+    }
+  }, [session]);
+
+  useEffect(() => {
+    if (userData?.username) {
+      localStorage.setItem("username", userData.username);
+    }
+  }, [userData]);
+
   const handleGithubLogin = () => {
     signIn("github", { callbackUrl: "/feed/dashboard" });
   };
