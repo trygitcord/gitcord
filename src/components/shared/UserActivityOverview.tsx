@@ -5,6 +5,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Clock, MessageCircle, HardDriveUpload } from "lucide-react";
 import { userEventsSlice } from "@/stores/user/eventsSlice";
+import Link from "next/link";
 
 function UserActivityOverview() {
   const {
@@ -122,9 +123,11 @@ function Card({
           {icon}
         </div>
         <div className="border-2 border-neutral-100 rounded-lg px-3 sm:px-4 py-1.5 hover:cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all duration-300 dark:border-neutral-800">
-          <p className="text-neutral-700 text-xs sm:text-sm dark:text-neutral-300">
-            View Details
-          </p>
+          <Link href={`/feed/activity`} className="w-full h-full">
+            <p className="text-neutral-700 text-xs sm:text-sm dark:text-neutral-300">
+              View Details
+            </p>
+          </Link>
         </div>
       </div>
       <div className="flex flex-col pt-3 sm:pt-4">

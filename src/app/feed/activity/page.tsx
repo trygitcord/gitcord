@@ -5,13 +5,7 @@ import { userEventsSlice } from "@/stores/user/eventsSlice";
 import { getUserProfile } from "@/stores/user/userProfileSlice";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
-import {
-  GitCommit,
-  GitPullRequest,
-  AlertCircle,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
+import { GitCommit, GitPullRequest, AlertCircle } from "lucide-react";
 
 enum RecentActivityType {
   Issue = "IssuesEvent",
@@ -186,6 +180,9 @@ function ActivityPage() {
 
   const [mounted, setMounted] = useState(false);
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
+  const [activeFilter, setActiveFilter] = useState<RecentActivityType | "all">(
+    "all"
+  );
 
   useEffect(() => {
     setMounted(true);
@@ -215,26 +212,99 @@ function ActivityPage() {
       </div>
     );
 
-  const shownEvents = userEventsData.slice(0, 30);
+  const filteredEvents = userEventsData.filter((event: any) => {
+    if (activeFilter === "all") return true;
+    return event.type === activeFilter;
+  });
+
+  const shownEvents = filteredEvents.slice(0, 30);
 
   return (
     <div className="w-full h-full">
-      <h1 className="text-lg font-medium flex items-center gap-2">Activity</h1>
-      <p className="text-neutral-500 text-sm dark:text-neutral-400">
-        Track all recent actions and updates in one place.
-      </p>
-      <div className="w-full h-[calc(100vh-12rem)] overflow-y-auto mt-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
-        <div className="flex flex-col gap-4">
-          {shownEvents.map((event: any, idx: number) => (
-            <div
-              key={idx}
-              className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-4 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors shadow-sm cursor-pointer"
-              onClick={() => setExpandedIdx(expandedIdx === idx ? null : idx)}
-            >
-              {renderActivityCard(event, expandedIdx === idx)}
-            </div>
-          ))}
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <h1 className="text-lg font-medium flex items-center gap-2">
+            Activity
+          </h1>
+          <p className="text-neutral-500 text-sm dark:text-neutral-400">
+            Track all recent actions and updates in one place.
+          </p>
         </div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setActiveFilter("all")}
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              activeFilter === "all"
+                ? "bg-[#5BC898] text-white"
+                : "bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700"
+            }`}
+          >
+            All
+          </button>
+          <button
+            onClick={() => setActiveFilter(RecentActivityType.Commit)}
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+              activeFilter === RecentActivityType.Commit
+                ? "bg-[#5BC898] text-white"
+                : "bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700"
+            }`}
+          >
+            <GitCommit className="w-4 h-4" />
+            Commits
+          </button>
+          <button
+            onClick={() => setActiveFilter(RecentActivityType.PullRequest)}
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+              activeFilter === RecentActivityType.PullRequest
+                ? "bg-purple-500 text-white"
+                : "bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700"
+            }`}
+          >
+            <GitPullRequest className="w-4 h-4" />
+            Pull Requests
+          </button>
+          <button
+            onClick={() => setActiveFilter(RecentActivityType.Issue)}
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+              activeFilter === RecentActivityType.Issue
+                ? "bg-yellow-400 text-white"
+                : "bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700"
+            }`}
+          >
+            <AlertCircle className="w-4 h-4" />
+            Issues
+          </button>
+        </div>
+      </div>
+      <div className="w-full h-[calc(100vh-12rem)] overflow-y-auto mt-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+        {shownEvents.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full text-center">
+            <div className="text-neutral-400 dark:text-neutral-500 text-lg mb-2">
+              {activeFilter === "all"
+                ? "No activities found"
+                : activeFilter === RecentActivityType.Commit
+                ? "No commits found"
+                : activeFilter === RecentActivityType.PullRequest
+                ? "No pull requests found"
+                : "No issues found"}
+            </div>
+            <p className="text-neutral-500 dark:text-neutral-400 text-sm">
+              Try selecting a different filter or check back later
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-4">
+            {shownEvents.map((event: any, idx: number) => (
+              <div
+                key={idx}
+                className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-4 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors shadow-sm cursor-pointer"
+                onClick={() => setExpandedIdx(expandedIdx === idx ? null : idx)}
+              >
+                {renderActivityCard(event, expandedIdx === idx)}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
