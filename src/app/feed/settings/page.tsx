@@ -43,7 +43,12 @@ function SettingsPage() {
 
   return (
     <div className="w-full max-w-2xl mx-auto p-6 space-y-6">
-      <h1 className="text-lg">Settings</h1>
+      <div>
+        <h1 className="text-lg">Settings</h1>
+        <p className="text-neutral-500 text-sm dark:text-neutral-400">
+          Manage your account and preferences.
+        </p>
+      </div>
 
       {/* Profile Section */}
       <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-6 space-y-4 relative">
