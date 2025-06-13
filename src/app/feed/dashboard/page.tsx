@@ -27,6 +27,9 @@ function page() {
           </TooltipContent>
         </Tooltip>
       </h1>
+      <p className="text-neutral-500 text-sm dark:text-neutral-400">
+        Overview of your key data and insights.
+      </p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mt-6">
         <div className="col-span-1 md:col-span-2 lg:col-span-6">
           <UserProfileOverview />

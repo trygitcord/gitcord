@@ -27,9 +27,9 @@ export default function DashboardLayout({
         <SidebarProvider>
           <SidebarNavigation />
 
-          <main className="w-full dark:bg-neutral-950">
+          <main className="w-full h-screen dark:bg-neutral-950 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
             <SidebarTrigger />
-            <div className="p-8 w-full h-full">
+            <div className="p-8 w-full h-[calc(100vh-4rem)]">
               <Breadcrumb />
               {children}
             </div>
