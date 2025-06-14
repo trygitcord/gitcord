@@ -77,7 +77,9 @@ function Organizations() {
           </p>
         </div>
         <div className="flex items-center justify-center h-64">
-          <p className="text-red-500">Error loading organizations: {error}</p>
+          <p className="text-neutral-400 dark:text-neutral-500">
+            Error loading organizations: {error}
+          </p>
         </div>
       </div>
     );

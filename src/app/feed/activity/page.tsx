@@ -207,8 +207,53 @@ function ActivityPage() {
 
   if (isLoading)
     return (
-      <div className="w-full min-h-screen">
-        <Skeleton className="w-full h-screen" />
+      <div className="w-full h-full">
+        <div className="flex justify-between items-center mb-4">
+          <div>
+            <h1 className="text-lg font-medium flex items-center gap-2">
+              Activity
+            </h1>
+            <p className="text-neutral-500 text-sm dark:text-neutral-400">
+              Track all recent actions and updates in one place.
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Skeleton className="h-8 w-16 rounded-lg" />
+            <Skeleton className="h-8 w-24 rounded-lg" />
+            <Skeleton className="h-8 w-28 rounded-lg" />
+            <Skeleton className="h-8 w-24 rounded-lg" />
+          </div>
+        </div>
+        <div className="w-full h-[calc(100vh-12rem)] overflow-y-auto mt-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+          <div className="flex flex-col gap-4">
+            {[...Array(5)].map((_, idx) => (
+              <div
+                key={idx}
+                className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-4"
+              >
+                <div className="flex border-l-4 border-neutral-300">
+                  <div className="flex flex-col flex-1 gap-2 pl-3">
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="w-5 h-5 rounded-full" />
+                    </div>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Skeleton className="h-6 w-20 rounded" />
+                        <div className="flex items-center gap-2">
+                          <Skeleton className="w-7 h-7 rounded-full" />
+                          <Skeleton className="h-4 w-24 rounded" />
+                        </div>
+                        <Skeleton className="h-4 w-32 rounded" />
+                        <Skeleton className="h-4 w-40 rounded" />
+                      </div>
+                      <Skeleton className="h-3 w-20 rounded" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
 
