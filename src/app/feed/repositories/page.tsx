@@ -95,7 +95,7 @@ function Repositories() {
         {sortedRepos.map((repo: any) => (
           <Link
             key={repo.id}
-            href={`/feed/repositories/${repo.id}`}
+            href={`/feed/repositories/${repo.name}`}
             className="group"
           >
             <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-4 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors h-full">
