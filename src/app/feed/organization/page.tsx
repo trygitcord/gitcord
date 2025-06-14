@@ -9,6 +9,10 @@ import Link from "next/link";
 import Image from "next/image";
 
 function Organizations() {
+  useEffect(() => {
+    document.title = "Feed | Organizations";
+  }, []);
+
   const {
     data: orgsData,
     loading: orgsLoading,

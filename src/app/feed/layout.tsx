@@ -14,6 +14,9 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "Dashboard",
   description: "Dashboard layout",
+  icons: {
+    icon: "/logo.svg",
+  },
 };
 
 export default function DashboardLayout({

@@ -20,6 +20,10 @@ function timeAgo(dateString: string) {
 }
 
 function Repositories() {
+  useEffect(() => {
+    document.title = "Feed | Repositories";
+  }, []);
+
   const {
     data: reposData,
     loading,

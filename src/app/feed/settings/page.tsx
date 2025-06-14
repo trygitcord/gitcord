@@ -10,6 +10,10 @@ import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 function SettingsPage() {
+  useEffect(() => {
+    document.title = "Feed | Settings";
+  }, []);
+
   const {
     data: userData,
     loading: userLoading,

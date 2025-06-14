@@ -6,6 +6,7 @@ import { getUserProfile } from "@/stores/user/userProfileSlice";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import { GitCommit, GitPullRequest, AlertCircle } from "lucide-react";
+import { Metadata } from "next";
 
 enum RecentActivityType {
   Issue = "IssuesEvent",
@@ -164,6 +165,10 @@ function renderActivityCard(event: any, expanded: boolean) {
 }
 
 function ActivityPage() {
+  useEffect(() => {
+    document.title = "Feed | Activity";
+  }, []);
+
   const {
     data: userData,
     loading: userLoading,
