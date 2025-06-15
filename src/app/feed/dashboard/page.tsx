@@ -8,7 +8,15 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Info } from "lucide-react";
+import { Metadata } from "next";
 import React from "react";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: "Feed | Dashboard",
+    description: "View your latest feed updates",
+  };
+}
 
 function page() {
   return (
