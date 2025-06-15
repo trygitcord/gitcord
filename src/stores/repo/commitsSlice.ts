@@ -1,4 +1,3 @@
-import { GITHUB_API_URL } from "@/lib/config";
 import { sliceTypes } from "@/types/sliceTypes";
 import { create } from "zustand";
 import githubAxios from "@/lib/axios";
