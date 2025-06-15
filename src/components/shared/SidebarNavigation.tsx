@@ -50,11 +50,13 @@ const profileItems = [
     title: "Profile",
     url: "/feed/profile",
     icon: User,
+    live: false,
   },
   {
     title: "Settings",
     url: "/feed/settings",
     icon: Settings,
+    live: true,
   },
 ];
 
@@ -63,16 +65,19 @@ const activityItems = [
     title: "Activity",
     url: "/feed/activity",
     icon: ChartColumnBig,
+    live: true,
   },
   {
     title: "Repositories",
     url: "/feed/repositories",
     icon: BookMarked,
+    live: true,
   },
   {
     title: "Organization",
     url: "/feed/organization",
     icon: Building2,
+    live: true,
   },
 ];
 
@@ -97,23 +102,39 @@ export function SidebarNavigation() {
               return (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link
-                      href={item.url}
-                      className={`flex items-center gap-2 w-full p-2 rounded-md transition-all ${
-                        isActive
-                          ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border border-neutral-100 dark:border-neutral-800"
-                          : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
-                      }
-                      ${!item.live && "cursor-not-allowed"}
-                      `}
-                    >
-                      <item.icon
-                        className={`${isActive ? "text-[#5BC898]" : ""}`}
-                      />
-                      <span className={`${isActive ? "text-[#5BC898]" : ""}`}>
-                        {item.title}
-                      </span>
-                    </Link>
+                    {item.live ? (
+                      <Link
+                        href={item.url}
+                        className={`flex items-center gap-2 w-full p-2 rounded-md transition-all ${
+                          isActive
+                            ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border border-neutral-100 dark:border-neutral-800"
+                            : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                        }`}
+                      >
+                        <item.icon
+                          className={`${isActive ? "text-[#5BC898]" : ""}`}
+                        />
+                        <span className={`${isActive ? "text-[#5BC898]" : ""}`}>
+                          {item.title}
+                        </span>
+                        {!item.live && (
+                          <span className="text-xs text-neutral-400 dark:text-neutral-500 ml-1">
+                            Soon
+                          </span>
+                        )}
+                      </Link>
+                    ) : (
+                      <button
+                        className="flex items-center gap-2 w-full p-2 rounded-md transition-all text-neutral-400 cursor-not-allowed"
+                        disabled
+                      >
+                        <item.icon />
+                        <span>{item.title}</span>
+                        <span className="text-xs text-neutral-400 dark:text-neutral-500 ml-1">
+                          Soon
+                        </span>
+                      </button>
+                    )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               );
@@ -129,22 +150,39 @@ export function SidebarNavigation() {
               return (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link
-                      href={item.url}
-                      className={`flex items-center gap-2 w-full p-2 rounded-md transition-all ${
-                        isActive
-                          ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border border-neutral-100 dark:border-neutral-800"
-                          : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
-                      }
-                      `}
-                    >
-                      <item.icon
-                        className={`${isActive ? "text-[#5BC898]" : ""}`}
-                      />
-                      <span className={`${isActive ? "text-[#5BC898]" : ""}`}>
-                        {item.title}
-                      </span>
-                    </Link>
+                    {item.live ? (
+                      <Link
+                        href={item.url}
+                        className={`flex items-center gap-2 w-full p-2 rounded-md transition-all ${
+                          isActive
+                            ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border border-neutral-100 dark:border-neutral-800"
+                            : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                        }`}
+                      >
+                        <item.icon
+                          className={`${isActive ? "text-[#5BC898]" : ""}`}
+                        />
+                        <span className={`${isActive ? "text-[#5BC898]" : ""}`}>
+                          {item.title}
+                        </span>
+                        {!item.live && (
+                          <span className="text-xs text-neutral-400 dark:text-neutral-500 ml-1">
+                            Soon
+                          </span>
+                        )}
+                      </Link>
+                    ) : (
+                      <button
+                        className="flex items-center gap-2 w-full p-2 rounded-md transition-all text-neutral-400 cursor-not-allowed"
+                        disabled
+                      >
+                        <item.icon />
+                        <span>{item.title}</span>
+                        <span className="text-xs text-neutral-400 dark:text-neutral-500 ml-1">
+                          Soon
+                        </span>
+                      </button>
+                    )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               );
@@ -160,22 +198,39 @@ export function SidebarNavigation() {
               return (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link
-                      href={item.url}
-                      className={`flex items-center gap-2 w-full p-2 rounded-md transition-all ${
-                        isActive
-                          ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border border-neutral-100 dark:border-neutral-800"
-                          : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
-                      }
-                      `}
-                    >
-                      <item.icon
-                        className={`${isActive ? "text-[#5BC898]" : ""}`}
-                      />
-                      <span className={`${isActive ? "text-[#5BC898]" : ""}`}>
-                        {item.title}
-                      </span>
-                    </Link>
+                    {item.live ? (
+                      <Link
+                        href={item.url}
+                        className={`flex items-center gap-2 w-full p-2 rounded-md transition-all ${
+                          isActive
+                            ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border border-neutral-100 dark:border-neutral-800"
+                            : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                        }`}
+                      >
+                        <item.icon
+                          className={`${isActive ? "text-[#5BC898]" : ""}`}
+                        />
+                        <span className={`${isActive ? "text-[#5BC898]" : ""}`}>
+                          {item.title}
+                        </span>
+                        {!item.live && (
+                          <span className="text-xs text-neutral-400 dark:text-neutral-500 ml-1">
+                            Soon
+                          </span>
+                        )}
+                      </Link>
+                    ) : (
+                      <button
+                        className="flex items-center gap-2 w-full p-2 rounded-md transition-all text-neutral-400 cursor-not-allowed"
+                        disabled
+                      >
+                        <item.icon />
+                        <span>{item.title}</span>
+                        <span className="text-xs text-neutral-400 dark:text-neutral-500 ml-1">
+                          Soon
+                        </span>
+                      </button>
+                    )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               );

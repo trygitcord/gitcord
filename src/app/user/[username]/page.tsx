@@ -1,6 +1,4 @@
 import React from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { MapPin, LinkIcon, Calendar, Eye } from "lucide-react";
 import {
@@ -12,6 +10,21 @@ import {
 import axios from "axios";
 import GithubAnalyticsWidget from "@/components/shared/GithubAnalyticsWidget";
 import Image from "next/image";
+import { Metadata } from "next";
+
+interface Props {
+  params: { username: string };
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  return {
+    title: `Gitcord | ${params.username}'s Profile`,
+    description: `View ${params.username}'s profile`,
+    icons: {
+      icon: "/logo.svg",
+    },
+  };
+}
 
 async function getGithubUser(username: string) {
   try {
@@ -46,10 +59,6 @@ function formatNumber(num: number): string {
     return thousands % 1 === 0 ? `${thousands}k` : `${thousands.toFixed(1)}k`;
   }
   return num.toString();
-}
-
-interface Props {
-  params: { username: string };
 }
 
 const ProfilePage = async ({ params }: Props) => {
