@@ -22,7 +22,7 @@ interface Commit {
   author: {
     login: string;
     avatar_url: string;
-  };
+  } | null;
 }
 
 interface LastCommitsProps {
@@ -53,16 +53,24 @@ export function LastCommits({ commits, owner, repo }: LastCommitsProps) {
                     #{commit.sha.slice(0, 7)}
                   </a>
                   <div className="flex items-center gap-2 min-w-0">
-                    <Image
-                      src={commit.author.avatar_url}
-                      alt={commit.author.login}
-                      width={20}
-                      height={20}
-                      className="w-5 h-5 rounded-full shrink-0"
-                    />
-                    <span className="text-neutral-600 dark:text-neutral-300 text-sm truncate">
-                      {commit.author.login}
-                    </span>
+                    {commit.author ? (
+                      <>
+                        <Image
+                          src={commit.author.avatar_url}
+                          alt={commit.author.login}
+                          width={20}
+                          height={20}
+                          className="w-5 h-5 rounded-full shrink-0"
+                        />
+                        <span className="text-neutral-600 dark:text-neutral-300 text-sm truncate">
+                          {commit.author.login}
+                        </span>
+                      </>
+                    ) : (
+                      <span className="text-neutral-500 dark:text-neutral-400 text-sm">
+                        Unknown Author
+                      </span>
+                    )}
                     <span className="text-neutral-500 dark:text-neutral-400 text-sm truncate">
                       {commit.commit.message}
                     </span>
