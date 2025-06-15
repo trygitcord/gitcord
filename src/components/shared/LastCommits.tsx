@@ -27,9 +27,11 @@ interface Commit {
 
 interface LastCommitsProps {
   commits: Commit[];
+  owner: string;
+  repo: string;
 }
 
-export function LastCommits({ commits }: LastCommitsProps) {
+export function LastCommits({ commits, owner, repo }: LastCommitsProps) {
   return (
     <div className="bg-neutral-50 rounded-xl h-full p-4 dark:bg-neutral-900">
       <div className="h-full flex flex-col">
@@ -43,7 +45,7 @@ export function LastCommits({ commits }: LastCommitsProps) {
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2 min-w-0">
                   <a
-                    href={`https://github.com/${commit.sha}`}
+                    href={`https://github.com/${owner}/${repo}/commit/${commit.sha}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-xs font-mono bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 px-2 py-1 rounded hover:underline hover:text-[#5BC898] transition-colors shrink-0"

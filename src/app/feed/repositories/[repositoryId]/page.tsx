@@ -231,7 +231,11 @@ function Page() {
         </div>
         {commitsData && (
           <div className="sm:col-span-2">
-            <LastCommits commits={commitsData} />
+            <LastCommits
+              commits={commitsData}
+              owner={localStorage.getItem("username") || ""}
+              repo={repoName}
+            />
           </div>
         )}
       </div>
