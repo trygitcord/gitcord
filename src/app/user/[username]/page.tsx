@@ -78,19 +78,21 @@ const ProfilePage = async ({ params }: Props) => {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-white">
-      <div className="max-w-[420px] rounded-2xl w-full mx-auto border border-gray-200 shadow-lg bg-white overflow-visible">
+    <div className="flex justify-center items-center min-h-screen bg-neutral-950">
+      <div className="max-w-[420px] rounded-2xl w-full mx-auto border border-neutral-800 shadow-lg bg-neutral-900 overflow-visible">
         {/* Banner ve Profil Fotoğrafı */}
         <div className="relative w-full h-24">
           <div
             className="absolute top-0 left-0 w-full h-24 rounded-t-2xl z-0"
             style={{
-              background: "linear-gradient(90deg, #3a9d5a 0%, #2d7d46 100%)",
+              background: "linear-gradient(135deg, #2d7d46 0%, #1b1f23 100%)",
+              backgroundImage:
+                "radial-gradient(circle at 100% 0%, rgba(45, 125, 70, 0.8) 0%, transparent 50%), radial-gradient(circle at 0% 100%, rgba(27, 31, 35, 0.8) 0%, transparent 50%)",
             }}
           />
           {/* View Count */}
           {gitcordUser && (
-            <div className="absolute top-4 right-4 z-10 flex items-center gap-1 text-white">
+            <div className="absolute top-4 right-4 z-10 flex items-center gap-1 text-neutral-100">
               <Eye className="w-4 h-4 font-semibold" />
               <span className="text-sm font-semibold">
                 {formatNumber(gitcordUser.stats?.view_count || 0)}
@@ -99,7 +101,7 @@ const ProfilePage = async ({ params }: Props) => {
           )}
           {/* Profile Picture */}
           <div className="absolute left-1/2 top-full -translate-x-1/2 -translate-y-1/2 z-10">
-            <div className="rounded-full w-24 h-24 border border-gray-200 flex items-center justify-center text-2xl font-bold text-white shadow-lg overflow-hidden bg-white">
+            <div className="rounded-full w-24 h-24 border border-neutral-800 flex items-center justify-center text-2xl font-bold text-white shadow-lg overflow-hidden bg-neutral-900">
               <img
                 src={githubUser.avatar_url}
                 alt={githubUser.name}
@@ -111,13 +113,15 @@ const ProfilePage = async ({ params }: Props) => {
         {/* Kart içeriği */}
         <div className="flex flex-col gap-4 p-4 mt-12">
           {/* Profile info */}
-          <div className="grid gap-4 px-4 py-4 rounded-xl bg-gray-50">
+          <div className="grid gap-4 px-4 py-4 rounded-xl bg-neutral-950">
             <div className="flex items-start justify-between">
               <div className="grid gap-1">
-                <div className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                <div className="text-xl font-bold text-neutral-100 flex items-center gap-2">
                   {githubUser.name || githubUser.login}
                 </div>
-                <div className="text-sm text-gray-500">@{githubUser.login}</div>
+                <div className="text-sm text-neutral-400">
+                  @{githubUser.login}
+                </div>
               </div>
               {gitcordUser && (
                 <div className="flex items-center gap-1">
@@ -202,38 +206,38 @@ const ProfilePage = async ({ params }: Props) => {
               )}
             </div>
 
-            <Separator className="bg-gray-200" />
+            <Separator className="bg-neutral-800" />
 
             {/* Stats */}
             <div className="grid grid-cols-3 gap-4 text-center">
               <div className="space-y-1">
-                <div className="text-lg font-bold text-gray-900">
+                <div className="text-lg font-bold text-neutral-100">
                   {githubUser.public_repos}
                 </div>
-                <div className="text-xs text-gray-500">Repositories</div>
+                <div className="text-xs text-neutral-400">Repositories</div>
               </div>
               <div className="space-y-1">
-                <div className="text-lg font-bold text-gray-900">
+                <div className="text-lg font-bold text-neutral-100">
                   {githubUser.followers}
                 </div>
-                <div className="text-xs text-gray-500">Followers</div>
+                <div className="text-xs text-neutral-400">Followers</div>
               </div>
               <div className="space-y-1">
-                <div className="text-lg font-bold text-gray-900">
+                <div className="text-lg font-bold text-neutral-100">
                   {githubUser.following}
                 </div>
-                <div className="text-xs text-gray-500">Following</div>
+                <div className="text-xs text-neutral-400">Following</div>
               </div>
             </div>
 
-            <Separator className="bg-gray-200" />
+            <Separator className="bg-neutral-800" />
 
             {/* About */}
             <div className="grid gap-2">
-              <div className="text-xs font-bold uppercase text-gray-900">
+              <div className="text-xs font-bold uppercase text-neutral-100">
                 About
               </div>
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-neutral-400">
                 {githubUser.bio || "No bio provided."}
               </div>
             </div>
@@ -241,25 +245,25 @@ const ProfilePage = async ({ params }: Props) => {
             {/* Details */}
             <div className="grid gap-3">
               {githubUser.location && (
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div className="flex items-center gap-2 text-sm text-neutral-400">
                   <MapPin className="w-4 h-4" />
                   {githubUser.location}
                 </div>
               )}
               {githubUser.blog && (
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div className="flex items-center gap-2 text-sm text-neutral-400">
                   <LinkIcon className="w-4 h-4" />
                   <a
                     href={githubUser.blog}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
+                    className="text-blue-400 hover:text-blue-300 hover:underline"
                   >
                     {githubUser.blog}
                   </a>
                 </div>
               )}
-              <div className="flex items-center gap-2 text-sm text-gray-600">
+              <div className="flex items-center gap-2 text-sm text-neutral-400">
                 <Calendar className="w-4 h-4" />
                 Joined {new Date(githubUser.created_at).toLocaleDateString()}
               </div>
