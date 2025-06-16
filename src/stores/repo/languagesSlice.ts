@@ -3,18 +3,25 @@ import { sliceTypes } from "@/types/sliceTypes";
 import { create } from "zustand";
 import githubAxios from "@/lib/axios";
 
-export const repoLanguagesSlice = create<sliceTypes>((set) => ({
-  data: null,
-  loading: true,
-  error: null,
+interface LanguagesState {
+  data: { [key: string]: { [key: string]: number } };
+  loading: boolean;
+  error: string | null;
+  fetchData: (username: string, repoName: string) => Promise<void>;
+}
 
-  // query = owner
-  // query2 = repo
-  fetchData: async (query?: string, query2?: string) => {
-    set({ loading: true, error: null });
+export const repoLanguagesSlice = create<LanguagesState>((set) => ({
+  data: {},
+  loading: false,
+  error: null,
+  fetchData: async (username: string, repoName: string) => {
     try {
-      const response = await githubAxios.get(`/repos/${query}/${query2}/languages`);
-      set({ data: response.data, loading: false });
+      set({ loading: true, error: null });
+      const response = await githubAxios.get(`/repos/${username}/${repoName}/languages`);
+      set((state) => ({
+        data: { ...state.data, [repoName]: response.data },
+        loading: false,
+      }));
     } catch (error: any) {
       set({ error: error.message, loading: false });
     }

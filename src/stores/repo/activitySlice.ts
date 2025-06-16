@@ -3,20 +3,31 @@ import { sliceTypes } from "@/types/sliceTypes";
 import { create } from "zustand";
 import githubAxios from "@/lib/axios";
 
-export const repoActivitySlice = create<sliceTypes>((set) => ({
-  data: null,
-  loading: true,
-  error: null,
+interface ActivityState {
+  data: { [key: string]: any[] };
+  loading: boolean;
+  error: string | null;
+  fetchData: (username: string, repoName: string) => Promise<void>;
+  resetData: () => void;
+}
 
-  // query = owner
-  // query2 = repo
-  fetchData: async (query?: string, query2?: string) => {
-    set({ loading: true, error: null });
+export const repoActivitySlice = create<ActivityState>((set) => ({
+  data: {},
+  loading: false,
+  error: null,
+  fetchData: async (username: string, repoName: string) => {
     try {
-      const response = await githubAxios.get(`/repos/${query}/${query2}/activity`);
-      set({ data: response.data, loading: false });
+      set({ loading: true, error: null });
+      const response = await githubAxios.get(`/repos/${username}/${repoName}/stats/commit_activity`);
+      set((state) => ({
+        data: { ...state.data, [repoName]: response.data },
+        loading: false,
+      }));
     } catch (error: any) {
       set({ error: error.message, loading: false });
     }
+  },
+  resetData: () => {
+    set({ data: {}, loading: false, error: null });
   },
 }));

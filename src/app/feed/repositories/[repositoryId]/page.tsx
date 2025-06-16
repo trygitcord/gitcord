@@ -23,11 +23,31 @@ function Page() {
   const [error, setError] = useState<string | null>(null);
   const [mainLanguage, setMainLanguage] = useState<string | null>(null);
   const [chartData, setChartData] = useState<any[]>([]);
+  const [isDataLoading, setIsDataLoading] = useState(false);
 
   const { data: languagesData, fetchData: fetchLanguages } =
     repoLanguagesSlice();
-  const { data: activityData, fetchData: fetchActivity } = repoActivitySlice();
+  const {
+    data: activityData,
+    fetchData: fetchActivity,
+    resetData: resetActivity,
+  } = repoActivitySlice();
   const { data: commitsData, fetchData: fetchCommits } = repoCommitsSlice();
+
+  // Reset states when repository changes
+  useEffect(() => {
+    const resetStates = () => {
+      setRepoData(null);
+      setLoading(true);
+      setError(null);
+      setMainLanguage(null);
+      setChartData([]);
+      setIsDataLoading(false);
+      resetActivity(); // Reset activity data in the store
+    };
+
+    resetStates();
+  }, [repoName, resetActivity]);
 
   useEffect(() => {
     document.title = `Feed | Repository | ${
@@ -45,14 +65,30 @@ function Page() {
           return;
         }
 
-        const [repoResponse] = await Promise.all([
-          githubAxios.get(`/repos/${username}/${repoName}`),
+        setIsDataLoading(true);
+        resetActivity(); // Reset activity data before fetching new data
+
+        // First fetch repository data to check if it exists
+        const repoResponse = await githubAxios.get(
+          `/repos/${username}/${repoName}`
+        );
+        setRepoData(repoResponse.data);
+
+        // Then fetch other data in parallel
+        await Promise.all([
           fetchLanguages(username, repoName),
-          fetchActivity(username, repoName),
+          fetchActivity(username, repoName).catch((err) => {
+            // If activity data fails, set empty chart data
+            if (err.response?.status === 404) {
+              console.warn(`No commit activity data available for ${repoName}`);
+              setChartData([]);
+            }
+            // Don't throw the error, just log it
+            console.error("Error fetching activity:", err);
+          }),
           fetchCommits(username, repoName),
         ]);
 
-        setRepoData(repoResponse.data);
         setLoading(false);
       } catch (err: any) {
         if (err.response?.status === 404) {
@@ -67,59 +103,56 @@ function Page() {
           );
         }
         setLoading(false);
+      } finally {
+        setIsDataLoading(false);
       }
     };
 
     fetchRepoData();
-  }, [repoName, fetchLanguages, fetchActivity, fetchCommits]);
+  }, [repoName, fetchLanguages, fetchActivity, fetchCommits, resetActivity]);
 
   useEffect(() => {
-    if (languagesData) {
-      const languages = languagesData as { [key: string]: number };
-      if (Object.keys(languages).length > 0) {
-        const mainLang = Object.entries(languages).reduce((a, b) =>
-          a[1] > b[1] ? a : b
-        )[0];
-        setMainLanguage(mainLang);
+    if (languagesData && repoData) {
+      // Get languages for this specific repository
+      const repoLanguages = languagesData[repoName];
+
+      if (repoLanguages && typeof repoLanguages === "object") {
+        // Check if repoLanguages is empty
+        if (Object.keys(repoLanguages).length === 0) {
+          setMainLanguage(null);
+        } else {
+          // Find the main language
+          const mainLang = Object.entries(repoLanguages).reduce((a, b) =>
+            a[1] > b[1] ? a : b
+          )[0];
+          setMainLanguage(mainLang);
+        }
       }
     }
-  }, [languagesData]);
+  }, [languagesData, repoData, repoName]);
 
   useEffect(() => {
-    if (activityData) {
-      const last7Days = Array.from({ length: 7 }, (_, i) => {
-        const date = new Date();
-        date.setDate(date.getDate() - i);
-        return {
-          date: date.toISOString().split("T")[0],
-          commits: 0,
-        };
-      }).reverse();
+    if (activityData && repoData && !isDataLoading) {
+      // Get activity for this specific repository
+      const repoActivity = activityData[repoName];
 
-      const processedData = activityData.map((item: any) => ({
-        date: new Date(item.timestamp).toISOString().split("T")[0],
-        commits: 1,
-      }));
+      if (Array.isArray(repoActivity) && repoActivity.length > 0) {
+        // Get the last 52 weeks of data (GitHub provides up to 52 weeks)
+        const last52Weeks = repoActivity.slice(-52);
 
-      const finalData = last7Days.map((day) => {
-        const commits = processedData
-          .filter(
-            (item: { date: string; commits: number }) => item.date === day.date
-          )
-          .reduce(
-            (sum: number, item: { date: string; commits: number }) =>
-              sum + item.commits,
-            0
-          );
-        return {
-          ...day,
-          commits,
-        };
-      });
+        // Process activities for the chart
+        const processedData = last52Weeks.map((item: any) => ({
+          date: new Date(item.week * 1000).toISOString().split("T")[0],
+          commits: item.total,
+        }));
 
-      setChartData(finalData);
+        setChartData(processedData);
+      } else {
+        // If no activity data, set empty array
+        setChartData([]);
+      }
     }
-  }, [activityData]);
+  }, [activityData, repoData, repoName, isDataLoading]);
 
   if (loading) {
     return (
@@ -188,9 +221,15 @@ function Page() {
       </div>
 
       <RepositoryBasicInformation
-        repoData={repoData}
-        mainLanguage={mainLanguage}
-        chartData={chartData}
+        name={repoData.name}
+        description={repoData.description}
+        visibility={repoData.visibility}
+        language={mainLanguage}
+        stars={repoData.stargazers_count}
+        forks={repoData.forks_count}
+        watchers={repoData.watchers_count}
+        lastUpdate={repoData.updated_at}
+        commitGraph={chartData}
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full mt-4">
@@ -225,7 +264,7 @@ function Page() {
           />
           {languagesData && (
             <div>
-              <LanguagesPieChart languages={languagesData} />
+              <LanguagesPieChart languages={languagesData[repoName] || {}} />
             </div>
           )}
         </div>
