@@ -17,10 +17,10 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  await params;
+  const { username } = await params;
   return {
-    title: `Gitcord | ${params.username}'s Profile`,
-    description: `View ${params.username}'s profile`,
+    title: `Gitcord | ${username}'s Profile`,
+    description: `View ${username}'s profile`,
     icons: {
       icon: "/logo.svg",
     },
