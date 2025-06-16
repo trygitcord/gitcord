@@ -266,7 +266,7 @@ function Page() {
                   {currentRepos.map((repo: any) => (
                     <Link
                       key={repo.id}
-                      href={`/feed/repositories/${repo.name}`}
+                      href={`/feed/organization/${orgData.login}/repository/${repo.name}`}
                       className="group h-full"
                     >
                       <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-4 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors h-full">
