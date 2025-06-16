@@ -8,6 +8,7 @@ import Image from "next/image";
 import { useTheme } from "next-themes";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { ShareProfileButton } from "@/components/shared/ShareProfileButton";
 
 function SettingsPage() {
   useEffect(() => {
@@ -75,7 +76,10 @@ function SettingsPage() {
             <p className="text-sm text-neutral-600 dark:text-neutral-400">
               Name
             </p>
-            <p className="text-sm">{userData.name}</p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm">{userData.name}</p>
+              <ShareProfileButton />
+            </div>
             <p className="text-sm text-neutral-600 dark:text-neutral-400">
               {userData.email}
             </p>

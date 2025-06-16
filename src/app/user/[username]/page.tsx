@@ -17,6 +17,7 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  await params;
   return {
     title: `Gitcord | ${params.username}'s Profile`,
     description: `View ${params.username}'s profile`,
