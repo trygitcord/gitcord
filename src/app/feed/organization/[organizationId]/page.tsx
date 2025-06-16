@@ -1,6 +1,14 @@
 "use client";
 
-import { ArrowLeft, Star, GitFork, Eye, Clock } from "lucide-react";
+import {
+  ArrowLeft,
+  Star,
+  GitFork,
+  Eye,
+  Clock,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
@@ -33,6 +41,8 @@ function Page() {
   const [mainLanguage, setMainLanguage] = useState<string | null>(null);
   const [chartData, setChartData] = useState<any[]>([]);
   const [isDataLoading, setIsDataLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const reposPerPage = 9; // 3x4 grid için
 
   const { data: languagesData, fetchData: fetchLanguages } =
     orgLanguagesSlice();
@@ -52,6 +62,7 @@ function Page() {
       setMainLanguage(null);
       setChartData([]);
       setIsDataLoading(false);
+      setCurrentPage(1);
       resetActivity(); // Reset activity data in the store
     };
 
@@ -169,6 +180,32 @@ function Page() {
     }
   }, [languagesData, orgData, orgName]);
 
+  // Sort repositories by updated_at time
+  const sortedRepos = reposData
+    ? [...reposData].sort(
+        (a, b) =>
+          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+      )
+    : [];
+
+  // Pagination logic
+  const indexOfLastRepo = currentPage * reposPerPage;
+  const indexOfFirstRepo = indexOfLastRepo - reposPerPage;
+  const currentRepos = sortedRepos.slice(indexOfFirstRepo, indexOfLastRepo);
+  const totalPages = Math.ceil((sortedRepos?.length || 0) / reposPerPage);
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
   return (
     <div>
       <div className="pt-1">
@@ -224,53 +261,78 @@ function Page() {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {reposData?.map((repo: any) => (
-                  <Link
-                    key={repo.id}
-                    href={`/feed/repositories/${repo.name}`}
-                    className="group h-full"
-                  >
-                    <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-4 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors h-full">
-                      <div className="flex flex-col h-full">
-                        <div className="flex items-start justify-between mb-2">
-                          <h3 className="text-neutral-800 dark:text-neutral-200 font-medium group-hover:text-[#5BC898] transition-colors">
-                            {repo.name}
-                          </h3>
-                          <span className="text-xs px-2 py-1 rounded-full bg-neutral-200 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400">
-                            {repo.visibility}
-                          </span>
-                        </div>
-                        <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4 line-clamp-2">
-                          {repo.description || "No description provided."}
-                        </p>
-                        <div className="mt-auto">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4 text-sm text-neutral-500 dark:text-neutral-400">
-                              <div className="flex items-center gap-1">
-                                <Star className="w-4 h-4" />
-                                <span>{repo.stargazers_count}</span>
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {currentRepos.map((repo: any) => (
+                    <Link
+                      key={repo.id}
+                      href={`/feed/repositories/${repo.name}`}
+                      className="group h-full"
+                    >
+                      <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-4 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors h-full">
+                        <div className="flex flex-col h-full">
+                          <div className="flex items-start justify-between mb-2">
+                            <h3 className="text-neutral-800 dark:text-neutral-200 font-medium group-hover:text-[#5BC898] transition-colors">
+                              {repo.name}
+                            </h3>
+                            <span className="text-xs px-2 py-1 rounded-full bg-neutral-200 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400">
+                              {repo.visibility}
+                            </span>
+                          </div>
+                          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4 line-clamp-2">
+                            {repo.description || "No description provided."}
+                          </p>
+                          <div className="mt-auto">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-4 text-sm text-neutral-500 dark:text-neutral-400">
+                                <div className="flex items-center gap-1">
+                                  <Star className="w-4 h-4" />
+                                  <span>{repo.stargazers_count}</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <GitFork className="w-4 h-4" />
+                                  <span>{repo.forks_count}</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <Eye className="w-4 h-4" />
+                                  <span>{repo.watchers_count}</span>
+                                </div>
                               </div>
-                              <div className="flex items-center gap-1">
-                                <GitFork className="w-4 h-4" />
-                                <span>{repo.forks_count}</span>
+                              <div className="flex items-center gap-1 text-xs text-neutral-400 dark:text-neutral-500">
+                                <Clock className="w-3 h-3" />
+                                <span>Updated {timeAgo(repo.updated_at)}</span>
                               </div>
-                              <div className="flex items-center gap-1">
-                                <Eye className="w-4 h-4" />
-                                <span>{repo.watchers_count}</span>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-1 text-xs text-neutral-400 dark:text-neutral-500">
-                              <Clock className="w-3 h-3" />
-                              <span>Updated {timeAgo(repo.updated_at)}</span>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+                    </Link>
+                  ))}
+                </div>
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-2 py-4 mt-4">
+                    <button
+                      onClick={handlePrevPage}
+                      disabled={currentPage === 1}
+                      className="p-2 rounded-lg bg-neutral-50 dark:bg-neutral-900 hover:bg-neutral-100 dark:hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:cursor-pointer"
+                    >
+                      <ChevronLeft className="w-5 h-5" />
+                    </button>
+                    <span className="text-sm text-neutral-600 dark:text-neutral-400">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <button
+                      onClick={handleNextPage}
+                      disabled={currentPage === totalPages}
+                      className="p-2 rounded-lg bg-neutral-50 dark:bg-neutral-900 hover:bg-neutral-100 dark:hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:cursor-pointer"
+                    >
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
