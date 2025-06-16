@@ -15,11 +15,21 @@ import { LanguagesPieChart } from "@/components/shared/LanguagesPieChart";
 import { ContributorsStats } from "@/components/shared/ContributorsStats";
 import { LastCommits } from "@/components/shared/LastCommits";
 
+interface RepositoryData {
+  name: string;
+  description: string | null;
+  visibility: string;
+  stargazers_count: number;
+  forks_count: number;
+  watchers_count: number;
+  updated_at: string;
+}
+
 function Page() {
   const params = useParams();
   const repoName = params.repoName as string;
   const orgName = params.organizationId as string;
-  const [repoData, setRepoData] = useState<any>(null);
+  const [repoData, setRepoData] = useState<RepositoryData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [mainLanguage, setMainLanguage] = useState<string | null>(null);
@@ -212,33 +222,39 @@ function Page() {
         </p>
       </div>
 
-      <RepositoryBasicInformation
-        name={repoData.name}
-        description={repoData.description}
-        visibility={repoData.visibility}
-        language={mainLanguage}
-        stars={repoData.stargazers_count}
-        forks={repoData.forks_count}
-        watchers={repoData.watchers_count}
-        lastUpdate={repoData.updated_at}
-        commitGraph={chartData}
-      />
+      {repoData && (
+        <RepositoryBasicInformation
+          name={repoData.name}
+          description={repoData.description}
+          visibility={repoData.visibility}
+          language={mainLanguage}
+          stars={repoData.stargazers_count}
+          forks={repoData.forks_count}
+          watchers={repoData.watchers_count}
+          lastUpdate={repoData.updated_at}
+          commitGraph={chartData}
+        />
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full mt-4">
-        <StatCard
-          icon={
-            <Star className="text-neutral-800 w-5 h-5 sm:w-6 sm:h-6 dark:text-neutral-300" />
-          }
-          count={repoData.stargazers_count}
-          label="Stars"
-        />
-        <StatCard
-          icon={
-            <GitFork className="text-neutral-800 w-5 h-5 sm:w-6 sm:h-6 dark:text-neutral-300" />
-          }
-          count={repoData.forks_count}
-          label="Forks"
-        />
+        {repoData && (
+          <>
+            <StatCard
+              icon={
+                <Star className="text-neutral-800 w-5 h-5 sm:w-6 sm:h-6 dark:text-neutral-300" />
+              }
+              count={repoData.stargazers_count}
+              label="Stars"
+            />
+            <StatCard
+              icon={
+                <GitFork className="text-neutral-800 w-5 h-5 sm:w-6 sm:h-6 dark:text-neutral-300" />
+              }
+              count={repoData.forks_count}
+              label="Forks"
+            />
+          </>
+        )}
         <StatCard
           icon={
             <GitCommit className="text-neutral-800 w-5 h-5 sm:w-6 sm:h-6 dark:text-neutral-300" />

@@ -5,6 +5,36 @@ import githubAxios from "@/lib/axios";
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000; // 1 second
 
+interface ContributorStats {
+  total: number;
+  weeks: {
+    w: number;
+    a: number;
+    d: number;
+    c: number;
+  }[];
+  author: {
+    login: string;
+    id: number;
+    node_id: string;
+    avatar_url: string;
+    gravatar_id: string;
+    url: string;
+    html_url: string;
+    followers_url: string;
+    following_url: string;
+    gists_url: string;
+    starred_url: string;
+    subscriptions_url: string;
+    organizations_url: string;
+    repos_url: string;
+    events_url: string;
+    received_events_url: string;
+    type: string;
+    site_admin: boolean;
+  };
+}
+
 export const repoContributorsSlice = create<sliceTypes>((set) => ({
   data: null,
   loading: true,
@@ -15,9 +45,9 @@ export const repoContributorsSlice = create<sliceTypes>((set) => ({
   fetchData: async (query?: string, query2?: string) => {
     set({ loading: true, error: null });
 
-    const fetchWithRetry = async (retryCount = 0): Promise<any> => {
+    const fetchWithRetry = async (retryCount = 0): Promise<ContributorStats[]> => {
       try {
-        const response = await githubAxios.get(
+        const response = await githubAxios.get<ContributorStats[]>(
           `/repos/${query}/${query2}/stats/contributors`
         );
 
