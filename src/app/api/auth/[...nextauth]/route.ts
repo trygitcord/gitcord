@@ -35,11 +35,12 @@ export const authOptions: AuthOptions = {
                     await connect();
 
                     const githubProfile = profile as GithubProfile;
-                    const existingUser = await User.findOne({ github_id: githubProfile.id });
+                    const existingUser = await User.findOne({ _id: githubProfile.id });
 
                     if (!existingUser) {
-                        // Create new user
+                        // Create new user with Github ID as _id
                         const newUser = await User.create({
+                            _id: githubProfile.id,
                             github_id: githubProfile.id,
                             name: githubProfile.name,
                             username: githubProfile.login,

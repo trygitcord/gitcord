@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 export interface UserType extends mongoose.Document {
-  _id: mongoose.Schema.Types.ObjectId;
+  _id: string;
   github_id: string;
   name: string;
   username: string;
@@ -14,14 +14,14 @@ export interface UserType extends mongoose.Document {
 }
 
 export interface UserPremiumType extends mongoose.Document {
-  _id: mongoose.Schema.Types.ObjectId;
+  _id: string;
   premium: boolean;
   premium_expires_at: Date;
   premium_plan: string;
 }
 
 export interface UserStatsType extends mongoose.Document {
-  _id: mongoose.Schema.Types.ObjectId;
+  _id: string;
   credit: number;
   view_count: number;
 }

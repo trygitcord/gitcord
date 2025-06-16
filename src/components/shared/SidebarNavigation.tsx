@@ -28,6 +28,7 @@ import {
 
 import Image from "next/image";
 import SidebarUserFooter from "@/components/shared/SidebarUserFooter";
+import React from "react";
 
 // Menu items.
 const items = [
@@ -48,9 +49,9 @@ const items = [
 const profileItems = [
   {
     title: "Profile",
-    url: "/feed/profile",
+    url: "/user",
     icon: User,
-    live: false,
+    live: true,
   },
   {
     title: "Settings",
@@ -83,6 +84,14 @@ const activityItems = [
 
 export function SidebarNavigation() {
   const pathname = usePathname();
+  const [profileUrl, setProfileUrl] = React.useState("/user");
+
+  React.useEffect(() => {
+    const username = localStorage.getItem("username");
+    if (username) {
+      setProfileUrl(`/user/${username}`);
+    }
+  }, []);
 
   return (
     <Sidebar className="p-4 border-r-2 border-r-neutral-200 dark:bg-neutral-950 dark:border-r-neutral-800">
@@ -195,12 +204,14 @@ export function SidebarNavigation() {
           <SidebarMenu>
             {profileItems.map((item) => {
               const isActive = pathname === item.url;
+              const url = item.title === "Profile" ? profileUrl : item.url;
               return (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     {item.live ? (
                       <Link
-                        href={item.url}
+                        href={url}
+                        target={item.title === "Profile" ? "_blank" : undefined}
                         className={`flex items-center gap-2 w-full p-2 rounded-md transition-all ${
                           isActive
                             ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border border-neutral-100 dark:border-neutral-800"

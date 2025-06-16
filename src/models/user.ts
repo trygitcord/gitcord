@@ -4,8 +4,8 @@ import { UserType } from '@/types/userTypes';
 const userSchema = new mongoose.Schema<UserType>(
     {
       _id: {
-        type: mongoose.Schema.Types.ObjectId,
-        auto: true,
+        type: String,
+        required: true,
       },
       github_id: {
         type: String,
