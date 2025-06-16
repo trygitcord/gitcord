@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { repoContributorsSlice } from "@/stores/repo/contributorsSlice";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { GitCommit, Plus, Minus } from "lucide-react";
+import { GitCommit, Plus, Minus, AlertCircle } from "lucide-react";
 import Link from "next/link";
 
 interface ContributorsStatsProps {
@@ -20,23 +20,54 @@ export function ContributorsStats({ owner, repo }: ContributorsStatsProps) {
   if (loading) {
     return (
       <div className="bg-neutral-900 rounded-xl p-4 h-[230px]">
-        <Skeleton className="w-full h-full" />
+        <h3 className="text-sm font-medium mb-4">Top Contributors</h3>
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex items-start justify-between">
+              <div className="flex items-start gap-2">
+                <Skeleton className="w-8 h-8 rounded-full" />
+                <div className="space-y-2">
+                  <Skeleton className="w-24 h-4" />
+                  <Skeleton className="w-16 h-3" />
+                </div>
+              </div>
+              <Skeleton className="w-20 h-2" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-neutral-900 rounded-xl p-4 h-[230px] flex items-center justify-center">
-        <p className="text-[#5BC898]">Error loading contributors data</p>
+      <div className="bg-neutral-900 rounded-xl p-4 h-[230px] flex flex-col items-center justify-center gap-2">
+        <AlertCircle className="w-8 h-8 text-red-400" />
+        <p className="text-red-400 text-center">
+          Error loading contributors data
+        </p>
+        <button
+          onClick={() => fetchData(owner, repo)}
+          className="text-sm text-neutral-400 hover:text-neutral-300 transition-colors"
+        >
+          Try again
+        </button>
       </div>
     );
   }
 
   if (!data || !Array.isArray(data) || data.length === 0) {
     return (
-      <div className="bg-neutral-900 rounded-xl p-4 h-[230px] flex items-center justify-center">
-        <p className="text-neutral-400">No contributor data available</p>
+      <div className="bg-neutral-900 rounded-xl p-4 h-[230px] flex flex-col items-center justify-center gap-2">
+        <p className="text-neutral-400 text-center">
+          No contributor data available
+        </p>
+        <button
+          onClick={() => fetchData(owner, repo)}
+          className="text-sm text-neutral-400 hover:text-neutral-300 transition-colors"
+        >
+          Refresh
+        </button>
       </div>
     );
   }

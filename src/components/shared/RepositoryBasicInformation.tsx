@@ -22,15 +22,27 @@ function timeAgo(dateString: string) {
 }
 
 interface RepositoryBasicInformationProps {
-  repoData: any;
-  mainLanguage: string | null;
-  chartData: any[];
+  name: string;
+  description: string | null;
+  visibility: string;
+  language: string | null;
+  stars: number;
+  forks: number;
+  watchers: number;
+  lastUpdate: string;
+  commitGraph: any[];
 }
 
 export const RepositoryBasicInformation = ({
-  repoData,
-  mainLanguage,
-  chartData,
+  name,
+  description,
+  visibility,
+  language,
+  stars,
+  forks,
+  watchers,
+  lastUpdate,
+  commitGraph,
 }: RepositoryBasicInformationProps) => {
   return (
     <div className="w-full bg-neutral-50 dark:bg-neutral-900 mt-4 rounded-xl p-4.5">
@@ -38,38 +50,36 @@ export const RepositoryBasicInformation = ({
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-medium dark:text-neutral-200 text-neutral-800">
-              {repoData.name}
+              {name}
             </h2>
             <span className="text-xs px-2 py-1 rounded-full bg-neutral-200 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400">
-              {repoData.visibility}
+              {visibility}
             </span>
           </div>
           <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            {repoData.description || "No description provided."}
+            {description || "No description provided."}
           </p>
           <div className="flex items-center justify-between text-sm text-neutral-500 dark:text-neutral-400">
             <div className="flex items-center gap-4">
-              {mainLanguage && (
+              {language && (
                 <div className="flex items-center">
                   <div className="w-2.5 h-2.5 rounded-full bg-[#5BC898]" />
                   <span className="text-xs px-2 py-1 rounded-full text-neutral-600 dark:text-neutral-400">
-                    {mainLanguage}
+                    {language}
                   </span>
                 </div>
               )}
-              <span className="text-xs">
-                Updated {timeAgo(repoData.updated_at)}
-              </span>
+              <span className="text-xs">Updated {timeAgo(lastUpdate)}</span>
             </div>
           </div>
         </div>
         <div className="flex flex-col items-end gap-1">
           <span className="text-xs text-neutral-500 dark:text-neutral-400">
-            Commit Graph
+            Commit Activity
           </span>
           <div className="w-[250px] h-[80px]">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData}>
+              <LineChart data={commitGraph}>
                 <XAxis dataKey="date" hide={true} />
                 <YAxis hide={true} />
                 <Tooltip
@@ -81,6 +91,9 @@ export const RepositoryBasicInformation = ({
                   }}
                   labelStyle={{ color: "#fff" }}
                   formatter={(value: number) => [`${value} commits`, "Commits"]}
+                  labelFormatter={(label) =>
+                    new Date(label).toLocaleDateString()
+                  }
                 />
                 <Line
                   type="monotone"
