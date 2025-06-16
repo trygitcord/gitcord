@@ -19,6 +19,17 @@ import { orgReposSlice } from "@/stores/org/reposSlice";
 import { orgLanguagesSlice } from "@/stores/org/languagesSlice";
 import { orgActivitySlice } from "@/stores/org/activitySlice";
 
+interface OrganizationData {
+  name: string;
+  login: string;
+  description: string | null;
+  type: string;
+  stargazers_count: number;
+  forks_count: number;
+  watchers_count: number;
+  updated_at: string;
+}
+
 function timeAgo(dateString: string) {
   const now = new Date();
   const date = new Date(dateString);
@@ -35,7 +46,7 @@ function timeAgo(dateString: string) {
 function Page() {
   const params = useParams();
   const orgName = params.organizationId as string;
-  const [orgData, setOrgData] = useState<any>(null);
+  const [orgData, setOrgData] = useState<OrganizationData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [mainLanguage, setMainLanguage] = useState<string | null>(null);
