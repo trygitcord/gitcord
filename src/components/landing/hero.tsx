@@ -202,7 +202,7 @@ const HeroHeader = () => {
           className={cn(
             "mx-auto mt-2 max-w-6xl px-6 transition-all duration-300 lg:px-12",
             isScrolled &&
-              "bg-background/50 max-w-4xl rounded-2xl border backdrop-blur-lg lg:px-5"
+              "bg-background/50 max-w-2xl rounded-3xl backdrop-blur-lg lg:px-6"
           )}
         >
           <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
@@ -269,7 +269,7 @@ const HeroHeader = () => {
 const Logo = ({ className }: { className?: string }) => {
   return (
     <div className="flex items-center gap-2">
-      <Image src="/logo.svg" alt="Gitcord Logo" width={24} height={24} />
+      <Image src="/logo.svg" alt="Gitcord Logo" width={28} height={28} />
       <h1 className="text-lg font-semibold text-neutral-100">Gitcord</h1>
     </div>
   );
