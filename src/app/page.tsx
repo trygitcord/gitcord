@@ -1,11 +1,14 @@
-import Test from "@/components/shared/test";
-import SearchUserInput from "@/components/shared/SearchUserInput";
+import { HeroSection } from "@/components/landing/hero";
+import { Footer } from "@/components/ui/footer-section";
 
 export default function Home() {
   return (
     <div>
-      <Test />
-      <SearchUserInput />
+      <div>
+        <HeroSection />
+        <div className="h-92"></div>
+        <Footer />
+      </div>
     </div>
   );
 }
