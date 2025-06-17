@@ -3,8 +3,9 @@
 import React, { useEffect } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { getUserProfile } from "@/stores/user/userProfileSlice";
+import { Github } from "lucide-react";
 
-function Test() {
+function LoginButton() {
   const { data: session } = useSession();
   const { data: userData, fetchData: fetchUserProfile } = getUserProfile();
 
@@ -25,15 +26,21 @@ function Test() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen gap-4">
+    <div>
       <button
         onClick={handleGithubLogin}
-        className="px-4 py-2 text-white bg-gray-800 rounded-md hover:bg-gray-700 transition-colors"
+        className="group px-4 py-1.5 bg-[#52b388] text-white rounded-lg flex items-center gap-1.5 text-sm font-medium
+        border border-[#4aa882]/20
+        shadow-[0_2px_8px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)]
+        hover:bg-[#4aa882] hover:border-[#4aa882]/30
+        active:scale-[0.98] active:shadow-[0_2px_4px_rgba(0,0,0,0.1)]
+        transition-all duration-200 ease-out hover:scale-105 hover:cursor-pointer"
       >
-        GitHub ile Giriş Yap
+        <Github className="w-4 h-4" strokeWidth={2.5} />
+        Get Started
       </button>
     </div>
   );
 }
 
-export default Test;
+export default LoginButton;
