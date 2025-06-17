@@ -29,7 +29,7 @@ function LoginButton() {
     <div>
       <button
         onClick={handleGithubLogin}
-        className="group px-4 py-1.5 bg-[#52b388] text-white rounded-lg flex items-center gap-1.5 text-sm font-medium
+        className="group px-4 py-1.5 bg-[#3ABA81] text-white rounded-lg flex items-center gap-1.5 text-sm font-semibold
         border border-[#4aa882]/20
         shadow-[0_2px_8px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)]
         hover:bg-[#4aa882] hover:border-[#4aa882]/30
