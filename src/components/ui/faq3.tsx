@@ -23,58 +23,14 @@ interface Faq3Props {
   supportButtonUrl: string;
 }
 
-const faqItems = [
-  {
-    id: "faq-1",
-    question: "What is the return policy?",
-    answer:
-      "You can return any item within 30 days of purchase for a full refund, provided it is in its original condition.",
-  },
-  {
-    id: "faq-2",
-    question: "How do I track my order?",
-    answer:
-      "Once your order is shipped, you will receive an email with a tracking number. You can use this number on our website to track your order.",
-  },
-  {
-    id: "faq-3",
-    question: "Do you offer international shipping?",
-    answer:
-      "Yes, we ship to most countries worldwide. Shipping costs and delivery times vary depending on the destination.",
-  },
-  {
-    id: "faq-4",
-    question: "Can I change my order after it has been placed?",
-    answer:
-      "You can change your order within 24 hours of placing it by contacting our customer service team.",
-  },
-  {
-    id: "faq-5",
-    question: "What payment methods do you accept?",
-    answer: "We accept all major credit cards, PayPal, and Apple Pay.",
-  },
-  {
-    id: "faq-6",
-    question: "How can I contact customer support?",
-    answer:
-      "You can reach our customer support team via email at support@example.com or by calling 1-800-123-4567.",
-  },
-  {
-    id: "faq-7",
-    question: "Are there any discounts for bulk purchases?",
-    answer:
-      "Yes, we offer discounts for bulk purchases. Please contact our sales team for more information.",
-  },
-];
-
 const Faq3 = ({
   heading = "Frequently asked questions",
   description = "Find answers to common questions about our products. Can't find what you're looking for? Contact our support team.",
-  items = faqItems,
+  items,
   supportHeading = "Need more support?",
   supportDescription = "Our dedicated support team is here to help you with any questions or concerns. Get in touch with us for personalized assistance.",
   supportButtonText = "Contact Support",
-  supportButtonUrl = "https://www.shadcnblocks.com",
+  supportButtonUrl = "",
 }: Faq3Props) => {
   return (
     <section className="py-32">
@@ -90,33 +46,34 @@ const Faq3 = ({
           collapsible
           className="mx-auto w-full lg:max-w-3xl"
         >
-          {items.map((item) => (
-            <AccordionItem key={item.id} value={item.id}>
-              <AccordionTrigger className="transition-opacity duration-200 hover:no-underline hover:opacity-60">
-                <div className="font-medium sm:py-1 lg:py-2 lg:text-lg">
-                  {item.question}
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="sm:mb-1 lg:mb-2">
-                <div className="text-muted-foreground lg:text-lg">
-                  {item.answer}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
+          {items &&
+            items.map((item) => (
+              <AccordionItem key={item.id} value={item.id}>
+                <AccordionTrigger className="transition-opacity duration-200 hover:no-underline hover:opacity-70 hover:cursor-pointer">
+                  <div className="font-medium sm:py-1 lg:py-2 lg:text-lg">
+                    {item.question}
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="sm:mb-1 lg:mb-2">
+                  <div className="text-neutral-400 lg:text-lg">
+                    {item.answer}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
         </Accordion>
-        <div className="mx-auto flex max-w-4xl flex-col items-center rounded-lg bg-neutral-900 p-4 text-center md:rounded-xl md:p-6 lg:p-8">
+        <div className="mx-auto flex max-w-4xl flex-col items-center rounded-lg p-4 text-center md:rounded-xl md:p-6 lg:p-8">
           <div className="relative">
             <Avatar className="absolute mb-4 size-16 origin-bottom -translate-x-[60%] scale-[80%] border md:mb-5">
-              <AvatarImage src="https://shadcnblocks.com/images/block/avatar-2.webp" />
+              <AvatarImage src="https://cdn.jsdelivr.net/gh/alohe/avatars/png/upstream_14.png" />
               <AvatarFallback>SU</AvatarFallback>
             </Avatar>
             <Avatar className="absolute mb-4 size-16 origin-bottom translate-x-[60%] scale-[80%] border md:mb-5">
-              <AvatarImage src="https://shadcnblocks.com/images/block/avatar-3.webp" />
+              <AvatarImage src="https://cdn.jsdelivr.net/gh/alohe/avatars/png/upstream_13.png" />
               <AvatarFallback>SU</AvatarFallback>
             </Avatar>
             <Avatar className="mb-4 size-16 border md:mb-5">
-              <AvatarImage src="https://shadcnblocks.com/images/block/avatar-1.webp" />
+              <AvatarImage src="https://cdn.jsdelivr.net/gh/alohe/avatars/png/upstream_16.png" />
               <AvatarFallback>SU</AvatarFallback>
             </Avatar>
           </div>
@@ -128,7 +85,11 @@ const Faq3 = ({
           </p>
           <div className="flex w-full flex-col justify-center gap-2 sm:flex-row">
             <Button className="w-full sm:w-auto" asChild>
-              <a href={supportButtonUrl} target="_blank">
+              <a
+                href={supportButtonUrl}
+                target="_blank"
+                className="text-neutral-950"
+              >
                 {supportButtonText}
               </a>
             </Button>
