@@ -43,8 +43,8 @@ const demoData = {
   supportButtonUrl: "",
 };
 
-function Faq3Demo() {
+function FaqSection() {
   return <Faq3 {...demoData} />;
 }
 
-export { Faq3Demo };
+export { FaqSection };

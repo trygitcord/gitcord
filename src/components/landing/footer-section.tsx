@@ -67,9 +67,16 @@ export function Footer() {
 
       <div className="grid w-full gap-8 xl:grid-cols-3 xl:gap-8">
         <AnimatedContainer className="space-y-4">
-          <div className="flex items-center justify-start gap-3">
-            <Image src="/logo.svg" alt="Gitcord Logo" width={30} height={30} />
-            <h1 className="text-xl font-semibold text-neutral-200">Gitcord</h1>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
+              <Image
+                src="/logo.svg"
+                alt="Gitcord Logo"
+                width={24}
+                height={24}
+              />
+              <h1 className="text-lg font-medium text-neutral-100">Gitcord</h1>
+            </div>
           </div>
           <p className="text-muted-foreground mt-8 text-sm md:mt-0">
             © {new Date().getFullYear()} Gitcord. All rights reserved.

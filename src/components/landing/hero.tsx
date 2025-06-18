@@ -56,7 +56,7 @@ export function HeroSection() {
                     href="#link"
                     className="hover:bg-background dark:hover:border-t-border bg-muted group mx-auto flex w-fit items-center gap-4 rounded-full border p-1 pl-4 shadow-md shadow-black/5 transition-all duration-300 dark:border-t-white/5 dark:shadow-zinc-950"
                   >
-                    <span className="text-sm text-[#43DF99]">
+                    <span className="text-sm text-[#3ABA81]">
                       All your data, one dashboard
                     </span>
                     <span className="dark:border-background block h-4 w-0.5 border-l bg-white dark:bg-zinc-700"></span>
@@ -271,8 +271,8 @@ const HeroHeader = () => {
 const Logo = ({ className }: { className?: string }) => {
   return (
     <div className="flex items-center gap-2">
-      <Image src="/logo.svg" alt="Gitcord Logo" width={28} height={28} />
-      <h1 className="text-lg font-semibold text-neutral-100">Gitcord</h1>
+      <Image src="/logo.svg" alt="Gitcord Logo" width={24} height={24} />
+      <h1 className="text-lg font-medium text-neutral-100">Gitcord</h1>
     </div>
   );
 };
