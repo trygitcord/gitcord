@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { privateReposSlice } from "@/stores/user/privateReposSlice";
+import { getUserProfile } from "@/stores/user/userProfileSlice";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Star,
@@ -10,8 +11,10 @@ import {
   Clock,
   ChevronLeft,
   ChevronRight,
+  Crown,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 function timeAgo(dateString: string) {
   const now = new Date();
@@ -27,28 +30,39 @@ function timeAgo(dateString: string) {
 }
 
 function Repositories() {
+  // All useState hooks first
+  const [currentPage, setCurrentPage] = useState(1);
+  const [mounted, setMounted] = useState(false);
+
+  // Custom hooks (slice hooks) second
+  const {
+    data: reposData,
+    loading: reposLoading,
+    error: reposError,
+    fetchData: fetchRepos,
+  } = privateReposSlice();
+
+  const {
+    data: userData,
+    loading: userLoading,
+    error: userError,
+    fetchData: fetchUserProfile,
+  } = getUserProfile();
+
+  // useEffect hooks last
   useEffect(() => {
     document.title = "Feed | Repositories";
   }, []);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const reposPerPage = 12; // 3x3 grid için
-
-  const {
-    data: reposData,
-    loading,
-    error,
-    fetchData: fetchRepos,
-  } = privateReposSlice();
-
-  const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
     setMounted(true);
     fetchRepos();
+    fetchUserProfile();
   }, []);
 
-  if (!mounted || loading || !reposData) {
+  const reposPerPage = 12; // 3x3 grid için
+
+  if (!mounted || reposLoading || userLoading || !reposData || !userData) {
     return (
       <div className="w-full h-full">
         <div className="mb-4">
@@ -68,7 +82,7 @@ function Repositories() {
     );
   }
 
-  if (error) {
+  if (reposError || userError) {
     return (
       <div className="w-full h-full">
         <div className="mb-4">
@@ -80,14 +94,31 @@ function Repositories() {
           </p>
         </div>
         <div className="flex items-center justify-center h-64">
-          <p className="text-red-500">Error loading repositories: {error}</p>
+          <p className="text-red-500">
+            Error loading repositories: {reposError || userError}
+          </p>
         </div>
       </div>
     );
   }
 
+  // Filter repositories based on user premium status
+  const isPremium = userData.premium?.isPremium || false;
+
+  const filteredRepos = reposData.filter((repo: any) => {
+    // Public repositories are always visible
+    if (repo.visibility === "public") {
+      return true;
+    }
+    // Private repositories are only visible to premium users
+    if (repo.visibility === "private") {
+      return isPremium;
+    }
+    return false;
+  });
+
   // Sort repositories by updated_at time
-  const sortedRepos = [...reposData].sort(
+  const sortedRepos = [...filteredRepos].sort(
     (a, b) =>
       new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
   );
@@ -118,6 +149,11 @@ function Repositories() {
         </h1>
         <p className="text-neutral-500 text-sm dark:text-neutral-400">
           Explore all repositories and their activities.
+          {!isPremium && (
+            <span className="block mt-1 text-xs text-amber-600 dark:text-amber-400">
+              ⭐ Upgrade to Premium to view private repositories
+            </span>
+          )}
         </p>
       </div>
       <div className="flex-1 overflow-auto">
@@ -134,9 +170,19 @@ function Repositories() {
                     <h3 className="text-neutral-800 dark:text-neutral-200 font-medium group-hover:text-[#5BC898] transition-colors">
                       {repo.name}
                     </h3>
-                    <span className="text-xs px-2 py-1 rounded-full bg-neutral-200 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400">
-                      {repo.visibility}
-                    </span>
+                    <div className="flex items-center gap-1">
+                      {repo.visibility === "private" && isPremium && (
+                        <Image
+                          src={"/logo.svg"}
+                          alt="Premium"
+                          width={14}
+                          height={14}
+                        />
+                      )}
+                      <span className="text-xs px-2 py-1 rounded-full bg-neutral-200 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400">
+                        {repo.visibility}
+                      </span>
+                    </div>
                   </div>
                   <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4 line-clamp-2">
                     {repo.description || "No description provided."}
