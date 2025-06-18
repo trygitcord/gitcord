@@ -38,10 +38,10 @@ export const ShareProfileButton: React.FC<ShareProfileButtonProps> = ({
       onClick={handleCopy}
       variant={variant}
       size={size}
-      className={`p-1 hover:bg-muted/50 ${className}`}
+      className={`p-3 hover:bg-muted/50 ${className}`}
       title="Copy profile link"
     >
-      {isCopied ? <Check className="h-2 w-2" /> : <Copy className="h-2 w-2" />}
+      {isCopied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
     </Button>
   );
 };

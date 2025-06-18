@@ -3,32 +3,21 @@ import { TestimonialsSection } from "@/components/ui/testimonials-with-marquee";
 const testimonials = [
   {
     author: {
-      name: "Emma Thompson",
-      handle: "@emmaai",
-      avatar:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
+      name: "BlanchDev",
+      handle: "@blanch",
+      avatar: "https://avatars.githubusercontent.com/u/21373355?v=4",
     },
-    text: "Using this AI platform has transformed how we handle data analysis. The speed and accuracy are unprecedented.",
-    href: "https://twitter.com/emmaai",
+    text: "Thanks to AI integration, I now have a clear vision for my upcoming projects, it feels like all my ideas are right at my fingertips.",
+    href: "https://github.com/BlanchDev",
   },
   {
     author: {
-      name: "David Park",
-      handle: "@davidtech",
-      avatar:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+      name: "Pingu",
+      handle: "@pingu",
+      avatar: "https://avatars.githubusercontent.com/u/70480951?v=4",
     },
-    text: "The API integration is flawless. We've reduced our development time by 60% since implementing this solution.",
-    href: "https://twitter.com/davidtech",
-  },
-  {
-    author: {
-      name: "Sofia Rodriguez",
-      handle: "@sofiaml",
-      avatar:
-        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face",
-    },
-    text: "Finally, an AI tool that actually understands context! The accuracy in natural language processing is impressive.",
+    text: "I was new to software development and GitHub felt overwhelming but after discovering Gitcord, I realized there was nothing to stress about.",
+    href: "https://github.com/berkcanakdeniz",
   },
 ];
 
