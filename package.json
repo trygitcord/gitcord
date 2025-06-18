@@ -23,7 +23,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.18.1",
-    "lucide-react": "^0.516.0",
+    "lucide-react": "^0.517.0",
     "mongoose": "^8.13.1",
     "motion": "^12.18.1",
     "next": "15.2.4",

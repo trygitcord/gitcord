@@ -56,7 +56,7 @@ export function HeroSection() {
                     href="#link"
                     className="hover:bg-background dark:hover:border-t-border bg-muted group mx-auto flex w-fit items-center gap-4 rounded-full border p-1 pl-4 shadow-md shadow-black/5 transition-all duration-300 dark:border-t-white/5 dark:shadow-zinc-950"
                   >
-                    <span className="text-sm text-[#3ABA81]">
+                    <span className="text-sm">
                       All your data, one dashboard
                     </span>
                     <span className="dark:border-background block h-4 w-0.5 border-l bg-white dark:bg-zinc-700"></span>
@@ -109,10 +109,10 @@ export function HeroSection() {
                     <Button
                       asChild
                       size="lg"
-                      className="rounded-xl px-5 text-base"
+                      className="rounded-xl px-5 text-base border"
                     >
                       <Link href="#link">
-                        <span className="text-nowrap">Start Building</span>
+                        <span className="text-nowrap">Start Now</span>
                       </Link>
                     </Button>
                   </div>
@@ -124,7 +124,7 @@ export function HeroSection() {
                     className="h-10.5 rounded-xl px-5"
                   >
                     <Link href="#link">
-                      <span className="text-nowrap">Request a demo</span>
+                      <span className="text-nowrap">Learn More!</span>
                     </Link>
                   </Button>
                 </AnimatedGroup>
