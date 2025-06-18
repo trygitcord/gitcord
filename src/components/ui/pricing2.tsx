@@ -54,7 +54,7 @@ const Pricing2 = ({
               plans.map((plan) => (
                 <Card
                   key={plan.id}
-                  className="flex w-80 flex-col justify-between text-left"
+                  className="flex w-80 flex-col justify-between text-left bg-neutral-950"
                 >
                   <CardHeader>
                     <CardTitle>
