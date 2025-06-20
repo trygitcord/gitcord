@@ -8,6 +8,7 @@ import { AnimatedGroup } from "@/components/ui/animated-group";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import LoginButton from "@/components/landing/login-btn";
+import SearchUserInput from "@/components/shared/SearchUserInput";
 import HeroImage from "@/assets/hero.png";
 
 const transitionVariants = {
@@ -86,6 +87,19 @@ export function HeroSection() {
                     stats, issue patterns, and contributor activity — all from a
                     single, unified dashboard.
                   </p>
+                </AnimatedGroup>
+
+                {/* Search User Input Section */}
+                <AnimatedGroup
+                  variants={transitionVariants}
+                  className="mt-8 mx-auto max-w-md"
+                >
+                  <div className="bg-muted/30 backdrop-blur-sm rounded-2xl p-6 border border-neutral-900 shadow-lg">
+                    <SearchUserInput />
+                    <p className="text-sm text-muted-foreground mt-3 text-center">
+                      Search for any GitHub user to view their profile
+                    </p>
+                  </div>
                 </AnimatedGroup>
 
                 <AnimatedGroup
