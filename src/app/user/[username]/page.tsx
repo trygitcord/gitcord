@@ -16,17 +16,6 @@ interface Props {
   params: { username: string };
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { username } = await params;
-  return {
-    title: `Gitcord | ${username}'s Profile`,
-    description: `View ${username}'s profile`,
-    icons: {
-      icon: "/logo.svg",
-    },
-  };
-}
-
 async function getGithubUser(username: string) {
   try {
     const { data } = await axios.get(
@@ -62,8 +51,24 @@ function formatNumber(num: number): string {
   return num.toString();
 }
 
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { username } = await params;
+  const githubUser = await getGithubUser(username);
+
+  if (githubUser) {
+    return {
+      title: `Gitcord | ${username}'s profile`,
+    };
+  }
+
+  return {
+    title: `@${username} - Gitcord`,
+  };
+}
+
 const ProfilePage = async ({ params }: Props) => {
   const { username } = await params;
+
   const [githubUser, gitcordUser] = await Promise.all([
     getGithubUser(username),
     getGitcordUser(username),
@@ -71,8 +76,58 @@ const ProfilePage = async ({ params }: Props) => {
 
   if (!githubUser) {
     return (
-      <div className="text-center mt-20 text-red-500">
-        Github user not found.
+      <div className="flex justify-center items-center min-h-screen bg-neutral-950">
+        <div className="max-w-[420px] rounded-2xl w-full mx-auto border border-neutral-800 shadow-lg bg-neutral-900 overflow-hidden">
+          {/* Header with gradient */}
+          <div className="relative w-full h-24">
+            <div
+              className="absolute top-0 left-0 w-full h-24 rounded-t-2xl z-0"
+              style={{
+                background: "linear-gradient(135deg, #2d7d46 0%, #1b1f23 100%)",
+                backgroundImage:
+                  "radial-gradient(circle at 100% 0%, rgba(45, 125, 70, 0.8) 0%, transparent 50%), radial-gradient(circle at 0% 100%, rgba(27, 31, 35, 0.8) 0%, transparent 50%)",
+              }}
+            />
+          </div>
+
+          {/* Content */}
+          <div className="flex flex-col items-center gap-6 p-8 text-center">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center">
+              <svg
+                className="w-8 h-8 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+                />
+              </svg>
+            </div>
+
+            <div className="space-y-2">
+              <h2 className="text-xl font-bold text-neutral-100">
+                User Not Found
+              </h2>
+              <p className="text-sm text-neutral-400 max-w-sm">
+                The GitHub user "{username}" could not be found. Please check
+                the username and try again.
+              </p>
+            </div>
+
+            <div className="w-full h-px bg-gradient-to-r from-transparent via-neutral-700 to-transparent"></div>
+
+            <div className="flex flex-col items-center gap-4">
+              <div className="text-xs text-neutral-500">
+                Make sure the username is correct and the user exists on GitHub.
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
