@@ -10,7 +10,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Gitcord",
+  title: "Gitcord | A Better Tracker",
   description:
     "Gitcord is a platform for developers to connect with each other and share their code.",
   icons: {

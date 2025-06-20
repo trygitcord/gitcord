@@ -45,7 +45,7 @@ export function HeroSection() {
           <div className="h-[80rem] -translate-y-[350px] absolute left-0 top-0 w-56 -rotate-45 bg-[radial-gradient(50%_50%_at_50%_50%,hsla(0,0%,85%,.04)_0,hsla(0,0%,45%,.02)_80%,transparent_100%)]" />
         </div>
         <section>
-          <div className="relative pt-24 md:pt-36">
+          <div className="relative pt-20 md:pt-28">
             <div
               aria-hidden
               className="absolute inset-0 -z-10 size-full [background:radial-gradient(125%_125%_at_50%_100%,transparent_0%,var(--background)_75%)]"
@@ -74,7 +74,7 @@ export function HeroSection() {
                     </div>
                   </Link>
 
-                  <h1 className="mt-8 max-w-4xl font-bold mx-auto text-balance text-6xl md:text-7xl lg:mt-16 xl:text-[5.25rem]">
+                  <h1 className="mt-8 max-w-4xl font-semibold mx-auto text-balance text-6xl md:text-7xl lg:mt-16 xl:text-[5.25rem]">
                     Track{" "}
                     <span className="bg-gradient-to-r from-[#4CFFAF] to-[#3ABA81] bg-clip-text text-transparent">
                       smarter
@@ -89,58 +89,41 @@ export function HeroSection() {
                   </p>
                 </AnimatedGroup>
 
-                {/* Search User Input Section */}
+                {/* Call to Action */}
                 <AnimatedGroup
                   variants={transitionVariants}
-                  className="mt-8 mx-auto max-w-md"
+                  className="mt-10 space-y-8"
                 >
-                  <div className="bg-muted/30 backdrop-blur-sm rounded-2xl p-6 border border-neutral-900 shadow-lg">
-                    <SearchUserInput />
-                    <p className="text-sm text-muted-foreground mt-3 text-center">
-                      Search for any GitHub user to view their profile
-                    </p>
+                  {/* Search Demo */}
+                  <div className="max-w-sm mx-auto">
+                    <div className="text-center mb-4">
+                      <p className="text-sm text-neutral-400">
+                        Try it with any GitHub username
+                      </p>
+                    </div>
+                    <div className="relative">
+                      <SearchUserInput />
+                    </div>
                   </div>
-                </AnimatedGroup>
 
-                <AnimatedGroup
-                  variants={{
-                    container: {
-                      visible: {
-                        transition: {
-                          staggerChildren: 0.05,
-                          delayChildren: 0.75,
-                        },
-                      },
-                    },
-                    ...transitionVariants,
-                  }}
-                  className="mt-12 flex flex-col items-center justify-center gap-2 md:flex-row"
-                >
-                  <div
-                    key={1}
-                    className="bg-foreground/10 rounded-[14px] border p-0.5"
-                  >
+                  {/* Action Buttons */}
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                     <Button
                       asChild
                       size="lg"
-                      className="rounded-xl px-5 text-base border"
+                      className="rounded-2xl px-8 py-3 text-base font-medium shadow-lg hover:shadow-xl transition-all"
                     >
-                      <Link href="#link">
-                        <span className="text-nowrap">Start Now</span>
-                      </Link>
+                      <Link href="#link">Get Started Free</Link>
+                    </Button>
+                    <Button
+                      asChild
+                      size="lg"
+                      variant="outline"
+                      className="rounded-2xl px-8 py-3 text-base font-medium border-neutral-700 hover:bg-neutral-800/50 transition-all"
+                    >
+                      <Link href="#link">View Demo</Link>
                     </Button>
                   </div>
-                  <Button
-                    key={2}
-                    asChild
-                    size="lg"
-                    variant="ghost"
-                    className="h-10.5 rounded-xl px-5"
-                  >
-                    <Link href="#link">
-                      <span className="text-nowrap">Learn More!</span>
-                    </Link>
-                  </Button>
                 </AnimatedGroup>
               </div>
             </div>
@@ -158,7 +141,7 @@ export function HeroSection() {
                 ...transitionVariants,
               }}
             >
-              <div className="relative -mr-56 mt-8 overflow-hidden px-2 sm:mr-0 sm:mt-12 md:mt-20">
+              <div className="relative -mr-56 mt-6 overflow-hidden px-2 sm:mr-0 sm:mt-8 md:mt-12">
                 <div
                   aria-hidden
                   className="bg-gradient-to-b to-background absolute inset-0 z-10 from-transparent from-35%"
