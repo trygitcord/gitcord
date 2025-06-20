@@ -3,10 +3,14 @@ import React from "react";
 import type { ComponentProps, ReactNode } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import {
-  FacebookIcon,
-  InstagramIcon,
-  LinkedinIcon,
-  YoutubeIcon,
+  Github,
+  Twitter,
+  Linkedin,
+  Mail,
+  Book,
+  BarChart3,
+  Users,
+  Shield,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -23,50 +27,45 @@ interface FooterSection {
 
 const footerLinks: FooterSection[] = [
   {
-    label: "Product",
+    label: "Platform",
     links: [
-      { title: "Features", href: "#features" },
-      { title: "Pricing", href: "#pricing" },
-      { title: "Testimonials", href: "#testimonials" },
-      { title: "Integration", href: "/" },
-    ],
-  },
-  {
-    label: "Company",
-    links: [
-      { title: "FAQs", href: "/faqs" },
-      { title: "About Us", href: "/about" },
-      { title: "Privacy Policy", href: "/privacy" },
-      { title: "Terms of Services", href: "/terms" },
+      { title: "Dashboard", href: "/feed/dashboard", icon: BarChart3 },
+      { title: "Analytics", href: "/feed/activity", icon: BarChart3 },
+      { title: "Repositories", href: "/feed/repositories", icon: Book },
+      { title: "Organizations", href: "/feed/organization", icon: Users },
     ],
   },
   {
     label: "Resources",
     links: [
-      { title: "Blog", href: "/blog" },
-      { title: "Changelog", href: "/changelog" },
-      { title: "Brand", href: "/brand" },
-      { title: "Help", href: "/help" },
+      {
+        title: "GitHub API",
+        href: "https://docs.github.com/en/rest",
+        icon: Book,
+      },
+      { title: "Documentation", href: "/docs" },
+      { title: "API Reference", href: "/api/docs" },
+      { title: "Status", href: "/status" },
     ],
   },
   {
-    label: "Social Links",
+    label: "Company",
     links: [
-      { title: "Facebook", href: "#", icon: FacebookIcon },
-      { title: "Instagram", href: "#", icon: InstagramIcon },
-      { title: "Youtube", href: "#", icon: YoutubeIcon },
-      { title: "LinkedIn", href: "#", icon: LinkedinIcon },
+      { title: "About", href: "/about" },
+      { title: "Privacy Policy", href: "/privacy", icon: Shield },
+      { title: "Terms of Service", href: "/terms", icon: Shield },
+      { title: "Contact", href: "/contact", icon: Mail },
     ],
   },
 ];
 
 export function Footer() {
   return (
-    <footer className="md:rounded-t-6xl relative w-full max-w-6xl mx-auto flex flex-col items-center justify-center rounded-t-4xl border-t bg-[radial-gradient(35%_128px_at_50%_0%,theme(backgroundColor.white/8%),transparent)] px-6 py-12 lg:py-16">
+    <footer className="md:rounded-t-6xl relative w-full max-w-6xl mx-auto flex flex-col items-center justify-center rounded-t-4xl border-t bg-[radial-gradient(35%_128px_at_50%_0%,theme(backgroundColor.white/8%),transparent)] px-8 py-16 lg:px-12 lg:py-20">
       <div className="bg-foreground/20 absolute top-0 right-1/2 left-1/2 h-px w-1/3 -translate-x-1/2 -translate-y-1/2 rounded-full blur" />
 
-      <div className="grid w-full gap-8 xl:grid-cols-3 xl:gap-8">
-        <AnimatedContainer className="space-y-4">
+      <div className="grid w-full gap-12 xl:grid-cols-3 xl:gap-12">
+        <AnimatedContainer className="space-y-6">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2">
               <Image
@@ -78,24 +77,41 @@ export function Footer() {
               <h1 className="text-lg font-medium text-neutral-100">Gitcord</h1>
             </div>
           </div>
-          <p className="text-muted-foreground mt-8 text-sm md:mt-0">
+          <p className="text-muted-foreground mt-4 text-sm max-w-sm">
+            Track smarter, code better. Monitor and analyze all your GitHub
+            repositories with real-time insights and unified analytics.
+          </p>
+
+          <p className="text-muted-foreground mt-8 text-sm md:mt-4">
             © {new Date().getFullYear()} Gitcord. All rights reserved.
           </p>
         </AnimatedContainer>
 
-        <div className="mt-10 grid grid-cols-2 gap-8 md:grid-cols-4 xl:col-span-2 xl:mt-0">
+        <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-3 sm:gap-8 xl:col-span-2 xl:mt-0 justify-items-start sm:justify-items-end">
           {footerLinks.map((section, index) => (
             <AnimatedContainer key={section.label} delay={0.1 + index * 0.1}>
-              <div className="mb-10 md:mb-0">
-                <h3 className="text-xs">{section.label}</h3>
-                <ul className="text-muted-foreground mt-4 space-y-2 text-sm">
+              <div className="mb-12 md:mb-0">
+                <h3 className="text-xs font-semibold text-foreground/90 uppercase tracking-wider">
+                  {section.label}
+                </h3>
+                <ul className="text-muted-foreground mt-6 space-y-4 text-sm">
                   {section.links.map((link) => (
                     <li key={link.title}>
                       <a
                         href={link.href}
-                        className="hover:text-foreground inline-flex items-center transition-all duration-300"
+                        className="hover:text-foreground inline-flex items-center gap-2 transition-all duration-300 hover:translate-x-1"
+                        target={
+                          link.href.startsWith("http") ? "_blank" : undefined
+                        }
+                        rel={
+                          link.href.startsWith("http")
+                            ? "noopener noreferrer"
+                            : undefined
+                        }
                       >
-                        {link.icon && <link.icon className="me-1 size-4" />}
+                        {link.icon && (
+                          <link.icon className="size-4 flex-shrink-0" />
+                        )}
                         {link.title}
                       </a>
                     </li>
@@ -106,6 +122,39 @@ export function Footer() {
           ))}
         </div>
       </div>
+
+      {/* Bottom section with additional info */}
+      <AnimatedContainer delay={0.5} className="w-full">
+        <div className="border-t border-foreground/10 mt-16 pt-10 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-6 text-xs text-muted-foreground">
+            <span>Made with ❤️ for developers</span>
+            <span className="hidden md:inline">•</span>
+            <span className="hidden md:inline">Powered by Lumi Works</span>
+          </div>
+          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+            <a
+              href="/privacy"
+              className="hover:text-foreground transition-colors"
+            >
+              Privacy
+            </a>
+            <span>•</span>
+            <a
+              href="/terms"
+              className="hover:text-foreground transition-colors"
+            >
+              Terms
+            </a>
+            <span>•</span>
+            <a
+              href="/status"
+              className="hover:text-foreground transition-colors"
+            >
+              Status
+            </a>
+          </div>
+        </div>
+      </AnimatedContainer>
     </footer>
   );
 }
