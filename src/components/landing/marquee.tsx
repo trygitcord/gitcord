@@ -4,7 +4,7 @@ const testimonials = [
   {
     author: {
       name: "BlanchDev",
-      handle: "@blanch",
+      handle: "Software Developer",
       avatar: "https://avatars.githubusercontent.com/u/21373355?v=4",
     },
     text: "Thanks to AI integration, I now have a clear vision for my upcoming projects, it feels like all my ideas are right at my fingertips.",
@@ -13,7 +13,7 @@ const testimonials = [
   {
     author: {
       name: "Pingu",
-      handle: "@pingu",
+      handle: "Frontend Developer",
       avatar: "https://avatars.githubusercontent.com/u/70480951?v=4",
     },
     text: "I was new to software development and GitHub felt overwhelming but after discovering Gitcord, I realized there was nothing to stress about.",
