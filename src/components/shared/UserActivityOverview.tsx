@@ -13,6 +13,7 @@ function UserActivityOverview() {
     loading: userLoading,
     error: userError,
     fetchData: getUser,
+    resetData: resetUser,
   } = getUserProfile();
 
   const {
@@ -20,6 +21,7 @@ function UserActivityOverview() {
     loading: userEventsLoading,
     error: userEventsError,
     fetchData: getUserEvents,
+    resetData: resetEvents,
   } = userEventsSlice();
 
   const [mounted, setMounted] = useState(false);
@@ -27,6 +29,12 @@ function UserActivityOverview() {
   useEffect(() => {
     setMounted(true);
     getUser();
+
+    // Cleanup on unmount
+    return () => {
+      resetUser();
+      resetEvents();
+    };
   }, []);
 
   useEffect(() => {

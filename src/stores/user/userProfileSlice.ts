@@ -3,7 +3,11 @@ import { sliceTypes } from "@/types/sliceTypes";
 import { create } from "zustand";
 import axios from "axios";
 
-export const getUserProfile = create<sliceTypes>((set) => ({
+interface UserProfileState extends sliceTypes {
+  resetData: () => void;
+}
+
+export const getUserProfile = create<UserProfileState>((set) => ({
   data: null,
   loading: true,
   error: null,
@@ -16,5 +20,9 @@ export const getUserProfile = create<sliceTypes>((set) => ({
     } catch (error: any) {
       set({ error: error.message, loading: false });
     }
+  },
+
+  resetData: () => {
+    set({ data: null, loading: true, error: null });
   },
 }));

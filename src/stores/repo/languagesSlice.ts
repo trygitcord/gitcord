@@ -8,6 +8,7 @@ interface LanguagesState {
   loading: boolean;
   error: string | null;
   fetchData: (username: string, repoName: string) => Promise<void>;
+  resetData: () => void;
 }
 
 export const repoLanguagesSlice = create<LanguagesState>((set) => ({
@@ -25,5 +26,8 @@ export const repoLanguagesSlice = create<LanguagesState>((set) => ({
     } catch (error: any) {
       set({ error: error.message, loading: false });
     }
+  },
+  resetData: () => {
+    set({ data: {}, loading: false, error: null });
   },
 }));

@@ -150,8 +150,8 @@ function Repositories() {
         <p className="text-neutral-500 text-sm dark:text-neutral-400">
           Explore all repositories and their activities.
           {!isPremium && (
-            <span className="block mt-1 text-xs text-amber-600 dark:text-amber-400">
-              ⭐ Upgrade to Premium to view private repositories
+            <span className="block mt-1 text-xs text-[#5BC898] dark:text-[#5BC898]">
+              Upgrade to Premium to view private repositories
             </span>
           )}
         </p>
@@ -172,12 +172,7 @@ function Repositories() {
                     </h3>
                     <div className="flex items-center gap-1">
                       {repo.visibility === "private" && isPremium && (
-                        <Image
-                          src={"/logo.svg"}
-                          alt="Premium"
-                          width={14}
-                          height={14}
-                        />
+                        <Crown className="w-4 h-4 text-[#5BC898]" />
                       )}
                       <span className="text-xs px-2 py-1 rounded-full bg-neutral-200 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400">
                         {repo.visibility}

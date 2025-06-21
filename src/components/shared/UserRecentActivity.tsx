@@ -18,13 +18,22 @@ function UserRecentActivity() {
     loading: userEventsLoading,
     error: userEventsError,
     fetchData: getUserEvents,
+    resetData: resetEvents,
   } = userEventsSlice();
 
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    getUserEvents();
+    const username = localStorage.getItem("username");
+    if (username) {
+      getUserEvents(username);
+    }
+
+    // Cleanup on unmount
+    return () => {
+      resetEvents();
+    };
   }, []);
 
   const isLoading =
