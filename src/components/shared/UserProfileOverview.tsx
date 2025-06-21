@@ -12,10 +12,16 @@ function UserProfileOverview() {
     loading,
     error,
     fetchData: getUser,
+    resetData: resetUser,
   } = getUserProfile();
 
   useEffect(() => {
     getUser();
+
+    // Cleanup on unmount
+    return () => {
+      resetUser();
+    };
   }, []);
 
   if (loading || !userData || error) {

@@ -12,10 +12,19 @@ function UserActivityChart() {
     loading: userEventsLoading,
     error: userEventsError,
     fetchData: getUserEvents,
+    resetData: resetEvents,
   } = userEventsSlice();
 
   useEffect(() => {
-    getUserEvents();
+    const username = localStorage.getItem("username");
+    if (username) {
+      getUserEvents(username);
+    }
+
+    // Cleanup on unmount
+    return () => {
+      resetEvents();
+    };
   }, []);
 
   const isLoading =

@@ -5,6 +5,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { SidebarNavigation } from "@/components/shared/SidebarNavigation";
 import { Poppins } from "next/font/google";
 import Breadcrumb from "@/components/shared/Path";
+import { StoreCleanupProvider } from "@/components/providers/StoreCleanupProvider";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -27,17 +28,19 @@ export default function DashboardLayout({
   return (
     <html lang="en" className={poppins.className} suppressHydrationWarning>
       <body suppressHydrationWarning>
-        <SidebarProvider>
-          <SidebarNavigation />
+        <StoreCleanupProvider>
+          <SidebarProvider>
+            <SidebarNavigation />
 
-          <main className="w-full h-screen dark:bg-neutral-950 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
-            <SidebarTrigger />
-            <div className="p-8 w-full h-[calc(100vh-4rem)]">
-              <Breadcrumb />
-              {children}
-            </div>
-          </main>
-        </SidebarProvider>
+            <main className="w-full h-screen dark:bg-neutral-950 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+              <SidebarTrigger />
+              <div className="p-8 w-full h-[calc(100vh-4rem)]">
+                <Breadcrumb />
+                {children}
+              </div>
+            </main>
+          </SidebarProvider>
+        </StoreCleanupProvider>
       </body>
     </html>
   );

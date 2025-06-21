@@ -3,7 +3,11 @@ import { sliceTypes } from "@/types/sliceTypes";
 import { create } from "zustand";
 import githubAxios from "@/lib/axios";
 
-export const userEventsSlice = create<sliceTypes>((set) => ({
+interface UserEventsState extends sliceTypes {
+  resetData: () => void;
+}
+
+export const userEventsSlice = create<UserEventsState>((set) => ({
   data: null,
   loading: true,
   error: null,
@@ -16,5 +20,9 @@ export const userEventsSlice = create<sliceTypes>((set) => ({
     } catch (error: any) {
       set({ error: error.message, loading: false });
     }
+  },
+
+  resetData: () => {
+    set({ data: null, loading: true, error: null });
   },
 }));

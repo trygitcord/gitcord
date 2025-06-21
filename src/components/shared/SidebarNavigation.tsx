@@ -8,9 +8,11 @@ import {
   ChartColumnBig,
   Inbox,
   User,
+  LineChart,
+  Crown,
 } from "lucide-react";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import Logo from "@/assets/logo.svg";
 
@@ -29,6 +31,7 @@ import {
 import Image from "next/image";
 import SidebarUserFooter from "@/components/shared/SidebarUserFooter";
 import React from "react";
+import { getUserProfile } from "@/stores/user/userProfileSlice";
 
 // Menu items.
 const items = [
@@ -37,6 +40,13 @@ const items = [
     url: "/feed/dashboard",
     icon: Trello,
     live: true,
+  },
+  {
+    title: "Analytics",
+    url: "/feed/analytics",
+    icon: LineChart,
+    live: true,
+    premium: true,
   },
   {
     title: "Inbox",
@@ -84,14 +94,27 @@ const activityItems = [
 
 export function SidebarNavigation() {
   const pathname = usePathname();
+  const router = useRouter();
   const [profileUrl, setProfileUrl] = React.useState("/user");
+  const [isPremium, setIsPremium] = React.useState(false);
+
+  const { data: profile, fetchData: getProfile } = getUserProfile();
 
   React.useEffect(() => {
     const username = localStorage.getItem("username");
     if (username) {
       setProfileUrl(`/user/${username}`);
     }
+
+    // Fetch user profile to check premium status
+    getProfile();
   }, []);
+
+  React.useEffect(() => {
+    if (profile) {
+      setIsPremium(profile.premium?.isPremium || false);
+    }
+  }, [profile]);
 
   return (
     <Sidebar className="p-4 border-r-2 border-r-neutral-200 dark:bg-neutral-950 dark:border-r-neutral-800">
@@ -108,6 +131,8 @@ export function SidebarNavigation() {
           <SidebarMenu>
             {items.map((item) => {
               const isActive = pathname === item.url;
+              const isItemPremium = item.premium && !isPremium;
+
               return (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
@@ -123,9 +148,16 @@ export function SidebarNavigation() {
                         <item.icon
                           className={`${isActive ? "text-[#5BC898]" : ""}`}
                         />
-                        <span className={`${isActive ? "text-[#5BC898]" : ""}`}>
+                        <span
+                          className={`${
+                            isActive ? "text-[#5BC898]" : ""
+                          } flex-1`}
+                        >
                           {item.title}
                         </span>
+                        {item.premium && (
+                          <Crown className="w-4 h-4 text-[#5BC898]" />
+                        )}
                         {!item.live && (
                           <span className="text-xs text-neutral-400 dark:text-neutral-500 ml-1">
                             Soon
@@ -138,10 +170,12 @@ export function SidebarNavigation() {
                         disabled
                       >
                         <item.icon />
-                        <span>{item.title}</span>
-                        <span className="text-xs text-neutral-400 dark:text-neutral-500 ml-1">
-                          Soon
-                        </span>
+                        <span className="flex-1">{item.title}</span>
+                        {!item.live && (
+                          <span className="text-xs text-neutral-400 dark:text-neutral-500 ml-1">
+                            Soon
+                          </span>
+                        )}
                       </button>
                     )}
                   </SidebarMenuButton>
