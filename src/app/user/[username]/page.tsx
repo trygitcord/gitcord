@@ -11,6 +11,8 @@ import axios from "axios";
 import GithubAnalyticsWidget from "@/components/shared/GithubAnalyticsWidget";
 import Image from "next/image";
 import { Metadata } from "next";
+import ContributionGraph from "@/components/shared/ContributionGraph";
+import { getGithubContributions } from "@/lib/contributions";
 
 interface Props {
   params: { username: string };
@@ -69,9 +71,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 const ProfilePage = async ({ params }: Props) => {
   const { username } = await params;
 
-  const [githubUser, gitcordUser] = await Promise.all([
+  const [githubUser, gitcordUser, contributions] = await Promise.all([
     getGithubUser(username),
     getGitcordUser(username),
+    getGithubContributions(username),
   ]);
 
   if (!githubUser) {
@@ -322,8 +325,15 @@ const ProfilePage = async ({ params }: Props) => {
                 <Calendar className="w-4 h-4" />
                 Joined {new Date(githubUser.created_at).toLocaleDateString()}
               </div>
+
+              <ContributionGraph
+                username={username}
+                contributions={contributions}
+              />
             </div>
           </div>
+
+          {/* Contribution Graph */}
         </div>
       </div>
       <GithubAnalyticsWidget />
