@@ -99,6 +99,10 @@ export default function AnalyticsPage() {
   const [isPremium, setIsPremium] = useState(false);
   const [analyticsData, setAnalyticsData] = useState<any>(null);
 
+  useEffect(() => {
+    document.title = `Feed |Analytics`;
+  }, []);
+
   const {
     data: repos,
     fetchData: getRepos,

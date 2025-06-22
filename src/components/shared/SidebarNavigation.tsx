@@ -10,6 +10,7 @@ import {
   User,
   LineChart,
   Crown,
+  Trophy,
 } from "lucide-react";
 
 import { usePathname, useRouter } from "next/navigation";
@@ -76,6 +77,12 @@ const activityItems = [
     title: "Activity",
     url: "/feed/activity",
     icon: ChartColumnBig,
+    live: true,
+  },
+  {
+    title: "Leaderboard",
+    url: "/feed/leaderboard",
+    icon: Trophy,
     live: true,
   },
   {
