@@ -1,19 +1,15 @@
 import { HeroSection } from "@/components/landing/hero";
-import { Marquee } from "@/components/landing/marquee";
 import { Footer } from "@/components/landing/footer-section";
 import { FaqSection } from "@/components/landing/faqs";
-import { PricingSection } from "@/components/landing/pricing";
-import { Features } from "@/components/landing/features";
+import MarqueeColumns from "@/components/landing/marquee-columns";
 
 export default function Home() {
   return (
     <div>
       <div>
         <HeroSection />
-        <div className="max-w-6xl mx-auto">
-          <Marquee />
-          <Features />
-          <PricingSection />
+        <div className="max-w-6xl mx-auto pt-16">
+          <MarqueeColumns />
         </div>
         <div className="flex items-center justify-center">
           <FaqSection />
