@@ -178,7 +178,7 @@ const menuItems = [
   { name: "About", href: "#link" },
 ];
 
-const HeroHeader = () => {
+export const HeroHeader = () => {
   const [menuState, setMenuState] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
 
