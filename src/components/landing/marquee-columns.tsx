@@ -66,7 +66,7 @@ const thirdColumn = testimonials.slice(6, 9);
 
 const MarqueeColumns = () => {
   return (
-    <section className="bg-background my-20 relative">
+    <section className="bg-background my-20 relative pt-14">
       <div className="container z-10 mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -76,7 +76,7 @@ const MarqueeColumns = () => {
           className="flex flex-col items-center justify-center max-w-[700px] mx-auto"
         >
           <h2 className="mb-3 text-3xl font-semibold md:mb-4 lg:mb-6 lg:text-4xl text-center">
-            What developers say about GitCord
+            What developers say about Gitcord
           </h2>
           <p className="text-muted-foreground lg:text-lg text-center">
             Discover how GitCord is transforming the way developers track and

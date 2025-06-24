@@ -1,7 +1,8 @@
 import { HeroSection } from "@/components/landing/hero";
 import { Footer } from "@/components/landing/footer-section";
-import { FaqSection } from "@/components/landing/faqs";
 import MarqueeColumns from "@/components/landing/marquee-columns";
+import { Features } from "@/components/landing/features";
+import AppPreview from "@/components/landing/app-preview";
 
 export default function Home() {
   return (
@@ -9,11 +10,11 @@ export default function Home() {
       <div>
         <HeroSection />
         <div className="max-w-6xl mx-auto pt-16">
+          <Features />
+          <AppPreview />
           <MarqueeColumns />
         </div>
-        <div className="flex items-center justify-center">
-          <FaqSection />
-        </div>
+        <div className="flex items-center justify-center">{/* faq */}</div>
         <Footer />
       </div>
     </div>
