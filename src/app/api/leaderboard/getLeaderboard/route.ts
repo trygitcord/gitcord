@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import User from '@/models/user';
-import { connect } from '@/lib/db';
+import { withDb, DbModels } from '@/lib/withDb';
 import { authOptions } from '../../auth/[...nextauth]/route';
 import { createGithubRequest } from '@/lib/axios-server';
 
@@ -108,7 +107,7 @@ async function getWeeklyActivity(username: string, githubToken?: string) {
   }
 }
 
-export async function GET(req: NextRequest) {
+export const GET = withDb(async (req: NextRequest, context: any, models: DbModels) => {
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
@@ -118,12 +117,10 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    await connect();
-
     // Tüm kullanıcıları al
-    const users = await User.find({}).select('_id username name avatar_url github_profile_url');
+    const users = await models.User.find({}).select('_id username name avatar_url github_profile_url');
 
-        // Her kullanıcı için haftalık aktiviteleri al ve puan hesapla
+    // Her kullanıcı için haftalık aktiviteleri al ve puan hesapla
     const leaderboardData: LeaderboardUser[] = await Promise.all(
       users.map(async (user) => {
         const activity = await getWeeklyActivity(user.username, (session as any).accessToken);
@@ -159,4 +156,4 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

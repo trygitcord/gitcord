@@ -4,7 +4,32 @@ import { AuthOptions } from "next-auth";
 import User from "@/models/user";
 import UserPremium from "@/models/userPremium";
 import UserStats from "@/models/userStats";
+import mongoose from "mongoose";
 import { connect } from "@/lib/db";
+
+let connectionPromise: Promise<typeof mongoose> | null = null;
+
+async function ensureDbConnection() {
+    const readyState = mongoose.connection.readyState;
+
+    if (readyState === 1) {
+        return; // Zaten bağlı
+    }
+
+    if (readyState === 2) {
+        // Bağlanma sürecinde, mevcut promise'i bekle
+        if (connectionPromise) {
+            await connectionPromise;
+        }
+    } else {
+        // Bağlı değil veya bağlantı kesiliyor, yeni bağlantı başlat
+        if (!connectionPromise || readyState === 0 || readyState === 3) {
+            connectionPromise = connect();
+        }
+
+        await connectionPromise;
+    }
+}
 
 interface GithubProfile {
     id: string;
@@ -32,7 +57,7 @@ export const authOptions: AuthOptions = {
         async signIn({ user, account, profile }) {
             if (account?.provider === "github" && profile) {
                 try {
-                    await connect();
+                    await ensureDbConnection();
 
                     const githubProfile = profile as GithubProfile;
                     const existingUser = await User.findOne({ _id: githubProfile.id });

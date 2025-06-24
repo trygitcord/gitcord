@@ -1,7 +1,7 @@
-import mongoose from 'mongoose';
+import { Schema, model, models } from 'mongoose';
 import { UserType } from '@/types/userTypes';
 
-const userSchema = new mongoose.Schema<UserType>(
+const userSchema = new Schema<UserType>(
     {
       _id: {
         type: String,
@@ -20,24 +20,20 @@ const userSchema = new mongoose.Schema<UserType>(
         type: String,
         required: true,
         unique: true,
-        trim: true,
       },
       bio: {
         type: String,
-        default: '',
       },
       email: {
         type: String,
-        required: false,
+        required: true,
         unique: true,
-        sparse: true,
-        match: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
       },
-      github_profile_url: {
+      avatar_url: {
         type: String,
         required: true,
       },
-      avatar_url: {
+      github_profile_url: {
         type: String,
         required: true,
       },
@@ -50,12 +46,14 @@ const userSchema = new mongoose.Schema<UserType>(
         default: false,
       },
     },
-
     {
       timestamps: true,
     }
   );
 
-const User = mongoose.models.User || mongoose.model('User', userSchema);
+
+
+
+const User = models.User || model<UserType>('User', userSchema);
 
 export default User;

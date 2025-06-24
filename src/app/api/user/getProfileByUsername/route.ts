@@ -1,9 +1,6 @@
-import { NextResponse } from "next/server";
-import UserStats from "@/models/userStats";
-import UserPremium from "@/models/userPremium";
-import { connect } from "@/lib/db";
+import { NextResponse, NextRequest } from "next/server";
+import { withDb, DbModels } from "@/lib/withDb";
 import { UserProfile, UserType } from "@/types/userTypes";
-import User from "@/models/user";
 
 interface UserStatsDocument {
     _id: string;
@@ -18,10 +15,8 @@ interface UserPremiumDocument {
     premium_plan?: string;
 }
 
-export async function GET(request: Request) {
+export const GET = withDb(async (request: NextRequest, context: any, models: DbModels) => {
     try {
-        await connect();
-
         // Get username from URL search params
         const { searchParams } = new URL(request.url);
         const username = searchParams.get('username');
@@ -34,7 +29,7 @@ export async function GET(request: Request) {
         }
 
         // Find user by username
-        const user = await User.findOne({ username }).lean() as UserType | null;
+        const user = await models.User.findOne({ username }).lean() as UserType | null;
 
         if (!user) {
             return NextResponse.json(
@@ -47,8 +42,8 @@ export async function GET(request: Request) {
 
         // Get user stats and premium info
         const [userStats, userPremium] = await Promise.all([
-            UserStats.findOne({ _id: userId }).lean() as Promise<UserStatsDocument | null>,
-            UserPremium.findOne({ _id: userId }).lean() as Promise<UserPremiumDocument | null>
+            models.UserStats.findOne({ _id: userId }).lean() as Promise<UserStatsDocument | null>,
+            models.UserPremium.findOne({ _id: userId }).lean() as Promise<UserPremiumDocument | null>
         ]);
 
         let statsData: UserStatsDocument;
@@ -61,7 +56,7 @@ export async function GET(request: Request) {
                 view_count: 0,
             };
 
-            await UserStats.create(statsData);
+            await models.UserStats.create(statsData);
         } else {
             statsData = userStats;
         }
@@ -74,13 +69,13 @@ export async function GET(request: Request) {
                 premium_plan: "free",
             };
 
-            await UserPremium.create(premiumData);
+            await models.UserPremium.create(premiumData);
         } else {
             premiumData = userPremium;
         }
 
         // Increment view count
-        await UserStats.findOneAndUpdate(
+        await models.UserStats.findOneAndUpdate(
             { _id: userId },
             { $inc: { view_count: 1 } }
         );
@@ -118,4 +113,4 @@ export async function GET(request: Request) {
             { status: 500 }
         );
     }
-}
+});
