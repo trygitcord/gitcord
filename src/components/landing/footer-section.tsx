@@ -29,10 +29,10 @@ const footerLinks: FooterSection[] = [
   {
     label: "Platform",
     links: [
-      { title: "Dashboard", href: "/feed/dashboard", icon: BarChart3 },
-      { title: "Analytics", href: "/feed/activity", icon: BarChart3 },
-      { title: "Repositories", href: "/feed/repositories", icon: Book },
-      { title: "Organizations", href: "/feed/organization", icon: Users },
+      { title: "Dashboard", href: "/feed/dashboard" },
+      { title: "Analytics", href: "/feed/activity" },
+      { title: "Repositories", href: "/feed/repositories" },
+      { title: "Organizations", href: "/feed/organization" },
     ],
   },
   {
@@ -41,27 +41,24 @@ const footerLinks: FooterSection[] = [
       {
         title: "GitHub API",
         href: "https://docs.github.com/en/rest",
-        icon: Book,
       },
-      { title: "Documentation", href: "/docs" },
-      { title: "API Reference", href: "/api/docs" },
-      { title: "Status", href: "/status" },
+      { title: "Status", href: "https://status.gitcord.pro" },
     ],
   },
   {
     label: "Company",
     links: [
-      { title: "About", href: "/about" },
-      { title: "Privacy Policy", href: "/privacy", icon: Shield },
-      { title: "Terms of Service", href: "/terms", icon: Shield },
-      { title: "Contact", href: "/contact", icon: Mail },
+      { title: "Team", href: "/team" },
+      { title: "Privacy Policy", href: "/privacy" },
+      { title: "Terms of Service", href: "/terms" },
+      { title: "Contact", href: "/contact" },
     ],
   },
 ];
 
 export function Footer() {
   return (
-    <footer className="md:rounded-t-6xl relative w-full max-w-6xl mx-auto flex flex-col items-center justify-center rounded-t-4xl border-t bg-[radial-gradient(35%_128px_at_50%_0%,theme(backgroundColor.white/8%),transparent)] px-8 py-16 lg:px-12 lg:py-20">
+    <footer className="mt-24 md:rounded-t-6xl relative w-full max-w-6xl mx-auto flex flex-col items-center justify-center rounded-t-4xl border-t bg-[radial-gradient(35%_128px_at_50%_0%,theme(backgroundColor.white/8%),transparent)] px-8 py-16 lg:px-12 lg:py-20">
       <div className="bg-foreground/20 absolute top-0 right-1/2 left-1/2 h-px w-1/3 -translate-x-1/2 -translate-y-1/2 rounded-full blur" />
 
       <div className="grid w-full gap-12 xl:grid-cols-3 xl:gap-12">
@@ -77,7 +74,7 @@ export function Footer() {
               <h1 className="text-lg font-medium text-neutral-100">Gitcord</h1>
             </div>
           </div>
-          <p className="text-muted-foreground mt-4 text-sm max-w-sm">
+          <p className="text-muted-foreground mt-4 max-w-sm">
             Track smarter, code better. Monitor and analyze all your GitHub
             repositories with real-time insights and unified analytics.
           </p>
@@ -100,9 +97,7 @@ export function Footer() {
                       <a
                         href={link.href}
                         className="hover:text-foreground inline-flex items-center gap-2 transition-all duration-300 hover:translate-x-1"
-                        target={
-                          link.href.startsWith("http") ? "_blank" : undefined
-                        }
+                        target="_blank"
                         rel={
                           link.href.startsWith("http")
                             ? "noopener noreferrer"
@@ -135,6 +130,7 @@ export function Footer() {
             <a
               href="/privacy"
               className="hover:text-foreground transition-colors"
+              target="_blank"
             >
               Privacy
             </a>
@@ -142,13 +138,15 @@ export function Footer() {
             <a
               href="/terms"
               className="hover:text-foreground transition-colors"
+              target="_blank"
             >
               Terms
             </a>
             <span>•</span>
             <a
-              href="/status"
+              href="https://status.gitcord.pro"
               className="hover:text-foreground transition-colors"
+              target="_blank"
             >
               Status
             </a>
