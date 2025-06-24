@@ -10,6 +10,8 @@ import Image from "next/image";
 import LoginButton from "@/components/landing/login-btn";
 import SearchUserInput from "@/components/shared/SearchUserInput";
 import HeroImage from "@/assets/hero.png";
+import HeroImageLight from "@/assets/herolight.png";
+import LightHeroImage from "@/assets/herolight.png";
 
 const transitionVariants = {
   item: {
@@ -156,7 +158,7 @@ export function HeroSection() {
                   />
                   <Image
                     className="z-2 border-border/25 aspect-15/8 relative rounded-2xl border dark:hidden"
-                    src={HeroImage}
+                    src={HeroImageLight}
                     alt="app screen"
                     width="2700"
                     height="1440"
@@ -269,7 +271,9 @@ const Logo = ({ className }: { className?: string }) => {
   return (
     <div className="flex items-center gap-2">
       <Image src="/logo.svg" alt="Gitcord Logo" width={24} height={24} />
-      <h1 className="text-lg font-medium text-neutral-100">Gitcord</h1>
+      <h1 className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
+        Gitcord
+      </h1>
     </div>
   );
 };
