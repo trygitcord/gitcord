@@ -96,7 +96,7 @@ export function ContributorsStats({ owner, repo }: ContributorsStatsProps) {
   const maxCommits = sortedContributors[0]?.total || 0;
 
   return (
-    <div className="bg-neutral-900 rounded-xl p-4 h-[230px] overflow-y-auto">
+    <div className="dark:bg-neutral-900 rounded-xl p-4 h-[230px] overflow-y-auto">
       <h3 className="text-sm font-medium mb-4">Top Contributors</h3>
       <div className="space-y-3">
         {sortedContributors.map((contributor: any) => (
@@ -138,7 +138,7 @@ export function ContributorsStats({ owner, repo }: ContributorsStatsProps) {
               </div>
             </div>
             <div className="flex items-center gap-2 ml-2 flex-shrink-0">
-              <div className="h-2 w-20 bg-neutral-800 rounded-full overflow-hidden">
+              <div className="h-2 w-20 dark:bg-neutral-800 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-[#5BC898] rounded-full"
                   style={{

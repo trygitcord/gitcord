@@ -40,7 +40,7 @@ export function LanguagesPieChart({ languages }: LanguagesPieChartProps) {
   }));
 
   return (
-    <div className="bg-neutral-900 rounded-xl p-4">
+    <div className="dark:bg-neutral-900 rounded-xl p-4">
       <h3 className="text-sm font-medium mb-4">Languages</h3>
       <div className="h-[160px]">
         <PieChart data={data} />

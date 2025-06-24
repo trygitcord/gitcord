@@ -138,7 +138,7 @@ export default function LeaderboardPage() {
                     <div
                       className={`flex items-center justify-center w-10 h-10 rounded-full font-semibold ${
                         rank === 1
-                          ? "bg-[#5BC898]/10 text-white dark:text-white"
+                          ? "bg-[#5BC898] dark:bg-[#5BC898]/10 text-white dark:text-white"
                           : rank === 2
                           ? "bg-gray-500/10 text-gray-600 dark:text-gray-400"
                           : rank === 3
