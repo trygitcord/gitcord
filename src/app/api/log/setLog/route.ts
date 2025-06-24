@@ -1,12 +1,11 @@
 // POST /api/log/setLog
 
 import { getServerSession } from "next-auth/next";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/route";
-import Log from "@/models/log";
-import { connect } from "@/lib/db";
+import { withDb, DbModels } from "@/lib/withDb";
 
-export async function POST(request: Request) {
+export const POST = withDb(async (request: NextRequest, context: any, models: DbModels) => {
     try {
         const session = await getServerSession(authOptions);
 
@@ -28,11 +27,8 @@ export async function POST(request: Request) {
             );
         }
 
-        // Connect to MongoDB using the utility function
-        await connect();
-
         // Log kaydını oluştur
-        const log = await Log.create({
+        const log = await models.Log.create({
             userId: session.user.id,
             action,
             method,
@@ -49,4 +45,4 @@ export async function POST(request: Request) {
             { status: 500 }
         );
     }
-}
+});

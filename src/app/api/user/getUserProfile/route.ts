@@ -1,14 +1,11 @@
 // GET /api/user/getUserProfile
 
 import { getServerSession } from "next-auth/next";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/route";
-import UserStats from "@/models/userStats";
-import UserPremium from "@/models/userPremium";
-import { connect } from "@/lib/db";
+import { withDb, DbModels } from "@/lib/withDb";
 import { UserProfile, UserType } from "@/types/userTypes";
 import { Session } from "next-auth";
-import User from "@/models/user";
 
 interface CustomSession extends Session {
     user: {
@@ -35,9 +32,8 @@ interface UserPremiumDocument {
     premium_plan?: string;
 }
 
-export async function GET(request: Request) {
+export const GET = withDb(async (request: NextRequest, context: any, models: DbModels) => {
     try {
-        await connect();
         const session = await getServerSession(authOptions) as CustomSession;
 
         if (!session) {
@@ -50,9 +46,9 @@ export async function GET(request: Request) {
         const userId = session.user.id;
 
         const [userStats, userPremium, user] = await Promise.all([
-            UserStats.findOne({ _id: userId }).lean() as Promise<UserStatsDocument | null>,
-            UserPremium.findOne({ _id: userId }).lean() as Promise<UserPremiumDocument | null>,
-            User.findOne({ github_id: userId }).lean() as Promise<UserType | null>
+            models.UserStats.findOne({ _id: userId }).lean() as Promise<UserStatsDocument | null>,
+            models.UserPremium.findOne({ _id: userId }).lean() as Promise<UserPremiumDocument | null>,
+            models.User.findOne({ github_id: userId }).lean() as Promise<UserType | null>
         ]);
 
         let statsData: UserStatsDocument;
@@ -65,7 +61,7 @@ export async function GET(request: Request) {
                 view_count: 0,
             };
 
-            const createdStats = await UserStats.create(statsData);
+            const createdStats = await models.UserStats.create(statsData);
         } else {
             statsData = userStats;
         }
@@ -78,7 +74,7 @@ export async function GET(request: Request) {
                 premium_plan: "free",
             };
 
-            const createdPremium = await UserPremium.create(premiumData);
+            const createdPremium = await models.UserPremium.create(premiumData);
         } else {
             premiumData = userPremium;
         }
@@ -123,4 +119,4 @@ export async function GET(request: Request) {
             { status: 500 }
         );
     }
-}
+});

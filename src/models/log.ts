@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, models } from 'mongoose';
 import { LogTypes } from '@/types/logTypes';
 
 const logSchema = new Schema<LogTypes>(
@@ -52,6 +52,7 @@ logSchema.index({ userId: 1, createdAt: -1 });
 logSchema.index({ action: 1, createdAt: -1 });
 logSchema.index({ method: 1, endpoint: 1 });
 
-const Log = model<LogTypes>('Log', logSchema);
+// Model zaten varsa onu kullan, yoksa yeni oluştur
+const Log = models.Log || model<LogTypes>('Log', logSchema);
 
 export default Log;

@@ -1,12 +1,11 @@
 // GET /api/log/getLog
 
 import { getServerSession } from "next-auth/next";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/route";
-import Log from "@/models/log";
-import { connect } from "@/lib/db";
+import { withDb, DbModels } from "@/lib/withDb";
 
-export async function GET(request: Request) {
+export const GET = withDb(async (request: NextRequest, context: any, models: DbModels) => {
     try {
         const session = await getServerSession(authOptions);
 
@@ -26,9 +25,6 @@ export async function GET(request: Request) {
         const startDate = searchParams.get("startDate");
         const endDate = searchParams.get("endDate");
 
-        // Connect to MongoDB using the utility function
-        await connect();
-
         // Filtreleme kriterlerini oluştur
         const filter: any = { userId: session.user.id };
         if (action) filter.action = action;
@@ -42,11 +38,11 @@ export async function GET(request: Request) {
 
         // Logları getir
         const [logs, total] = await Promise.all([
-            Log.find(filter)
+            models.Log.find(filter)
                 .sort({ createdAt: -1 })
                 .skip(offset)
                 .limit(limit),
-            Log.countDocuments(filter)
+            models.Log.countDocuments(filter)
         ]);
 
         return NextResponse.json({
@@ -65,4 +61,4 @@ export async function GET(request: Request) {
             { status: 500 }
         );
     }
-}
+});
