@@ -122,7 +122,7 @@ export const GET = withDb(async (req: NextRequest, context: any, models: DbModel
 
     // Her kullanıcı için haftalık aktiviteleri al ve puan hesapla
     const leaderboardData: LeaderboardUser[] = await Promise.all(
-      users.map(async (user) => {
+      users.map(async (user: any) => {
         const activity = await getWeeklyActivity(user.username, (session as any).accessToken);
 
         return {
