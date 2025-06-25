@@ -24,8 +24,15 @@ async function getGithubUser(username: string) {
       `${process.env.NEXT_PUBLIC_GITHUB_API_URL}/users/${username}`
     );
     return data;
-  } catch (error) {
-    console.error("Error fetching GitHub user:", error);
+  } catch (error: any) {
+    // Check if it's a 404 error (user not found on GitHub)
+    if (error.response?.status === 404) {
+      console.log(`GitHub user ${username} not found`);
+      return null;
+    }
+
+    // Log other errors
+    console.error("Error fetching GitHub user:", error.message || error);
     return null;
   }
 }
@@ -39,8 +46,15 @@ async function getGitcordUser(username: string) {
       }
     );
     return data;
-  } catch (error) {
-    console.error("Error fetching Gitcord user:", error);
+  } catch (error: any) {
+    // Check if it's a 404 error (user not found in Gitcord)
+    if (error.response?.status === 404) {
+      console.log(`User ${username} is not a Gitcord member`);
+      return null;
+    }
+
+    // Log other errors but still return null to continue with GitHub-only profile
+    console.error("Error fetching Gitcord user:", error.message || error);
     return null;
   }
 }
