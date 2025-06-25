@@ -202,10 +202,10 @@ const ProfilePage = async ({ params }: Props) => {
                       <TooltipTrigger>
                         <div className="p-0.5 rounded-full text-neutral-950 transition-colors">
                           <Image
-                            src="/member-card.png"
+                            src="/badge-2.png"
                             alt="Gitcord Logo"
-                            width={20}
-                            height={20}
+                            width={22}
+                            height={22}
                           />
                         </div>
                       </TooltipTrigger>
@@ -221,10 +221,10 @@ const ProfilePage = async ({ params }: Props) => {
                         <TooltipTrigger>
                           <div className="p-0.5 rounded-full text-[#ED4245] transition-colors">
                             <Image
-                              src="/banner.png"
+                              src="/badge-4.png"
                               alt="Moderator"
-                              width={20}
-                              height={20}
+                              width={22}
+                              height={22}
                             />
                           </div>
                         </TooltipTrigger>
@@ -241,10 +241,10 @@ const ProfilePage = async ({ params }: Props) => {
                         <TooltipTrigger>
                           <div className="p-0.5 rounded-full text-[#FEE75C] transition-colors">
                             <Image
-                              src="/premium.png"
+                              src="/badge-3.png"
                               alt="Premium"
-                              width={20}
-                              height={20}
+                              width={22}
+                              height={22}
                             />
                           </div>
                         </TooltipTrigger>
@@ -261,10 +261,10 @@ const ProfilePage = async ({ params }: Props) => {
                         <TooltipTrigger>
                           <div className="p-0.5 rounded-full transition-colors">
                             <Image
-                              src="/fire.png"
+                              src="/badge-1.png"
                               alt="Popular"
-                              width={20}
-                              height={20}
+                              width={22}
+                              height={22}
                             />
                           </div>
                         </TooltipTrigger>
