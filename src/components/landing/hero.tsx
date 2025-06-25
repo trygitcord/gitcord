@@ -118,7 +118,7 @@ export function HeroSection() {
                     <Button
                       onClick={handleGithubLogin}
                       size="lg"
-                      className="group relative rounded-xl px-6 py-2.5 text-sm font-medium bg-gradient-to-r from-[#4CFFAF] to-[#3ABA81] text-neutral-950 dark:text-neutral-800 hover:shadow-lg hover:shadow-green-500/25 dark:hover:shadow-green-500/25 transition-all duration-300 hover:scale-105 border-0 flex items-center gap-2"
+                      className="cursor-pointer group relative rounded-xl px-6 py-2.5 text-sm font-medium bg-gradient-to-r from-[#4CFFAF] to-[#3ABA81] text-neutral-950 dark:text-neutral-800 hover:shadow-lg hover:shadow-green-500/25 dark:hover:shadow-green-500/25 transition-all duration-300 hover:scale-105 border-0 flex items-center gap-2"
                     >
                       Get Started Free
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-200" />
