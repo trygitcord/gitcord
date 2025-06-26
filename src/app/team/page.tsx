@@ -116,7 +116,7 @@ function TeamMemberCard({
         {/* Gradient background effect */}
         <div
           className={cn(
-            "absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500",
+            "absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500 pointer-events-none",
             `bg-gradient-to-br ${member.gradient}`
           )}
         />
@@ -138,7 +138,7 @@ function TeamMemberCard({
                 <div className="relative">
                   <div
                     className={cn(
-                      "absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl",
+                      "absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl pointer-events-none",
                       `bg-gradient-to-r ${member.gradient}`
                     )}
                   />
@@ -236,7 +236,7 @@ function page() {
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#5BC898]/5 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#5BC898]/5 via-transparent to-transparent pointer-events-none" />
 
         <div className="max-w-6xl mx-auto px-6 pt-24 pb-8">
           <motion.div

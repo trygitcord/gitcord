@@ -10,10 +10,10 @@ function LoginButton() {
   const { data: userData, fetchData: fetchUserProfile } = getUserProfile();
 
   useEffect(() => {
-    if (session?.user) {
+    if (session?.user && !userData) {
       fetchUserProfile();
     }
-  }, [session]);
+  }, [session, userData, fetchUserProfile]);
 
   useEffect(() => {
     if (userData?.username) {
