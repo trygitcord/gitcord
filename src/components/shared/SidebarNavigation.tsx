@@ -114,8 +114,11 @@ export function SidebarNavigation() {
     }
 
     // Fetch user profile to check premium status
-    getProfile();
-  }, []);
+    // Sadece profile yoksa fetch yap
+    if (!profile) {
+      getProfile();
+    }
+  }, [profile, getProfile]);
 
   React.useEffect(() => {
     if (profile) {
