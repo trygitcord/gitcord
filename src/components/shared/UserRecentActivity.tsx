@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import { FileChartColumn } from "lucide-react";
-import { userEventsSlice } from "@/stores/user/eventsSlice";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
+import { useUserEvents } from "@/hooks/useGitHubQueries";
+import { useUserProfile } from "@/hooks/useMyApiQueries";
 
 enum RecentActivityType {
   Issue = "IssuesEvent",
@@ -13,37 +14,21 @@ enum RecentActivityType {
 }
 
 function UserRecentActivity() {
+  const { data: userData, isLoading: userLoading } = useUserProfile();
+
   const {
     data: userEventsData,
-    loading: userEventsLoading,
+    isLoading: userEventsLoading,
     error: userEventsError,
-    fetchData: getUserEvents,
-    resetData: resetEvents,
-  } = userEventsSlice();
+  } = useUserEvents(userData?.username);
 
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    const username = localStorage.getItem("username");
-    if (username) {
-      getUserEvents(username);
-    }
-
-    // Cleanup on unmount
-    return () => {
-      resetEvents();
-    };
-  }, []);
-
-  const isLoading =
-    !mounted ||
+  if (
+    userLoading ||
     userEventsLoading ||
-    userEventsError ||
+    !userData ||
     !userEventsData ||
-    userEventsData.length === 0;
-
-  if (isLoading)
+    userEventsError
+  )
     return (
       <div className="w-full h-96">
         <Skeleton className="w-full h-96" />

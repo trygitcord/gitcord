@@ -1,31 +1,26 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import Image from "next/image";
-import { getUserProfile } from "@/stores/user/userProfileSlice";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Crown, Eye } from "lucide-react";
+import { useUserProfile } from "@/hooks/useMyApiQueries";
 
 function UserProfileOverview() {
-  const {
-    data: userData,
-    loading,
-    error,
-    fetchData: getUser,
-    resetData: resetUser,
-  } = getUserProfile();
+  const { data: userData, isLoading, error } = useUserProfile();
 
-  useEffect(() => {
-    getUser();
-
-    // Cleanup on unmount
-    return () => {
-      resetUser();
-    };
-  }, []);
-
-  if (loading || !userData || error) {
+  if (isLoading || !userData || error) {
     return <Skeleton className="w-full h-48" />;
+  }
+
+  if (error || !userData) {
+    return (
+      <div className="w-full bg-neutral-50 rounded-xl dark:bg-neutral-900 p-6">
+        <div className="text-center text-neutral-500 dark:text-neutral-400">
+          Failed to load profile data
+        </div>
+      </div>
+    );
   }
 
   return (

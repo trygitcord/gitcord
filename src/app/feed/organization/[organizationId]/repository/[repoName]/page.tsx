@@ -3,160 +3,105 @@
 import { ArrowLeft, Star, GitFork, GitCommit } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import githubAxios from "@/lib/axios";
+import React, { useEffect, useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { repoLanguagesSlice } from "@/stores/repo/languagesSlice";
-import { repoActivitySlice } from "@/stores/repo/activitySlice";
-import { repoCommitsSlice } from "@/stores/repo/commitsSlice";
+import {
+  useRepository,
+  useRepositoryLanguages,
+  useRepositoryCommitActivity,
+  useRepositoryCommits,
+} from "@/hooks/useGitHubQueries";
 import { RepositoryBasicInformation } from "@/components/shared/RepositoryBasicInformation";
 import { StatCard } from "@/components/shared/StatCard";
 import { LanguagesPieChart } from "@/components/shared/LanguagesPieChart";
 import { ContributorsStats } from "@/components/shared/ContributorsStats";
 import { LastCommits } from "@/components/shared/LastCommits";
 
-interface RepositoryData {
-  name: string;
-  description: string | null;
-  visibility: string;
-  stargazers_count: number;
-  forks_count: number;
-  watchers_count: number;
-  updated_at: string;
-}
-
 function Page() {
   const params = useParams();
   const repoName = params.repoName as string;
   const orgName = params.organizationId as string;
-  const [repoData, setRepoData] = useState<RepositoryData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [mainLanguage, setMainLanguage] = useState<string | null>(null);
-  const [chartData, setChartData] = useState<any[]>([]);
-  const [isDataLoading, setIsDataLoading] = useState(false);
 
-  const { data: languagesData, fetchData: fetchLanguages } =
-    repoLanguagesSlice();
+  // Tanstack Query hooks
   const {
-    data: activityData,
-    fetchData: fetchActivity,
-    resetData: resetActivity,
-  } = repoActivitySlice();
-  const { data: commitsData, fetchData: fetchCommits } = repoCommitsSlice();
+    data: repoData,
+    isLoading: repoLoading,
+    error: repoError,
+  } = useRepository(orgName, repoName);
 
-  // Reset states when repository changes
-  useEffect(() => {
-    const resetStates = () => {
-      setRepoData(null);
-      setLoading(true);
-      setError(null);
-      setMainLanguage(null);
-      setChartData([]);
-      setIsDataLoading(false);
-      resetActivity();
-    };
+  const { data: languagesData, isLoading: languagesLoading } =
+    useRepositoryLanguages(orgName, repoName);
 
-    resetStates();
-  }, [repoName, orgName, resetActivity]);
+  const { data: activityData, isLoading: activityLoading } =
+    useRepositoryCommitActivity(orgName, repoName);
 
+  const { data: commitsData, isLoading: commitsLoading } = useRepositoryCommits(
+    orgName,
+    repoName
+  );
+
+  // Set document title
   useEffect(() => {
     document.title = `Organization | Repository | ${
       repoName.charAt(0).toUpperCase() + repoName.slice(1)
     }`;
   }, [repoName]);
 
-  useEffect(() => {
-    const fetchRepoData = async () => {
-      try {
-        setIsDataLoading(true);
-        resetActivity();
+  // Calculate main language
+  const mainLanguage = useMemo(() => {
+    if (!languagesData || !repoData) return null;
 
-        // First fetch repository data to check if it exists
-        const repoResponse = await githubAxios.get(
-          `/repos/${orgName}/${repoName}`
-        );
-        setRepoData(repoResponse.data);
+    if (languagesData && typeof languagesData === "object") {
+      const languageEntries = Object.entries(languagesData);
+      if (languageEntries.length === 0) return null;
 
-        // Then fetch other data in parallel
-        await Promise.all([
-          fetchLanguages(orgName, repoName),
-          fetchActivity(orgName, repoName).catch((err) => {
-            if (err.response?.status === 404) {
-              console.warn(`No commit activity data available for ${repoName}`);
-              setChartData([]);
-            }
-            console.error("Error fetching activity:", err);
-          }),
-          fetchCommits(orgName, repoName),
-        ]);
-
-        setLoading(false);
-      } catch (err: any) {
-        if (err.response?.status === 404) {
-          setError("Repository not found or you don't have access to it.");
-        } else if (err.response?.status === 403) {
-          setError("Access denied. Please check your GitHub permissions.");
-        } else if (err.response?.status === 401) {
-          setError("Authentication failed. Please try logging in again.");
-        } else {
-          setError(
-            err.message || "An error occurred while fetching repository data."
-          );
-        }
-        setLoading(false);
-      } finally {
-        setIsDataLoading(false);
-      }
-    };
-
-    fetchRepoData();
-  }, [
-    repoName,
-    orgName,
-    fetchLanguages,
-    fetchActivity,
-    fetchCommits,
-    resetActivity,
-  ]);
-
-  useEffect(() => {
-    if (languagesData && repoData) {
-      const repoLanguages = languagesData[repoName];
-
-      if (repoLanguages && typeof repoLanguages === "object") {
-        if (Object.keys(repoLanguages).length === 0) {
-          setMainLanguage(null);
-        } else {
-          const mainLang = Object.entries(repoLanguages).reduce((a, b) =>
-            a[1] > b[1] ? a : b
-          )[0];
-          setMainLanguage(mainLang);
-        }
-      }
+      return languageEntries.reduce((a: any, b: any) =>
+        a[1] > b[1] ? a : b
+      )[0];
     }
-  }, [languagesData, repoData, repoName]);
+    return null;
+  }, [languagesData, repoData]);
 
-  useEffect(() => {
-    if (activityData && repoData && !isDataLoading) {
-      const repoActivity = activityData[repoName];
+  // Process chart data
+  const chartData = useMemo(() => {
+    if (!activityData || !repoData) return [];
 
-      if (Array.isArray(repoActivity) && repoActivity.length > 0) {
-        const last52Weeks = repoActivity.slice(-52);
+    if (Array.isArray(activityData) && activityData.length > 0) {
+      const last52Weeks = activityData.slice(-52);
 
-        const processedData = last52Weeks.map((item: any) => ({
-          date: new Date(item.week * 1000).toISOString().split("T")[0],
-          commits: item.total,
-        }));
-
-        setChartData(processedData);
-      } else {
-        setChartData([]);
-      }
+      return last52Weeks.map((item: any) => ({
+        date: new Date(item.week * 1000).toISOString().split("T")[0],
+        commits: item.total,
+      }));
     }
-  }, [activityData, repoData, repoName, isDataLoading]);
 
-  if (loading) {
+    return [];
+  }, [activityData, repoData]);
+
+  // Determine loading state
+  const isLoading =
+    repoLoading || languagesLoading || activityLoading || commitsLoading;
+
+  // Handle error state
+  const error = useMemo(() => {
+    if (!repoError) return null;
+
+    const errorResponse = (repoError as any)?.response;
+    if (errorResponse?.status === 404) {
+      return "Repository not found or you don't have access to it.";
+    } else if (errorResponse?.status === 403) {
+      return "Access denied. Please check your GitHub permissions.";
+    } else if (errorResponse?.status === 401) {
+      return "Authentication failed. Please try logging in again.";
+    } else {
+      return (
+        (repoError as any)?.message ||
+        "An error occurred while fetching repository data."
+      );
+    }
+  }, [repoError]);
+
+  if (isLoading) {
     return (
       <div>
         <div className="pt-1">
@@ -269,7 +214,7 @@ function Page() {
           <ContributorsStats owner={orgName} repo={repoName} />
           {languagesData && (
             <div>
-              <LanguagesPieChart languages={languagesData[repoName] || {}} />
+              <LanguagesPieChart languages={languagesData || {}} />
             </div>
           )}
         </div>

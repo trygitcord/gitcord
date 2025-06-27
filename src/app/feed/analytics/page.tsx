@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import {
   Card,
   CardContent,
@@ -47,11 +48,13 @@ import {
   PolarRadiusAxis,
   Radar,
 } from "recharts";
-import { userReposSlice } from "@/stores/user/reposSlice";
-import { privateReposSlice } from "@/stores/user/privateReposSlice";
-import { userEventsSlice } from "@/stores/user/eventsSlice";
-import { getUserProfile } from "@/stores/user/userProfileSlice";
-import { userOrgsSlice } from "@/stores/user/orgsSlice";
+import {
+  useUserRepositories,
+  usePrivateRepositories,
+  useUserEvents,
+  useUserOrganizations,
+} from "@/hooks/useGitHubQueries";
+import { useUserProfile } from "@/hooks/useMyApiQueries";
 
 // Time formatting functions
 function timeAgo(dateString: string) {
@@ -95,6 +98,7 @@ const COLORS = [
 
 export default function AnalyticsPage() {
   const router = useRouter();
+  const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(true);
   const [isPremium, setIsPremium] = useState(false);
   const [analyticsData, setAnalyticsData] = useState<any>(null);
@@ -103,102 +107,45 @@ export default function AnalyticsPage() {
     document.title = `Feed |Analytics`;
   }, []);
 
-  const {
-    data: repos,
-    fetchData: getRepos,
-    resetData: resetRepos,
-  } = userReposSlice();
-  const {
-    data: privateRepos,
-    fetchData: getPrivateRepos,
-    resetData: resetPrivateRepos,
-  } = privateReposSlice();
-  const {
-    data: events,
-    fetchData: getEvents,
-    resetData: resetEvents,
-  } = userEventsSlice();
-  const {
-    data: profile,
-    fetchData: getProfile,
-    loading: profileLoading,
-    resetData: resetProfile,
-  } = getUserProfile();
-  const {
-    data: orgs,
-    fetchData: getOrgs,
-    resetData: resetOrgs,
-  } = userOrgsSlice();
+  // Get user profile
+  const { data: profile, isLoading: profileLoading } = useUserProfile();
 
-  // Reset all data when component unmounts
-  useEffect(() => {
-    return () => {
-      resetRepos();
-      resetPrivateRepos();
-      resetEvents();
-      resetOrgs();
-      resetProfile();
-    };
-  }, []);
+  // Get username from profile
+  const username = profile?.username || session?.user?.name;
 
-  // Load initial data
-  useEffect(() => {
-    loadData();
-  }, []);
+  // Load data with new hooks
+  const { data: repos, isLoading: reposLoading } =
+    useUserRepositories(username);
+  const { data: privateRepos, isLoading: privateReposLoading } =
+    usePrivateRepositories();
+  const { data: events, isLoading: eventsLoading } = useUserEvents(username);
+  const { data: orgs, isLoading: orgsLoading } = useUserOrganizations(username);
 
-  const loadData = async () => {
-    try {
-      setIsLoading(true);
+  // Check if all data is loading
+  const dataLoading =
+    reposLoading || privateReposLoading || eventsLoading || orgsLoading;
 
-      // First load profile to check premium status
-      await getProfile();
-    } catch (error) {
-      console.error("Error loading profile:", error);
-      setIsLoading(false);
-    }
-  };
-
-  // Watch for profile changes to update premium status and load data
+  // Watch for profile changes to update premium status
   useEffect(() => {
     if (profile && !profileLoading) {
       const userIsPremium = profile.premium?.isPremium || false;
       setIsPremium(userIsPremium);
-
-      if (userIsPremium) {
-        const username = profile.username || localStorage.getItem("username");
-        if (username) {
-          loadAnalyticsData(username);
-        } else {
-          setIsLoading(false);
-        }
-      } else {
-        setIsLoading(false);
-      }
+      setIsLoading(false);
     }
   }, [profile, profileLoading]);
 
-  const loadAnalyticsData = async (username: string) => {
-    try {
-      // Load all data in parallel
-      await Promise.all([
-        getRepos(username),
-        getPrivateRepos(),
-        getEvents(username),
-        getOrgs(username),
-      ]);
-    } catch (error) {
-      console.error("Error loading analytics data:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   // Process analytics data when store data changes
   useEffect(() => {
-    if (isPremium && (privateRepos || repos) && events && orgs) {
+    if (
+      isPremium &&
+      !dataLoading &&
+      (privateRepos || repos) &&
+      events &&
+      orgs
+    ) {
       processAnalyticsData();
     }
-  }, [privateRepos, repos, events, orgs, isPremium]);
+  }, [privateRepos, repos, events, orgs, isPremium, dataLoading]);
 
   const processAnalyticsData = () => {
     // Use privateRepos if available (for premium users), otherwise use public repos

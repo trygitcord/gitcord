@@ -3,37 +3,26 @@
 import React, { useEffect } from "react";
 import { ChartColumnBig } from "lucide-react";
 import { ChartTooltipDefault } from "../ui/chart-tooltip-default";
-import { userEventsSlice } from "@/stores/user/eventsSlice";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useUserEvents } from "@/hooks/useGitHubQueries";
+import { useUserProfile } from "@/hooks/useMyApiQueries";
 
 function UserActivityChart() {
+  const { data: userData, isLoading: userLoading } = useUserProfile();
+
   const {
     data: userEventsData,
-    loading: userEventsLoading,
+    isLoading: userEventsLoading,
     error: userEventsError,
-    fetchData: getUserEvents,
-    resetData: resetEvents,
-  } = userEventsSlice();
+  } = useUserEvents(userData?.username);
 
-  useEffect(() => {
-    const username = localStorage.getItem("username");
-    if (username) {
-      getUserEvents(username);
-    }
-
-    // Cleanup on unmount
-    return () => {
-      resetEvents();
-    };
-  }, []);
-
-  const isLoading =
+  if (
+    userLoading ||
     userEventsLoading ||
-    userEventsError ||
+    !userData ||
     !userEventsData ||
-    userEventsData.length === 0;
-
-  if (isLoading)
+    userEventsError
+  )
     return (
       <div className="w-full h-72 sm:h-96">
         <Skeleton className="w-full h-72 sm:h-96" />

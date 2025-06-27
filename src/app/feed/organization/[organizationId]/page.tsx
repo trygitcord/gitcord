@@ -10,25 +10,16 @@ import {
   ChevronRight,
 } from "lucide-react";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useParams } from "next/navigation";
-import githubAxios from "@/lib/axios";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RepositoryBasicInformation } from "@/components/shared/RepositoryBasicInformation";
-import { orgReposSlice } from "@/stores/org/reposSlice";
-import { orgLanguagesSlice } from "@/stores/org/languagesSlice";
-import { orgActivitySlice } from "@/stores/org/activitySlice";
-
-interface OrganizationData {
-  name: string;
-  login: string;
-  description: string | null;
-  type: string;
-  stargazers_count: number;
-  forks_count: number;
-  watchers_count: number;
-  updated_at: string;
-}
+import {
+  useOrganization,
+  useOrganizationRepositories,
+  useOrganizationLanguages,
+  useOrganizationActivity,
+} from "@/hooks/useGitHubQueries";
 
 function timeAgo(dateString: string) {
   const now = new Date();
@@ -46,39 +37,30 @@ function timeAgo(dateString: string) {
 function Page() {
   const params = useParams();
   const orgName = params.organizationId as string;
-  const [orgData, setOrgData] = useState<OrganizationData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [mainLanguage, setMainLanguage] = useState<string | null>(null);
-  const [chartData, setChartData] = useState<any[]>([]);
-  const [isDataLoading, setIsDataLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const reposPerPage = 9; // 3x4 grid için
 
-  const { data: languagesData, fetchData: fetchLanguages } =
-    orgLanguagesSlice();
+  // Tanstack Query hooks
+  const {
+    data: orgData,
+    isLoading: orgLoading,
+    error: orgError,
+  } = useOrganization(orgName);
+  const {
+    data: reposData,
+    isLoading: reposLoading,
+    error: reposError,
+  } = useOrganizationRepositories(orgName);
+  const {
+    data: languagesData,
+    isLoading: languagesLoading,
+    error: languagesError,
+  } = useOrganizationLanguages(orgName);
   const {
     data: activityData,
-    fetchData: fetchActivity,
-    resetData: resetActivity,
-  } = orgActivitySlice();
-  const { data: reposData, fetchData: fetchRepos } = orgReposSlice();
-
-  // Reset states when organization changes
-  useEffect(() => {
-    const resetStates = () => {
-      setOrgData(null);
-      setLoading(true);
-      setError(null);
-      setMainLanguage(null);
-      setChartData([]);
-      setIsDataLoading(false);
-      setCurrentPage(1);
-      resetActivity(); // Reset activity data in the store
-    };
-
-    resetStates();
-  }, [orgName, resetActivity]);
+    isLoading: activityLoading,
+    error: activityError,
+  } = useOrganizationActivity(orgName);
 
   useEffect(() => {
     document.title = `Feed | Organization | ${
@@ -86,124 +68,43 @@ function Page() {
     }`;
   }, [orgName]);
 
-  useEffect(() => {
-    const fetchOrgData = async () => {
-      try {
-        const username = localStorage.getItem("username");
-        if (!username) {
-          setError("Username not found");
-          setLoading(false);
-          return;
-        }
+  // Calculate main language
+  const mainLanguage = useMemo(() => {
+    if (!languagesData || typeof languagesData !== "object") return null;
 
-        setIsDataLoading(true);
-        resetActivity(); // Reset activity data before fetching new data
+    const languages = Object.entries(languagesData);
+    if (languages.length === 0) return null;
 
-        // First fetch organization data to check if it exists
-        try {
-          const orgResponse = await githubAxios.get(`/orgs/${orgName}`);
-          setOrgData(orgResponse.data);
-        } catch (error: any) {
-          if (error.response?.status === 404) {
-            throw new Error(`Organization ${orgName} not found`);
-          } else if (error.response?.status === 403) {
-            throw new Error(`Access denied to organization ${orgName}`);
-          }
-          throw error;
-        }
+    return languages.reduce((a, b) => (a[1] > b[1] ? a : b))[0];
+  }, [languagesData]);
 
-        // Then fetch other data in parallel
-        await Promise.all([
-          fetchLanguages(username, orgName),
-          fetchActivity(username, orgName).catch((err: Error) => {
-            // If activity data fails, set empty chart data
-            if (
-              err instanceof Error &&
-              "response" in err &&
-              (err as any).response?.status === 404
-            ) {
-              console.warn(`No commit activity data available for ${orgName}`);
-              setChartData([]);
-            }
-            // Don't throw the error, just log it
-            console.error("Error fetching activity:", err);
-          }),
-          fetchRepos(orgName),
-        ]);
+  // Process chart data from activity
+  const chartData = useMemo(() => {
+    if (!activityData || !Array.isArray(activityData)) return [];
 
-        setLoading(false);
-      } catch (err: any) {
-        if (err.response?.status === 404) {
-          setError("Organization not found or you don't have access to it.");
-        } else if (err.response?.status === 403) {
-          setError("Access denied. Please check your GitHub permissions.");
-        } else if (err.response?.status === 401) {
-          setError("Authentication failed. Please try logging in again.");
-        } else {
-          setError(
-            err.message || "An error occurred while fetching organization data."
-          );
-        }
-        setLoading(false);
-      } finally {
-        setIsDataLoading(false);
-      }
-    };
+    // Get the last 52 weeks of data
+    const last52Weeks = activityData.slice(-52);
 
-    fetchOrgData();
-  }, [orgName, fetchLanguages, fetchActivity, fetchRepos, resetActivity]);
-
-  useEffect(() => {
-    if (activityData && orgData && !isDataLoading) {
-      // Get activity for this specific organization
-      const orgActivity = activityData[orgName];
-
-      if (Array.isArray(orgActivity) && orgActivity.length > 0) {
-        // Get the last 52 weeks of data (GitHub provides up to 52 weeks)
-        const last52Weeks = orgActivity.slice(-52);
-
-        // Process activities for the chart
-        const processedData = last52Weeks.map((item: any) => ({
-          date: new Date(item.week * 1000).toISOString().split("T")[0],
-          commits: item.total,
-        }));
-
-        setChartData(processedData);
-      } else {
-        // If no activity data, set empty array
-        setChartData([]);
-      }
-    }
-  }, [activityData, orgData, orgName, isDataLoading]);
-
-  useEffect(() => {
-    if (languagesData && orgData) {
-      // Get languages for this specific organization
-      const orgLanguages = languagesData[orgName];
-
-      if (orgLanguages && typeof orgLanguages === "object") {
-        // Find the main language (the one with the most bytes)
-        const mainLang = Object.entries(orgLanguages).reduce((a, b) =>
-          a[1] > b[1] ? a : b
-        )[0];
-        setMainLanguage(mainLang);
-      }
-    }
-  }, [languagesData, orgData, orgName]);
+    return last52Weeks.map((item: any) => ({
+      date: new Date(item.week * 1000).toISOString().split("T")[0],
+      commits: item.total,
+    }));
+  }, [activityData]);
 
   // Sort repositories by updated_at time
-  const sortedRepos = reposData
-    ? [...reposData].sort(
-        (a, b) =>
-          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-      )
-    : [];
+  const sortedRepos = useMemo(() => {
+    if (!reposData) return [];
+    return [...reposData].sort(
+      (a, b) =>
+        new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+    );
+  }, [reposData]);
 
   // Pagination logic
   const indexOfLastRepo = currentPage * reposPerPage;
   const indexOfFirstRepo = indexOfLastRepo - reposPerPage;
   const currentRepos = sortedRepos.slice(indexOfFirstRepo, indexOfLastRepo);
-  const totalPages = Math.ceil((sortedRepos?.length || 0) / reposPerPage);
+  const totalPages = Math.ceil(sortedRepos.length / reposPerPage);
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
@@ -216,6 +117,17 @@ function Page() {
       setCurrentPage(currentPage + 1);
     }
   };
+
+  // Loading state
+  const isLoading =
+    orgLoading || reposLoading || languagesLoading || activityLoading;
+
+  // Error state - prioritize org error since it's most critical
+  const error =
+    orgError?.message ||
+    reposError?.message ||
+    languagesError?.message ||
+    activityError?.message;
 
   return (
     <div>
@@ -235,7 +147,7 @@ function Page() {
         </p>
       </div>
 
-      {loading ? (
+      {isLoading ? (
         <div className="mt-4 space-y-8">
           <Skeleton className="h-32 w-full" />
           <Skeleton className="h-64 w-full" />
@@ -259,16 +171,16 @@ function Page() {
           />
           <div className="mt-8">
             <h2 className="text-lg font-medium mb-4">Repositories</h2>
-            {loading ? (
+            {reposLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[1, 2, 3, 4, 5, 6].map((i) => (
                   <Skeleton key={i} className="w-full h-48" />
                 ))}
               </div>
-            ) : error ? (
+            ) : reposError ? (
               <div className="flex items-center justify-center h-64">
                 <p className="text-red-500">
-                  Error loading repositories: {error}
+                  Error loading repositories: {reposError.message}
                 </p>
               </div>
             ) : (

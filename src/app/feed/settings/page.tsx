@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { LogOut, Globe, Moon, Crown, CreditCard, Shield } from "lucide-react";
-import { getUserProfile } from "@/stores/user/userProfileSlice";
+import { useUserProfile } from "@/hooks/useMyApiQueries";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import { useTheme } from "next-themes";
@@ -17,19 +17,12 @@ function SettingsPage() {
 
   const {
     data: userData,
-    loading: userLoading,
+    isLoading: userLoading,
     error: userError,
-    fetchData: fetchUserProfile,
-  } = getUserProfile();
+  } = useUserProfile();
 
   const { setTheme, theme } = useTheme();
   const router = useRouter();
-
-  useEffect(() => {
-    fetchUserProfile();
-  }, []);
-
-  console.log(userData);
 
   async function handleLogout() {
     await signOut({ redirect: false });

@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { use, useEffect } from "react";
 import { Separator } from "@/components/ui/separator";
 import { MapPin, LinkIcon, Calendar, Eye } from "lucide-react";
 import {
@@ -7,56 +9,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import axios from "axios";
 import GithubAnalyticsWidget from "@/components/shared/GithubAnalyticsWidget";
 import Image from "next/image";
-import { Metadata } from "next";
 import ContributionGraph from "@/components/shared/ContributionGraph";
-import { getGithubContributions } from "@/lib/contributions";
+import { useGitHubUser } from "@/hooks/useGitHubQueries";
+import { useProfileByUsername } from "@/hooks/useMyApiQueries";
+import { useGithubContributions } from "@/hooks/useGithubContributions";
 
 interface Props {
-  params: { username: string };
-}
-
-async function getGithubUser(username: string) {
-  try {
-    const { data } = await axios.get(
-      `${process.env.NEXT_PUBLIC_GITHUB_API_URL}/users/${username}`
-    );
-    return data;
-  } catch (error: any) {
-    // Check if it's a 404 error (user not found on GitHub)
-    if (error.response?.status === 404) {
-      console.log(`GitHub user ${username} not found`);
-      return null;
-    }
-
-    // Log other errors
-    console.error("Error fetching GitHub user:", error.message || error);
-    return null;
-  }
-}
-
-async function getGitcordUser(username: string) {
-  try {
-    const { data } = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/user/getProfileByUsername`,
-      {
-        params: { username },
-      }
-    );
-    return data;
-  } catch (error: any) {
-    // Check if it's a 404 error (user not found in Gitcord)
-    if (error.response?.status === 404) {
-      console.log(`User ${username} is not a Gitcord member`);
-      return null;
-    }
-
-    // Log other errors but still return null to continue with GitHub-only profile
-    console.error("Error fetching Gitcord user:", error.message || error);
-    return null;
-  }
+  params: Promise<{ username: string }>;
 }
 
 function formatNumber(num: number): string {
@@ -67,31 +28,52 @@ function formatNumber(num: number): string {
   return num.toString();
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { username } = await params;
-  const githubUser = await getGithubUser(username);
+const ProfilePage = ({ params }: Props) => {
+  const { username } = use(params);
 
-  if (githubUser) {
-    return {
-      title: `Gitcord | ${username}'s profile`,
-    };
+  // React Query hooks
+  const {
+    data: githubUser,
+    isLoading: githubLoading,
+    error: githubError,
+  } = useGitHubUser(username);
+  const { data: gitcordUser, isLoading: gitcordLoading } =
+    useProfileByUsername(username);
+  const { data: contributions, isLoading: contributionsLoading } =
+    useGithubContributions(username);
+
+  // Update document title when user data is loaded
+  useEffect(() => {
+    if (githubUser) {
+      document.title = `Gitcord | ${
+        githubUser.name || githubUser.login
+      }'s profile`;
+    } else if (githubError || (!githubLoading && !githubUser)) {
+      document.title = `@${username} - Gitcord`;
+    } else {
+      document.title = `Gitcord | Loading...`;
+    }
+  }, [githubUser, githubError, githubLoading, username]);
+
+  // Loading state
+  if (githubLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-neutral-950">
+        <div className="max-w-[420px] rounded-2xl w-full mx-auto border border-neutral-800 shadow-lg bg-neutral-900 overflow-hidden">
+          <div className="flex flex-col items-center gap-6 p-8 text-center">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 animate-pulse"></div>
+            <div className="space-y-2">
+              <div className="h-6 bg-neutral-800 rounded animate-pulse w-32"></div>
+              <div className="h-4 bg-neutral-800 rounded animate-pulse w-48"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
-  return {
-    title: `@${username} - Gitcord`,
-  };
-}
-
-const ProfilePage = async ({ params }: Props) => {
-  const { username } = await params;
-
-  const [githubUser, gitcordUser, contributions] = await Promise.all([
-    getGithubUser(username),
-    getGitcordUser(username),
-    getGithubContributions(username),
-  ]);
-
-  if (!githubUser) {
+  // Error or user not found
+  if (githubError || !githubUser) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-neutral-950">
         <div className="max-w-[420px] rounded-2xl w-full mx-auto border border-neutral-800 shadow-lg bg-neutral-900 overflow-hidden">
@@ -342,7 +324,7 @@ const ProfilePage = async ({ params }: Props) => {
 
               <ContributionGraph
                 username={username}
-                contributions={contributions}
+                contributions={contributions || []}
               />
             </div>
           </div>

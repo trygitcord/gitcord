@@ -1,12 +1,16 @@
+import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
-interface ContributionDay {
+export interface ContributionDay {
   date: string;
   count: number;
   level: number;
 }
 
+// Standalone function for server-side usage
 export async function getGithubContributions(username: string): Promise<ContributionDay[]> {
+  if (!username) return [];
+
   try {
     const response = await axios.get(
       `https://github-contributions-api.jogruber.de/v4/${username}?y=last`
@@ -29,10 +33,27 @@ export async function getGithubContributions(username: string): Promise<Contribu
     return [];
   } catch (error) {
     console.error('Error fetching GitHub contributions:', error);
+    // Return mock data on error
     return generateMockContributions();
   }
 }
 
+// GitHub Contributions Query Hook
+export const useGithubContributions = (username: string | null) => {
+  return useQuery({
+    queryKey: ['github-contributions', username],
+    queryFn: async () => {
+      if (!username) return [];
+      return getGithubContributions(username);
+    },
+    staleTime: 60 * 60 * 1000, // 1 hour
+    enabled: !!username,
+    retry: 2,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
+  });
+};
+
+// Mock data generator for fallback
 function generateMockContributions(): ContributionDay[] {
   const contributions = [];
   const today = new Date();

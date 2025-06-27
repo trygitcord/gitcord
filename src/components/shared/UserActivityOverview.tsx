@@ -1,51 +1,26 @@
 "use client";
 
-import { getUserProfile } from "@/stores/user/userProfileSlice";
 import React, { useEffect, useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Clock, MessageCircle, HardDriveUpload } from "lucide-react";
-import { userEventsSlice } from "@/stores/user/eventsSlice";
 import Link from "next/link";
+import { useUserProfile } from "@/hooks/useMyApiQueries";
+import { useUserEvents } from "@/hooks/useGitHubQueries";
 
 function UserActivityOverview() {
   const {
     data: userData,
-    loading: userLoading,
+    isLoading: userLoading,
     error: userError,
-    fetchData: getUser,
-    resetData: resetUser,
-  } = getUserProfile();
+  } = useUserProfile();
 
   const {
     data: userEventsData,
-    loading: userEventsLoading,
+    isLoading: userEventsLoading,
     error: userEventsError,
-    fetchData: getUserEvents,
-    resetData: resetEvents,
-  } = userEventsSlice();
-
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    getUser();
-
-    // Cleanup on unmount
-    return () => {
-      resetUser();
-      resetEvents();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (mounted && userData?.username) {
-      getUserEvents(userData?.username);
-    }
-  }, [userData, mounted]);
+  } = useUserEvents(userData?.username);
 
   const counts = useMemo(() => {
-    if (!mounted) return { PushEvent: 0, PullRequestEvent: 0, IssuesEvent: 0 };
-
     const tempCounts = {
       PushEvent: 0,
       PullRequestEvent: 0,
@@ -61,18 +36,16 @@ function UserActivityOverview() {
     }
 
     return tempCounts;
-  }, [userEventsData, mounted]);
+  }, [userEventsData]);
 
-  const isLoading =
-    !mounted ||
+  if (
     userLoading ||
-    !userData ||
-    userError ||
     userEventsLoading ||
-    userEventsError ||
-    !userEventsData;
-
-  if (isLoading)
+    !userData ||
+    !userEventsData ||
+    userError ||
+    userEventsError
+  )
     return (
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full h-full">
         <Skeleton className="w-full h-32 sm:h-36" />
