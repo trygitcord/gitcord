@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { privateReposSlice } from "@/stores/user/privateReposSlice";
-import { getUserProfile } from "@/stores/user/userProfileSlice";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Star,
@@ -15,6 +13,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePrivateRepositories } from "@/hooks/useGitHubQueries";
+import { useUserProfile } from "@/hooks/useMyApiQueries";
 
 function timeAgo(dateString: string) {
   const now = new Date();
@@ -32,37 +32,27 @@ function timeAgo(dateString: string) {
 function Repositories() {
   // All useState hooks first
   const [currentPage, setCurrentPage] = useState(1);
-  const [mounted, setMounted] = useState(false);
 
   // Custom hooks (slice hooks) second
   const {
     data: reposData,
-    loading: reposLoading,
+    isLoading: reposLoading,
     error: reposError,
-    fetchData: fetchRepos,
-  } = privateReposSlice();
+  } = usePrivateRepositories();
 
   const {
     data: userData,
-    loading: userLoading,
+    isLoading: userLoading,
     error: userError,
-    fetchData: fetchUserProfile,
-  } = getUserProfile();
+  } = useUserProfile();
 
-  // useEffect hooks last
   useEffect(() => {
     document.title = "Feed | Repositories";
   }, []);
 
-  useEffect(() => {
-    setMounted(true);
-    fetchRepos();
-    fetchUserProfile();
-  }, []);
-
   const reposPerPage = 12; // 3x3 grid için
 
-  if (!mounted || reposLoading || userLoading || !reposData || !userData) {
+  if (reposLoading || userLoading || !reposData || !userData) {
     return (
       <div className="w-full h-full">
         <div className="mb-4">
@@ -95,7 +85,8 @@ function Repositories() {
         </div>
         <div className="flex items-center justify-center h-64">
           <p className="text-red-500">
-            Error loading repositories: {reposError || userError}
+            Error loading repositories:{" "}
+            {reposError?.message || userError?.message || "Unknown error"}
           </p>
         </div>
       </div>

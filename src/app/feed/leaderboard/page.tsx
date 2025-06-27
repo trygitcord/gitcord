@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useLeaderboard } from "@/stores/user/leaderboardSlice";
 import {
   Card,
   CardContent,
@@ -24,22 +23,19 @@ import {
   Clock,
 } from "lucide-react";
 import Link from "next/link";
+import { useActivityLeaderboard } from "@/hooks/useMyApiQueries";
 
 const ITEMS_PER_PAGE = 8;
 
 export default function LeaderboardPage() {
-  const { data, loading, error, fetchData } = useLeaderboard();
+  const { data, isLoading, error } = useActivityLeaderboard();
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     document.title = `Feed | Leaderboard`;
   }, []);
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  if (loading) {
+  if (isLoading || !data || error) {
     return <LeaderboardSkeleton />;
   }
 
@@ -120,7 +116,7 @@ export default function LeaderboardPage() {
       {/* Leaderboard List - Modern card based approach */}
       {currentData.length > 0 ? (
         <div className="space-y-2">
-          {currentData.map((user, index) => {
+          {currentData.map((user: any, index: number) => {
             const rank = startIndex + index + 1;
             const isTopThree = rank <= 3;
 

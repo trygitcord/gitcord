@@ -1,213 +1,204 @@
 "use client";
 
-import { ArrowLeft, Star, GitFork, GitCommit } from "lucide-react";
-import Link from "next/link";
+import React, { useEffect, useState, useMemo } from "react";
 import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import githubAxios from "@/lib/axios";
-import { Skeleton } from "@/components/ui/skeleton";
-import { repoLanguagesSlice } from "@/stores/repo/languagesSlice";
-import { repoActivitySlice } from "@/stores/repo/activitySlice";
-import { repoCommitsSlice } from "@/stores/repo/commitsSlice";
 import { RepositoryBasicInformation } from "@/components/shared/RepositoryBasicInformation";
-import { StatCard } from "@/components/shared/StatCard";
-import { LanguagesPieChart } from "@/components/shared/LanguagesPieChart";
 import { ContributorsStats } from "@/components/shared/ContributorsStats";
 import { LastCommits } from "@/components/shared/LastCommits";
+import { Skeleton } from "@/components/ui/skeleton";
+import { LanguagesPieChart } from "@/components/shared/LanguagesPieChart";
+import { StatCard } from "@/components/shared/StatCard";
+import {
+  useRepository,
+  useRepositoryCommitActivity,
+  useRepositoryCommits,
+  useRepositoryLanguages,
+} from "@/hooks/useGitHubQueries";
+import { useUserProfile } from "@/hooks/useMyApiQueries";
+import Link from "next/link";
+import { ArrowLeft, Star, GitFork, GitCommit } from "lucide-react";
 
 interface RepositoryData {
+  id: number;
   name: string;
+  full_name: string;
   description: string | null;
-  visibility: string;
   stargazers_count: number;
   forks_count: number;
-  watchers_count: number;
+  language: string | null;
   updated_at: string;
+  watchers_count: number;
+}
+
+interface Commit {
+  sha: string;
+  commit: {
+    message: string;
+    author: {
+      date: string;
+    };
+  };
+  author: {
+    login: string;
+    avatar_url: string;
+  } | null;
 }
 
 function Page() {
   const params = useParams();
-  const repoName = params.repositoryId as string;
-  const [repoData, setRepoData] = useState<RepositoryData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const repositoryId = params.repositoryId as string;
+
+  // Debug: Log the repositoryId to understand its format
+  console.log("repositoryId:", repositoryId);
+
+  // Since repositoryId might be URL encoded, decode it first
+  const decodedRepositoryId = repositoryId
+    ? decodeURIComponent(repositoryId)
+    : "";
+  console.log("decodedRepositoryId:", decodedRepositoryId);
+
+  // Get user profile to determine owner if not provided
+  const { data: userProfile, isLoading: profileLoading } = useUserProfile();
+
+  // Parse owner and repo from repositoryId (trying different formats)
+  const { owner, repo } = useMemo(() => {
+    let parsedOwner: string | null = null;
+    let parsedRepo: string | null = null;
+
+    if (decodedRepositoryId) {
+      if (decodedRepositoryId.includes("/")) {
+        // Format: "owner/repo"
+        [parsedOwner, parsedRepo] = decodedRepositoryId.split("/");
+      } else {
+        // Format: just "repo" - we need to get owner from user profile
+        parsedRepo = decodedRepositoryId;
+        // If owner is not in the URL, use the current user's username
+        if (userProfile?.username) {
+          parsedOwner = userProfile.username;
+        }
+      }
+    }
+
+    return { owner: parsedOwner, repo: parsedRepo };
+  }, [decodedRepositoryId, userProfile?.username]);
+
   const [mainLanguage, setMainLanguage] = useState<string | null>(null);
   const [chartData, setChartData] = useState<any[]>([]);
-  const [isDataLoading, setIsDataLoading] = useState(false);
 
-  const { data: languagesData, fetchData: fetchLanguages } =
-    repoLanguagesSlice();
+  // TanStack Query hooks - already have internal enabled checks
+  const {
+    data: repoData,
+    isLoading: repoLoading,
+    error: repoError,
+  } = useRepository(owner, repo);
+
+  const {
+    data: languagesData,
+    isLoading: languagesLoading,
+    error: languagesError,
+  } = useRepositoryLanguages(owner, repo);
+
   const {
     data: activityData,
-    fetchData: fetchActivity,
-    resetData: resetActivity,
-  } = repoActivitySlice();
-  const { data: commitsData, fetchData: fetchCommits } = repoCommitsSlice();
+    isLoading: activityLoading,
+    error: activityError,
+  } = useRepositoryCommitActivity(owner, repo);
 
-  // Reset states when repository changes
-  useEffect(() => {
-    const resetStates = () => {
-      setRepoData(null);
-      setLoading(true);
-      setError(null);
-      setMainLanguage(null);
-      setChartData([]);
-      setIsDataLoading(false);
-      resetActivity(); // Reset activity data in the store
-    };
-
-    resetStates();
-  }, [repoName, resetActivity]);
+  const {
+    data: commitsData,
+    isLoading: commitsLoading,
+    error: commitsError,
+  } = useRepositoryCommits(owner, repo);
 
   useEffect(() => {
     document.title = `Feed | Repository | ${
-      repoName.charAt(0).toUpperCase() + repoName.slice(1)
+      repo ? repo.charAt(0).toUpperCase() + repo.slice(1) : "Repository"
     }`;
-  }, [repoName]);
+  }, [repo]);
 
+  // Process languages data when it changes
   useEffect(() => {
-    const fetchRepoData = async () => {
-      try {
-        const username = localStorage.getItem("username");
-        if (!username) {
-          setError("Username not found");
-          setLoading(false);
-          return;
-        }
+    if (languagesData && typeof languagesData === "object") {
+      const languageEntries = Object.entries(languagesData);
+      const totalBytes = languageEntries.reduce(
+        (sum, [_, bytes]) => sum + (bytes as number),
+        0
+      );
 
-        setIsDataLoading(true);
-        resetActivity(); // Reset activity data before fetching new data
+      const processedData = languageEntries
+        .map(([language, bytes]) => ({
+          name: language,
+          value: (((bytes as number) / totalBytes) * 100).toFixed(2),
+          bytes: bytes as number,
+        }))
+        .sort((a, b) => b.bytes - a.bytes);
 
-        // First fetch repository data to check if it exists
-        const repoResponse = await githubAxios.get(
-          `/repos/${username}/${repoName}`
-        );
-        setRepoData(repoResponse.data);
-
-        // Then fetch other data in parallel
-        await Promise.all([
-          fetchLanguages(username, repoName),
-          fetchActivity(username, repoName).catch((err) => {
-            // If activity data fails, set empty chart data
-            if (err.response?.status === 404) {
-              console.warn(`No commit activity data available for ${repoName}`);
-              setChartData([]);
-            }
-            // Don't throw the error, just log it
-            console.error("Error fetching activity:", err);
-          }),
-          fetchCommits(username, repoName),
-        ]);
-
-        setLoading(false);
-      } catch (err: any) {
-        if (err.response?.status === 404) {
-          setError("Repository not found or you don't have access to it.");
-        } else if (err.response?.status === 403) {
-          setError("Access denied. Please check your GitHub permissions.");
-        } else if (err.response?.status === 401) {
-          setError("Authentication failed. Please try logging in again.");
-        } else {
-          setError(
-            err.message || "An error occurred while fetching repository data."
-          );
-        }
-        setLoading(false);
-      } finally {
-        setIsDataLoading(false);
-      }
-    };
-
-    fetchRepoData();
-  }, [repoName, fetchLanguages, fetchActivity, fetchCommits, resetActivity]);
-
-  useEffect(() => {
-    if (languagesData && repoData) {
-      // Get languages for this specific repository
-      const repoLanguages = languagesData[repoName];
-
-      if (repoLanguages && typeof repoLanguages === "object") {
-        // Check if repoLanguages is empty
-        if (Object.keys(repoLanguages).length === 0) {
-          setMainLanguage(null);
-        } else {
-          // Find the main language
-          const mainLang = Object.entries(repoLanguages).reduce((a, b) =>
-            a[1] > b[1] ? a : b
-          )[0];
-          setMainLanguage(mainLang);
-        }
+      if (processedData.length > 0) {
+        setMainLanguage(processedData[0].name);
       }
     }
-  }, [languagesData, repoData, repoName]);
+  }, [languagesData]);
 
+  // Process activity data when it changes
   useEffect(() => {
-    if (activityData && repoData && !isDataLoading) {
-      // Get activity for this specific repository
-      const repoActivity = activityData[repoName];
-
-      if (Array.isArray(repoActivity) && repoActivity.length > 0) {
-        // Get the last 52 weeks of data (GitHub provides up to 52 weeks)
-        const last52Weeks = repoActivity.slice(-52);
-
-        // Process activities for the chart
-        const processedData = last52Weeks.map((item: any) => ({
-          date: new Date(item.week * 1000).toISOString().split("T")[0],
-          commits: item.total,
-        }));
-
-        setChartData(processedData);
-      } else {
-        // If no activity data, set empty array
-        setChartData([]);
-      }
+    if (activityData && Array.isArray(activityData)) {
+      const formattedData = activityData.map((week: any) => ({
+        week: new Date(week.week * 1000).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        }),
+        commits: week.total,
+      }));
+      setChartData(formattedData);
+    } else {
+      setChartData([]);
     }
-  }, [activityData, repoData, repoName, isDataLoading]);
+  }, [activityData]);
 
-  if (loading) {
+  // Show loading state
+  const isLoading =
+    profileLoading ||
+    repoLoading ||
+    languagesLoading ||
+    activityLoading ||
+    commitsLoading;
+
+  if (isLoading) {
     return (
-      <div>
-        <div className="pt-1">
-          <Link
-            href="/feed/repositories"
-            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back</span>
-          </Link>
+      <div className="space-y-6">
+        <Skeleton className="h-32 w-full" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Skeleton className="h-64 w-full" />
+          <Skeleton className="h-64 w-full" />
         </div>
-        <div className="pt-2">
-          <h1 className="text-lg font-medium">Repository</h1>
-          <p className="text-neutral-500 text-sm dark:text-neutral-400">
-            Explore the latest activity in this repository.
-          </p>
-        </div>
-        <Skeleton className="w-full h-48 mt-4 rounded-xl" />
       </div>
     );
   }
 
+  // Show error state
+  const error = repoError || languagesError || activityError || commitsError;
   if (error) {
     return (
-      <div>
-        <div className="pt-1">
-          <Link
-            href="/feed/repositories"
-            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back</span>
-          </Link>
-        </div>
-        <div className="pt-2">
-          <h1 className="text-lg font-medium">Repository</h1>
-          <p className="text-neutral-500 text-sm dark:text-neutral-400">
-            Explore the latest activity in this repository.
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center space-y-2">
+          <h2 className="text-xl font-semibold text-red-600">Error</h2>
+          <p className="text-neutral-600 dark:text-neutral-400">
+            {error instanceof Error
+              ? error.message
+              : "An error occurred while loading repository data"}
           </p>
         </div>
-        <div className="w-full h-48 bg-neutral-900 mt-4 rounded-xl flex items-center justify-center">
-          <p className="text-[#5BC898]">Error: {error}</p>
-        </div>
+      </div>
+    );
+  }
+
+  // Show no data state
+  if (!repoData || !owner || !repo) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <p className="text-neutral-600 dark:text-neutral-400">
+          No repository data found
+        </p>
       </div>
     );
   }
@@ -235,7 +226,7 @@ function Page() {
           <RepositoryBasicInformation
             name={repoData.name}
             description={repoData.description}
-            visibility={repoData.visibility}
+            visibility="public"
             language={mainLanguage}
             stars={repoData.stargazers_count}
             forks={repoData.forks_count}
@@ -270,15 +261,10 @@ function Page() {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full mt-4">
             <div className="space-y-4">
-              <ContributorsStats
-                owner={localStorage.getItem("username") || ""}
-                repo={repoName}
-              />
+              <ContributorsStats owner={owner || ""} repo={repo || ""} />
               {languagesData && (
                 <div>
-                  <LanguagesPieChart
-                    languages={languagesData[repoName] || {}}
-                  />
+                  <LanguagesPieChart languages={languagesData} />
                 </div>
               )}
             </div>
@@ -286,8 +272,8 @@ function Page() {
               <div className="sm:col-span-2">
                 <LastCommits
                   commits={commitsData}
-                  owner={localStorage.getItem("username") || ""}
-                  repo={repoName}
+                  owner={owner || ""}
+                  repo={repo || ""}
                 />
               </div>
             )}

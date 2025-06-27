@@ -3,6 +3,7 @@ import "@/styles/globals.css";
 import { Poppins } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import SessionProvider from "@/components/providers/SessionProvider";
+import { QueryProvider } from "@/components/providers/QueryProvider";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -27,14 +28,16 @@ export default function RootLayout({
     <html lang="en" className={poppins.className} suppressHydrationWarning>
       <body suppressHydrationWarning>
         <SessionProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
+          <QueryProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="dark"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
+            </ThemeProvider>
+          </QueryProvider>
         </SessionProvider>
       </body>
     </html>

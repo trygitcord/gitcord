@@ -2,18 +2,12 @@
 
 import React, { useEffect } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { getUserProfile } from "@/stores/user/userProfileSlice";
+import { useUserProfile } from "@/hooks/useMyApiQueries";
 import { Github } from "lucide-react";
 
 function LoginButton() {
   const { data: session } = useSession();
-  const { data: userData, fetchData: fetchUserProfile } = getUserProfile();
-
-  useEffect(() => {
-    if (session?.user && !userData) {
-      fetchUserProfile();
-    }
-  }, [session, userData, fetchUserProfile]);
+  const { data: userData, isLoading, error } = useUserProfile();
 
   useEffect(() => {
     if (userData?.username) {

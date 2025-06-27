@@ -32,7 +32,7 @@ import {
 import Image from "next/image";
 import SidebarUserFooter from "@/components/shared/SidebarUserFooter";
 import React from "react";
-import { getUserProfile } from "@/stores/user/userProfileSlice";
+import { useUserProfile } from "@/hooks/useMyApiQueries";
 
 // Menu items.
 const items = [
@@ -101,30 +101,10 @@ const activityItems = [
 
 export function SidebarNavigation() {
   const pathname = usePathname();
-  const router = useRouter();
-  const [profileUrl, setProfileUrl] = React.useState("/user");
-  const [isPremium, setIsPremium] = React.useState(false);
 
-  const { data: profile, fetchData: getProfile } = getUserProfile();
-
-  React.useEffect(() => {
-    const username = localStorage.getItem("username");
-    if (username) {
-      setProfileUrl(`/user/${username}`);
-    }
-
-    // Fetch user profile to check premium status
-    // Sadece profile yoksa fetch yap
-    if (!profile) {
-      getProfile();
-    }
-  }, [profile, getProfile]);
-
-  React.useEffect(() => {
-    if (profile) {
-      setIsPremium(profile.premium?.isPremium || false);
-    }
-  }, [profile]);
+  const { data: profile } = useUserProfile();
+  const profileUrl = profile?.username ? `/user/${profile.username}` : "/user";
+  const isPremium = profile?.premium?.isPremium || false;
 
   return (
     <Sidebar className="p-4 border-r-2 border-r-neutral-200 dark:bg-neutral-950 dark:border-r-neutral-800">

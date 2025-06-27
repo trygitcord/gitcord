@@ -1,12 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { userEventsSlice } from "@/stores/user/eventsSlice";
-import { getUserProfile } from "@/stores/user/userProfileSlice";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import { GitCommit, GitPullRequest, AlertCircle } from "lucide-react";
-import { Metadata } from "next";
+import { useUserProfile } from "@/hooks/useMyApiQueries";
+import { useUserEvents } from "@/hooks/useGitHubQueries";
 
 enum RecentActivityType {
   Issue = "IssuesEvent",
@@ -171,46 +170,29 @@ function ActivityPage() {
 
   const {
     data: userData,
-    loading: userLoading,
+    isLoading: userLoading,
     error: userError,
-    fetchData: getUser,
-  } = getUserProfile();
+  } = useUserProfile();
 
   const {
     data: userEventsData,
-    loading: userEventsLoading,
+    isLoading: userEventsLoading,
     error: userEventsError,
-    fetchData: getUserEvents,
-  } = userEventsSlice();
+  } = useUserEvents(userData?.username);
 
-  const [mounted, setMounted] = useState(false);
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
   const [activeFilter, setActiveFilter] = useState<RecentActivityType | "all">(
     "all"
   );
 
-  useEffect(() => {
-    setMounted(true);
-    getUser();
-  }, []);
-
-  useEffect(() => {
-    if (mounted && userData?.username) {
-      getUserEvents(userData.username);
-    }
-  }, [userData, mounted]);
-
-  const isLoading =
-    !mounted ||
+  if (
     userLoading ||
-    !userData ||
-    userError ||
     userEventsLoading ||
-    userEventsError ||
+    !userData ||
     !userEventsData ||
-    userEventsData.length === 0;
-
-  if (isLoading)
+    userError ||
+    userEventsError
+  )
     return (
       <div className="w-full h-full">
         <div className="flex justify-between items-center mb-4">

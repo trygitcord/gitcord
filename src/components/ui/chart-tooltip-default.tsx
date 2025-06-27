@@ -81,9 +81,18 @@ export function ChartTooltipDefault({ data }: { data: any }) {
       : null;
 
   return (
-    <div className="w-full h-full">
-      <ChartContainer config={chartConfig}>
-        <BarChart accessibilityLayer data={chartData || []}>
+    <div className="w-full h-full min-h-[300px]">
+      <ChartContainer config={chartConfig} className="w-full h-full">
+        <BarChart
+          accessibilityLayer
+          data={chartData || []}
+          margin={{
+            top: 20,
+            right: 30,
+            left: 20,
+            bottom: 5,
+          }}
+        >
           <XAxis
             dataKey="date"
             tickLine={false}
