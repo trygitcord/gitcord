@@ -18,6 +18,7 @@ import {
   FileText,
   GitBranch,
   Activity,
+  ShoppingCart,
 } from "lucide-react";
 
 import { usePathname, useRouter } from "next/navigation";
@@ -94,6 +95,12 @@ const dataItems = [
 ];
 
 const profileItems = [
+  {
+    title: "Shop",
+    url: "/feed/shop",
+    icon: ShoppingCart,
+    live: true,
+  },
   {
     title: "Profile",
     url: "/user",
