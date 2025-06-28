@@ -168,32 +168,32 @@ export default function LeaderboardPage() {
                   </div>
 
                   {/* Right side - Stats and Score */}
-                  <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-4">
                     {/* Activity Stats - Desktop only */}
-                    <div className="hidden md:flex items-center gap-6">
-                      <div className="text-center">
-                        <p className="text-2xl font-semibold">
+                    <div className="hidden md:flex items-center gap-3">
+                      <div className="flex flex-col items-center justify-center w-16 h-16 bg-muted/50 rounded-lg border">
+                        <p className="text-lg font-semibold">
                           {user.pushEvents}
                         </p>
                         <p className="text-xs text-muted-foreground">pushes</p>
                       </div>
-                      <div className="text-center">
-                        <p className="text-2xl font-semibold">
+                      <div className="flex flex-col items-center justify-center w-16 h-16 bg-muted/50 rounded-lg border">
+                        <p className="text-lg font-semibold">
                           {user.pullRequests}
                         </p>
                         <p className="text-xs text-muted-foreground">PRs</p>
                       </div>
-                      <div className="text-center">
-                        <p className="text-2xl font-semibold">{user.issues}</p>
+                      <div className="flex flex-col items-center justify-center w-16 h-16 bg-muted/50 rounded-lg border">
+                        <p className="text-lg font-semibold">{user.issues}</p>
                         <p className="text-xs text-muted-foreground">issues</p>
                       </div>
                     </div>
 
                     {/* Total Score */}
-                    <div className="flex flex-col items-end">
-                      <div className="flex items-center gap-2">
-                        <Activity className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-2xl font-bold">
+                    <div className="flex flex-col items-center justify-center w-20 h-16 bg-gradient-to-br from-[#5BC898]/10 to-[#5BC898]/5 rounded-lg border border-[#5BC898]/20">
+                      <div className="flex items-center gap-1">
+                        <Activity className="h-3 w-3 text-[#5BC898]" />
+                        <span className="text-lg font-bold text-[#5BC898]">
                           {user.weeklyScore}
                         </span>
                       </div>
@@ -330,12 +330,12 @@ function LeaderboardSkeleton() {
                 </div>
               </div>
               <div className="flex items-center gap-6">
-                <div className="hidden md:flex items-center gap-6">
-                  <Skeleton className="h-12 w-12" />
-                  <Skeleton className="h-12 w-12" />
-                  <Skeleton className="h-12 w-12" />
+                <div className="hidden md:flex items-center gap-3">
+                  <Skeleton className="h-16 w-16 rounded-lg" />
+                  <Skeleton className="h-16 w-16 rounded-lg" />
+                  <Skeleton className="h-16 w-16 rounded-lg" />
                 </div>
-                <Skeleton className="h-12 w-16" />
+                <Skeleton className="h-16 w-20 rounded-lg" />
               </div>
             </div>
           </div>
