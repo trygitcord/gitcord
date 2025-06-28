@@ -30,33 +30,55 @@ function timeAgo(dateString: string) {
   return `${Math.floor(diff / 31536000)} years ago`;
 }
 
-// Sağlık skoru hesaplama fonksiyonu (örnek, daha sonra geliştirilebilir)
+// Sağlık skoru hesaplama fonksiyonu - dengeli puanlama sistemi
 function calculateHealthScore(repo: any) {
-  // Son güncellenme (max 30 gün = 40 puan)
-  const daysSinceUpdate = (Date.now() - new Date(repo.updated_at).getTime()) / (1000 * 60 * 60 * 24);
+  // Son güncellenme skoru (0-35 puan)
+  const daysSinceUpdate =
+    (Date.now() - new Date(repo.updated_at).getTime()) / (1000 * 60 * 60 * 24);
   let updateScore = 0;
-  if (daysSinceUpdate < 1) updateScore = 40;
-  else if (daysSinceUpdate < 7) updateScore = 35;
-  else if (daysSinceUpdate < 30) updateScore = 25;
-  else if (daysSinceUpdate < 90) updateScore = 10;
-  // Commit sayısı (max 30 puan)
+  if (daysSinceUpdate < 1) updateScore = 35;
+  else if (daysSinceUpdate < 3) updateScore = 30;
+  else if (daysSinceUpdate < 7) updateScore = 25;
+  else if (daysSinceUpdate < 30) updateScore = 15;
+  else if (daysSinceUpdate < 90) updateScore = 5;
+  else if (daysSinceUpdate < 180) updateScore = 2;
+  // 180+ gün = 0 puan
+
+  // Commit sayısı skoru (0-30 puan)
   let commitScore = 0;
-  if (repo.commits_count >= 100) commitScore = 30;
-  else if (repo.commits_count >= 50) commitScore = 20;
-  else if (repo.commits_count >= 10) commitScore = 10;
-  // Açık issue ve PR (max 15 puan, azsa daha iyi)
-  let issueScore = 15;
-  if ((repo.open_issues_count || 0) > 20) issueScore = 0;
-  else if ((repo.open_issues_count || 0) > 10) issueScore = 5;
-  else if ((repo.open_issues_count || 0) > 3) issueScore = 10;
-  // Aktiflik (son 30 günde commit varsa +15)
+  if (repo.commits_count >= 500) commitScore = 30;
+  else if (repo.commits_count >= 200) commitScore = 25;
+  else if (repo.commits_count >= 100) commitScore = 20;
+  else if (repo.commits_count >= 50) commitScore = 15;
+  else if (repo.commits_count >= 20) commitScore = 10;
+  else if (repo.commits_count >= 5) commitScore = 5;
+  // 5'den az commit = 0 puan
+
+  // Açık issue yönetimi skoru (0-15 puan)
+  const openIssues = repo.open_issues_count || 0;
+  let issueScore = 0;
+  if (openIssues === 0) issueScore = 15; // Hiç açık issue yok
+  else if (openIssues <= 3) issueScore = 12; // Az sayıda issue
+  else if (openIssues <= 10) issueScore = 8; // Orta seviye
+  else if (openIssues <= 20) issueScore = 4; // Çok issue
+  // 20+ issue = 0 puan
+
+  // Aktiflik bonusu (0-20 puan)
   let activityScore = 0;
   if (repo.last_commit_date) {
-    const daysSinceCommit = (Date.now() - new Date(repo.last_commit_date).getTime()) / (1000 * 60 * 60 * 24);
-    if (daysSinceCommit < 30) activityScore = 15;
+    const daysSinceCommit =
+      (Date.now() - new Date(repo.last_commit_date).getTime()) /
+      (1000 * 60 * 60 * 24);
+    if (daysSinceCommit < 1) activityScore = 20; // Bugün commit
+    else if (daysSinceCommit < 7) activityScore = 15; // Bu hafta commit
+    else if (daysSinceCommit < 30) activityScore = 10; // Bu ay commit
+    else if (daysSinceCommit < 90) activityScore = 5; // Son 3 ay
+    // 90+ gün = 0 puan
   }
-  // Toplam skor (max 100)
-  return Math.min(100, updateScore + commitScore + issueScore + activityScore);
+
+  // Toplam skor hesaplama (0-100)
+  const totalScore = updateScore + commitScore + issueScore + activityScore;
+  return Math.max(0, Math.min(100, totalScore));
 }
 
 function Repositories() {
@@ -184,9 +206,16 @@ function Repositories() {
               key={repo.id}
               href={`/feed/repositories/${repo.name}`}
               className="group h-full"
-            > {/* Silinebilir bug olursa -Harun */}
+            >
+              {" "}
+              {/* Silinebilir bug olursa -Harun */}
               <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-4 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors h-full relative">
-                <span className="absolute top-15 right-4 z-10 "><ProjectHealthChart score={calculateHealthScore(repo)} size={40} /></span>
+                <span className="absolute top-15 right-4 z-10 ">
+                  <ProjectHealthChart
+                    score={calculateHealthScore(repo)}
+                    size={40}
+                  />
+                </span>
                 <div className="flex flex-col h-full">
                   <div className="flex items-start justify-between mb-2">
                     <h3 className="text-neutral-800 dark:text-neutral-200 font-medium group-hover:text-[#5BC898] transition-colors">
@@ -220,14 +249,13 @@ function Repositories() {
                           <span>{repo.watchers_count}</span>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center gap-1 text-xs text-neutral-400 dark:text-neutral-500">
                         <Clock className="w-3 h-3" />
-               
+
                         <span>Updated {timeAgo(repo.updated_at)}</span>
                       </div>
                     </div>
-                   
                   </div>
                 </div>
               </div>
