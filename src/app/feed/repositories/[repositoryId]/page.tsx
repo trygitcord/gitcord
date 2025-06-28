@@ -274,6 +274,7 @@ function Page() {
                   commits={commitsData}
                   owner={owner || ""}
                   repo={repo || ""}
+                  isMain={true}
                 />
               </div>
             )}
