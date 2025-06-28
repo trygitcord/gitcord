@@ -33,6 +33,7 @@ import Image from "next/image";
 import SidebarUserFooter from "@/components/shared/SidebarUserFooter";
 import React from "react";
 import { useUserProfile } from "@/hooks/useMyApiQueries";
+import { useVersion } from "@/hooks/useVersion";
 
 // Menu items.
 const items = [
@@ -103,6 +104,7 @@ export function SidebarNavigation() {
   const pathname = usePathname();
 
   const { data: profile } = useUserProfile();
+  const { data: versionData } = useVersion();
   const profileUrl = profile?.username ? `/user/${profile.username}` : "/user";
   const isPremium = profile?.premium?.isPremium || false;
 
@@ -112,7 +114,14 @@ export function SidebarNavigation() {
         <SidebarGroup>
           <Link href="/feed/dashboard" className="flex items-center gap-3">
             <Image src={Logo} width={28} height={28} alt="Logo" />
-            <h1 className="font-medium">Gitcord</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="font-medium">Gitcord</h1>
+              {versionData && (
+                <span className="px-2 py-1 text-xs font-mono bg-neutral-900 text-neutral-100 rounded-full dark:bg-neutral-800 dark:text-neutral-200">
+                  {versionData.version}
+                </span>
+              )}
+            </div>
           </Link>
         </SidebarGroup>
 
