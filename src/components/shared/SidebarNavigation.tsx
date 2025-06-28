@@ -143,12 +143,7 @@ export function SidebarNavigation() {
       let repositoryId: string;
 
       // Check if it's owner/repo format or just repo format
-      if (
-        repoSegment2 &&
-        !["analytics", "activity", "branches", "overview"].includes(
-          repoSegment2
-        )
-      ) {
+      if (repoSegment2 && !["activity", "overview"].includes(repoSegment2)) {
         // Format: /feed/repositories/owner/repo
         owner = repoSegment1;
         repo = repoSegment2;
@@ -361,16 +356,6 @@ export function SidebarNavigation() {
                               title: "Overview",
                               icon: FileText,
                               url: `/feed/repositories/${repositoryInfo.repositoryId}`,
-                            },
-                            {
-                              title: "Analytics",
-                              icon: BarChart3,
-                              url: `/feed/repositories/${repositoryInfo.repositoryId}/analytics`,
-                            },
-                            {
-                              title: "Branches",
-                              icon: GitBranch,
-                              url: `/feed/repositories/${repositoryInfo.repositoryId}/branches`,
                             },
                             {
                               title: "Activity",
