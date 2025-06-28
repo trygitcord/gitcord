@@ -9,13 +9,11 @@ const getModels = () => {
   const User = require('@/models/user').default;
   const UserStats = require('@/models/userStats').default;
   const UserPremium = require('@/models/userPremium').default;
-  const Log = require('@/models/log').default;
 
   return {
     User,
     UserStats,
     UserPremium,
-    Log
   };
 };
 
