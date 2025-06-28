@@ -6,20 +6,23 @@ interface ShareProfileButtonProps {
   className?: string;
   variant?: "default" | "outline" | "ghost";
   size?: "default" | "sm" | "lg";
+  username?: string;
 }
 
 export const ShareProfileButton: React.FC<ShareProfileButtonProps> = ({
   className = "",
   variant = "ghost",
   size = "sm",
+  username,
 }) => {
   const [isCopied, setIsCopied] = useState(false);
 
   const getProfileUrl = () => {
-    const username = localStorage.getItem("username");
-    return username
-      ? `${window.location.origin}/user/${username}`
-      : window.location.href;
+    if (username) {
+      return `${window.location.origin}/user/${username}`;
+    }
+    // Fallback to current URL if no username provided
+    return window.location.href;
   };
 
   const handleCopy = async () => {

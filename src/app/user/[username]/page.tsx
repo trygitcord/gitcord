@@ -12,6 +12,7 @@ import {
 import GithubAnalyticsWidget from "@/components/shared/GithubAnalyticsWidget";
 import Image from "next/image";
 import ContributionGraph from "@/components/shared/ContributionGraph";
+import { ShareProfileButton } from "@/components/shared/ShareProfileButton";
 import { useGitHubUser } from "@/hooks/useGitHubQueries";
 import { useProfileByUsername } from "@/hooks/useMyApiQueries";
 import { useGithubContributions } from "@/hooks/useGithubContributions";
@@ -21,11 +22,19 @@ interface Props {
 }
 
 function formatNumber(num: number): string {
-  if (num >= 1000) {
-    const thousands = num / 1000;
-    return thousands % 1 === 0 ? `${thousands}k` : `${thousands.toFixed(1)}k`;
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + "M";
+  } else if (num >= 1000) {
+    return (num / 1000).toFixed(1) + "K";
   }
   return num.toString();
+}
+
+function ensureHttps(url: string): string {
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    return `https://${url}`;
+  }
+  return url;
 }
 
 const ProfilePage = ({ params }: Props) => {
@@ -144,15 +153,17 @@ const ProfilePage = ({ params }: Props) => {
                 "radial-gradient(circle at 100% 0%, rgba(45, 125, 70, 0.8) 0%, transparent 50%), radial-gradient(circle at 0% 100%, rgba(27, 31, 35, 0.8) 0%, transparent 50%)",
             }}
           />
+          {/* Share Profile Button */}
+          <div className="absolute top-4 left-4 z-10">
+            <ShareProfileButton username={username} />
+          </div>
           {/* View Count */}
-          {gitcordUser && (
-            <div className="absolute top-4 right-4 z-10 flex items-center gap-1 text-neutral-100">
-              <Eye className="w-4 h-4 font-semibold" />
-              <span className="text-sm font-semibold">
-                {formatNumber(gitcordUser.stats?.view_count || 0)}
-              </span>
-            </div>
-          )}
+          <div className="absolute top-4 right-4 z-10 flex items-center gap-1 text-neutral-100">
+            <Eye className="w-4 h-4 font-semibold" />
+            <span className="text-sm font-semibold">
+              {gitcordUser ? formatNumber(gitcordUser.stats?.view_count || 0) : "~"}
+            </span>
+          </div>
           {/* Profile Picture */}
           <div className="absolute left-1/2 top-full -translate-x-1/2 -translate-y-1/2 z-10">
             <div className="rounded-full w-24 h-24 border border-neutral-800 flex items-center justify-center text-2xl font-bold text-white shadow-lg overflow-hidden bg-neutral-900">
@@ -177,8 +188,9 @@ const ProfilePage = ({ params }: Props) => {
                   @{githubUser.login}
                 </div>
               </div>
-              {gitcordUser && (
-                <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1">
+                {/* Gitcord Member Badge - Show if user is registered in Gitcord */}
+                {gitcordUser && (
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
@@ -196,68 +208,98 @@ const ProfilePage = ({ params }: Props) => {
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
+                )}
 
-                  {gitcordUser.isModerator && (
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <div className="p-0.5 rounded-full text-[#ED4245] transition-colors">
-                            <Image
-                              src="/badge-4.png"
-                              alt="Moderator"
-                              width={22}
-                              height={22}
-                            />
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Moderator</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  )}
+                {/* Moderator Badge - Show if user is registered and is moderator */}
+                {gitcordUser?.isModerator && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <div className="p-0.5 rounded-full text-[#ED4245] transition-colors">
+                          <Image
+                            src="/badge-4.png"
+                            alt="Moderator"
+                            width={22}
+                            height={22}
+                          />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Moderator</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
 
-                  {gitcordUser.premium?.isPremium && (
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <div className="p-0.5 rounded-full text-[#FEE75C] transition-colors">
-                            <Image
-                              src="/badge-3.png"
-                              alt="Premium"
-                              width={22}
-                              height={22}
-                            />
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Premium</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  )}
+                {/* Premium Badge - Show if user is registered and has premium */}
+                {gitcordUser?.premium?.isPremium && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <div className="p-0.5 rounded-full text-[#FEE75C] transition-colors">
+                          <Image
+                            src="/badge-3.png"
+                            alt="Premium"
+                            width={22}
+                            height={22}
+                          />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Premium</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
 
-                  {gitcordUser.stats?.view_count > 1000 && (
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <div className="p-0.5 rounded-full transition-colors">
-                            <Image
-                              src="/badge-1.png"
-                              alt="Popular"
-                              width={22}
-                              height={22}
-                            />
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Hype!!</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  )}
-                </div>
-              )}
+                {/* Popular Badge - Show if user has high view count (registered users) or high GitHub stats (all users) */}
+                {(gitcordUser?.stats?.view_count > 1000 || 
+                  githubUser.followers > 1000 || 
+                  githubUser.public_repos > 50) && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <div className="p-0.5 rounded-full transition-colors">
+                          <Image
+                            src="/badge-1.png"
+                            alt="Popular"
+                            width={22}
+                            height={22}
+                          />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Hype!!</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+
+                {/* GitHub Verified Badge - Show for users with verified email or high activity */}
+                {(githubUser.followers > 500 || 
+                  githubUser.public_repos > 20 || 
+                  githubUser.following > 200) && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <div className="p-0.5 rounded-full text-blue-500 transition-colors">
+                          <svg
+                            className="w-5 h-5"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                          </svg>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>GitHub Verified</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+              </div>
             </div>
 
             <Separator className="bg-neutral-800" />
@@ -308,7 +350,7 @@ const ProfilePage = ({ params }: Props) => {
                 <div className="flex items-center gap-2 text-sm text-neutral-400">
                   <LinkIcon className="w-4 h-4" />
                   <a
-                    href={githubUser.blog}
+                    href={ensureHttps(githubUser.blog)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-400 hover:text-blue-300 hover:underline"

@@ -58,7 +58,7 @@ function SettingsPage() {
         )}
         <div className="flex items-center space-x-4">
           <div className="w-16 h-16 rounded-full bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center">
-            <Image
+            <Image className="rounded-full"
               src={userData.avatar_url}
               alt="User Avatar"
               width={64}
@@ -71,7 +71,7 @@ function SettingsPage() {
             </p>
             <div className="flex items-center gap-2">
               <p className="text-sm">{userData.name}</p>
-              <ShareProfileButton />
+              <ShareProfileButton username={userData.username} />
             </div>
             <p className="text-sm text-neutral-600 dark:text-neutral-400">
               {userData.email}

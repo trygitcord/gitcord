@@ -625,10 +625,9 @@ export default function AnalyticsPage() {
                     <YAxis />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: "rgba(255, 255, 255, 0.95)",
+                        backgroundColor: "rgba(8, 19, 5, 0.95)",
                         border: "none",
                         borderRadius: "8px",
-                        boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
                       }}
                     />
                     <Bar dataKey="size" fill="#5BC898" name="Size (KB)" />

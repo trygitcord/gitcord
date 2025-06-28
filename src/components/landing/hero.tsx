@@ -219,7 +219,7 @@ export const HeroHeader = () => {
         <div
           className={cn(
             "mx-auto mt-2 max-w-5xl px-6 transition-all duration-300 lg:px-12",
-            isScrolled && "bg-background/50 backdrop-blur-lg"
+            isScrolled && "bg-background/50 backdrop-blur-lg rounded-xl"
           )}
         >
           <AnimatedGroup variants={transitionVariants}>
