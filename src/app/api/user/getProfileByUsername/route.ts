@@ -28,8 +28,13 @@ export const GET = withDb(async (request: NextRequest, context: any, models: DbM
             );
         }
 
-        // Find user by username
-        const user = await models.User.findOne({ username }).lean() as UserType | null;
+        // Convert username to lowercase for case-insensitive search
+        const lowercaseUsername = username.toLowerCase();
+
+        // Find user by username (case-insensitive)
+        const user = await models.User.findOne({
+            username: { $regex: new RegExp(`^${lowercaseUsername}$`, 'i') }
+        }).lean() as UserType | null;
 
         if (!user) {
             return NextResponse.json(
