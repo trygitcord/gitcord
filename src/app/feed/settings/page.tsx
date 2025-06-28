@@ -1,7 +1,15 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { LogOut, Globe, Moon, Crown, CreditCard, Shield } from "lucide-react";
+import {
+  LogOut,
+  Globe,
+  Moon,
+  Crown,
+  CreditCard,
+  Shield,
+  Gift,
+} from "lucide-react";
 import { useUserProfile } from "@/hooks/useMyApiQueries";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
@@ -9,6 +17,7 @@ import { useTheme } from "next-themes";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { ShareProfileButton } from "@/components/shared/ShareProfileButton";
+import ReedemCode from "@/components/shared/ReedemCode";
 
 function SettingsPage() {
   useEffect(() => {
@@ -58,7 +67,8 @@ function SettingsPage() {
         )}
         <div className="flex items-center space-x-4">
           <div className="w-16 h-16 rounded-full bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center">
-            <Image className="rounded-full"
+            <Image
+              className="rounded-full"
               src={userData.avatar_url}
               alt="User Avatar"
               width={64}
@@ -131,6 +141,16 @@ function SettingsPage() {
           <select className="w-32 p-1.5 text-sm bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-md">
             <option>English</option>
           </select>
+        </div>
+      </div>
+
+      <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <Gift className="w-5 h-5 text-neutral-500" />
+            <span className="text-sm">Reedem Code</span>
+          </div>
+          <ReedemCode />
         </div>
       </div>
 

@@ -28,7 +28,6 @@ const userStatsSchema = new Schema<UserStatsType>(
     }
 );
 
-// Model zaten varsa onu kullan, yoksa yeni oluştur
 const UserStats = models.UserStats || model<UserStatsType>('UserStats', userStatsSchema);
 
 export default UserStats;
