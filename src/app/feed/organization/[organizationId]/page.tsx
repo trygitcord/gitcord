@@ -20,6 +20,7 @@ import {
   useOrganizationLanguages,
   useOrganizationActivity,
 } from "@/hooks/useGitHubQueries";
+import ProjectHealthChart from '@/components/shared/ProjectHealthChart';
 
 function timeAgo(dateString: string) {
   const now = new Date();
@@ -32,6 +33,29 @@ function timeAgo(dateString: string) {
   if (diff < 2592000) return `${Math.floor(diff / 86400)} days ago`;
   if (diff < 31536000) return `${Math.floor(diff / 2592000)} months ago`;
   return `${Math.floor(diff / 31536000)} years ago`;
+}
+
+function calculateHealthScore(repo: any) {
+  const daysSinceUpdate = (Date.now() - new Date(repo.updated_at).getTime()) / (1000 * 60 * 60 * 24);
+  let updateScore = 0;
+  if (daysSinceUpdate < 1) updateScore = 40;
+  else if (daysSinceUpdate < 7) updateScore = 35;
+  else if (daysSinceUpdate < 30) updateScore = 25;
+  else if (daysSinceUpdate < 90) updateScore = 10;
+  let commitScore = 0;
+  if (repo.commits_count >= 100) commitScore = 30;
+  else if (repo.commits_count >= 50) commitScore = 20;
+  else if (repo.commits_count >= 10) commitScore = 10;
+  let issueScore = 15;
+  if ((repo.open_issues_count || 0) > 20) issueScore = 0;
+  else if ((repo.open_issues_count || 0) > 10) issueScore = 5;
+  else if ((repo.open_issues_count || 0) > 3) issueScore = 10;
+  let activityScore = 0;
+  if (repo.last_commit_date) {
+    const daysSinceCommit = (Date.now() - new Date(repo.last_commit_date).getTime()) / (1000 * 60 * 60 * 24);
+    if (daysSinceCommit < 30) activityScore = 15;
+  }
+  return Math.min(100, updateScore + commitScore + issueScore + activityScore);
 }
 
 function Page() {
@@ -192,7 +216,8 @@ function Page() {
                       href={`/feed/organization/${orgData.login}/repository/${repo.name}`}
                       className="group h-full"
                     >
-                      <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-4 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors h-full">
+                      <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-4 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors h-full relative">
+                        <span className="absolute top-15 right-4 z-10"><ProjectHealthChart score={calculateHealthScore(repo)} size={40} /></span>
                         <div className="flex flex-col h-full">
                           <div className="flex items-start justify-between mb-2">
                             <h3 className="text-neutral-800 dark:text-neutral-200 font-medium group-hover:text-[#5BC898] transition-colors">
