@@ -280,8 +280,8 @@ const ProfilePage = ({ params }: Props) => {
                 )}
 
                 {/* GitHub Verified Badge - Show for users with verified email or high activity */}
-                {(githubUser.followers > 50 ||
-                  githubUser.public_repos > 15 ) && (
+                {(githubUser.followers >= 50 ||
+                  githubUser.public_repos >= 15 ) && (
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
