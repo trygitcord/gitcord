@@ -17,6 +17,7 @@ import {
   Monitor,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 interface FooterLink {
   title: string;
@@ -152,7 +153,7 @@ export function Footer() {
                 <ul className="text-muted-foreground mt-6 space-y-4 text-sm">
                   {section.links.map((link) => (
                     <li key={link.title}>
-                      <a
+                      <Link
                         href={link.href}
                         className="hover:text-foreground inline-flex items-center gap-2 transition-all duration-300 hover:translate-x-1"
                         target="_blank"
@@ -166,7 +167,7 @@ export function Footer() {
                           <link.icon className="size-4 flex-shrink-0" />
                         )}
                         {link.title}
-                      </a>
+                      </Link>
                     </li>
                   ))}
                 </ul>
@@ -187,29 +188,29 @@ export function Footer() {
           <div className="flex items-center gap-6">
             <ThemeToggle />
             <div className="flex items-center gap-4 text-xs text-muted-foreground">
-              <a
+              <Link
                 href="/privacy"
                 className="hover:text-foreground transition-colors"
                 target="_blank"
               >
                 Privacy
-              </a>
+              </Link>
               <span>•</span>
-              <a
+              <Link
                 href="/terms"
                 className="hover:text-foreground transition-colors"
                 target="_blank"
               >
                 Terms
-              </a>
+              </Link>
               <span>•</span>
-              <a
+              <Link
                 href="https://status.gitcord.pro"
                 className="hover:text-foreground transition-colors"
                 target="_blank"
               >
                 Status
-              </a>
+              </Link>
             </div>
           </div>
         </div>

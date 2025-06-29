@@ -68,14 +68,14 @@ export function LastCommits({
               >
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2 min-w-0">
-                    <a
+                    <Link
                       href={`https://github.com/${owner}/${repo}/commit/${commit.sha}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-xs font-mono bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 px-2 py-1 rounded hover:underline hover:text-[#5BC898] transition-colors shrink-0"
                     >
                       #{commit.sha.slice(0, 7)}
-                    </a>
+                    </Link>
                     <div className="flex items-center gap-2 min-w-0">
                       {commit.author ? (
                         <>
@@ -186,14 +186,14 @@ export function LastCommits({
                   <span className="text-xs text-neutral-300 dark:text-neutral-600">
                     •
                   </span>
-                  <a
+                  <Link
                     href={`https://github.com/${owner}/${repo}/commit/${commit.sha}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-xs font-mono cursor-pointer bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 px-2 py-0.5 rounded hover:bg-[#5BC898] hover:text-white transition-colors"
                   >
                     #{commit.sha.slice(0, 7)}
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

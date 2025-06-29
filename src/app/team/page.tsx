@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 // Team member data
 const teamMembers = [
@@ -187,7 +188,7 @@ function TeamMemberCard({
               {/* Social links - always at bottom */}
               <div className="flex items-center gap-3 mt-auto">
                 {member.github && (
-                  <a
+                  <Link
                     href={member.github}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -195,10 +196,10 @@ function TeamMemberCard({
                     aria-label={`${member.name}'s GitHub`}
                   >
                     <Github className="w-4 h-4 text-neutral-600 dark:text-neutral-400" />
-                  </a>
+                  </Link>
                 )}
                 {member.twitter && (
-                  <a
+                  <Link
                     href={member.twitter}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -206,10 +207,10 @@ function TeamMemberCard({
                     aria-label={`${member.name}'s Twitter`}
                   >
                     <Twitter className="w-4 h-4 text-neutral-600 dark:text-neutral-400" />
-                  </a>
+                  </Link>
                 )}
                 {member.linkedin && (
-                  <a
+                  <Link
                     href={member.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -217,7 +218,7 @@ function TeamMemberCard({
                     aria-label={`${member.name}'s LinkedIn`}
                   >
                     <Linkedin className="w-4 h-4 text-neutral-600 dark:text-neutral-400" />
-                  </a>
+                  </Link>
                 )}
               </div>
             </>
@@ -324,13 +325,13 @@ function page() {
               We're always looking for talented individuals who share our
               passion for building great developer tools.
             </p>
-            <a
+            <Link
               href="mailto:careers@gitcord.pro"
               className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#4CFFAF] to-[#3ABA81] text-white font-medium rounded-xl hover:shadow-lg hover:shadow-green-500/25 transition-all duration-300 hover:scale-105"
             >
               <Mail className="w-5 h-5" />
               Get in Touch
-            </a>
+            </Link>
           </motion.div>
         </div>
       </div>

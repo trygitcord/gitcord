@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import { useUserEvents } from "@/hooks/useGitHubQueries";
 import { useUserProfile } from "@/hooks/useMyApiQueries";
+import Link from "next/link";
 
 enum RecentActivityType {
   Issue = "IssuesEvent",
@@ -81,14 +82,14 @@ function renderActivityCard(event: any) {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-2">
             {commitUrl && (
-              <a
+              <Link
                 href={commitUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs font-mono bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 px-2 py-1 rounded hover:underline hover:text-[#5BC898] transition-colors"
               >
                 #{commitShortSha}
-              </a>
+              </Link>
             )}
             <div className="flex items-center gap-2">
               <Image
@@ -106,14 +107,14 @@ function renderActivityCard(event: any) {
               has been commit to
             </span>
             <span className="text-neutral-600 dark:text-neutral-300 text-sm">
-              <a
+              <Link
                 href={`https://github.com/${event.repo.name}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:underline hover:text-[#5BC898] transition-colors"
               >
                 {event.repo.name}
-              </a>
+              </Link>
             </span>
           </div>
           <span className="text-neutral-400 text-xs ml-2">
@@ -130,14 +131,14 @@ function renderActivityCard(event: any) {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-2">
             {prUrl && (
-              <a
+              <Link
                 href={prUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs font-mono bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 px-2 py-1 rounded hover:underline hover:text-[#5BC898] transition-colors"
               >
                 {prNumber}
-              </a>
+              </Link>
             )}
             <div className="flex items-center gap-2">
               <Image
@@ -155,14 +156,14 @@ function renderActivityCard(event: any) {
               opened a pull request in
             </span>
             <span className="text-neutral-600 dark:text-neutral-300 text-sm">
-              <a
+              <Link
                 href={`https://github.com/${event.repo.name}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:underline hover:text-[#5BC898] transition-colors"
               >
                 {event.repo.name}
-              </a>
+              </Link>
             </span>
           </div>
           <span className="text-neutral-400 text-xs ml-2">
@@ -179,14 +180,14 @@ function renderActivityCard(event: any) {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-2">
             {issueUrl && (
-              <a
+              <Link
                 href={issueUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs font-mono bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 px-2 py-1 rounded hover:underline hover:text-[#5BC898] transition-colors"
               >
                 {issueNumber}
-              </a>
+              </Link>
             )}
             <div className="flex items-center gap-2">
               <Image
@@ -204,14 +205,14 @@ function renderActivityCard(event: any) {
               opened an issue in
             </span>
             <span className="text-neutral-600 dark:text-neutral-300 text-sm">
-              <a
+              <Link
                 href={`https://github.com/${event.repo.name}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:underline hover:text-[#5BC898] transition-colors"
               >
                 {event.repo.name}
-              </a>
+              </Link>
             </span>
           </div>
           <span className="text-neutral-400 text-xs ml-2">

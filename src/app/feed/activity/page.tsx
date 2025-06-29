@@ -6,6 +6,7 @@ import Image from "next/image";
 import { GitCommit, GitPullRequest, AlertCircle } from "lucide-react";
 import { useUserProfile } from "@/hooks/useMyApiQueries";
 import { useUserEvents } from "@/hooks/useGitHubQueries";
+import Link from "next/link";
 
 enum RecentActivityType {
   Issue = "IssuesEvent",
@@ -24,7 +25,7 @@ function timeAgo(dateString: string) {
 }
 
 function renderActivityCard(event: any, expanded: boolean) {
-  let icon = null;
+  let icon: React.ReactElement | null = null;
   let borderColor = "";
   switch (event.type) {
     case RecentActivityType.Commit:
@@ -52,7 +53,7 @@ function renderActivityCard(event: any, expanded: boolean) {
             {event.type === RecentActivityType.Commit && (
               <div className="flex flex-wrap gap-1">
                 {event.payload?.commits?.slice(0, 3).map((commit: any) => (
-                  <a
+                  <Link
                     key={commit.sha}
                     href={`https://github.com/${event.repo.name}/commit/${commit.sha}`}
                     target="_blank"
@@ -60,7 +61,7 @@ function renderActivityCard(event: any, expanded: boolean) {
                     className="text-xs font-mono bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 px-2 py-1 rounded hover:underline hover:text-[#5BC898] transition-colors"
                   >
                     #{commit.sha.slice(0, 7)}
-                  </a>
+                  </Link>
                 ))}
                 {event.payload?.commits?.length > 3 && (
                   <span className="text-xs font-mono bg-neutral-200 dark:bg-neutral-700 text-neutral-500 px-2 py-1 rounded">
@@ -70,24 +71,24 @@ function renderActivityCard(event: any, expanded: boolean) {
               </div>
             )}
             {event.type === RecentActivityType.PullRequest && (
-              <a
+              <Link
                 href={`https://github.com/${event.repo.name}/pull/${event.payload?.pull_request?.number}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs font-mono bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 px-2 py-1 rounded hover:underline hover:text-[#5BC898] transition-colors"
               >
                 #{event.payload?.pull_request?.number}
-              </a>
+              </Link>
             )}
             {event.type === RecentActivityType.Issue && (
-              <a
+              <Link
                 href={`https://github.com/${event.repo.name}/issues/${event.payload?.issue?.number}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs font-mono bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 px-2 py-1 rounded hover:underline hover:text-[#5BC898] transition-colors"
               >
                 #{event.payload?.issue?.number}
-              </a>
+              </Link>
             )}
             <div className="flex items-center gap-2">
               <Image
@@ -105,14 +106,14 @@ function renderActivityCard(event: any, expanded: boolean) {
               {event.payload?.action} {event.type.toLowerCase()} in
             </span>
             <span className="text-neutral-600 dark:text-neutral-300 text-sm">
-              <a
+              <Link
                 href={`https://github.com/${event.repo.name}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:underline hover:text-[#5BC898] transition-colors"
               >
                 {event.repo.name}
-              </a>
+              </Link>
             </span>
           </div>
           <span className="text-neutral-400 text-xs ml-2">
@@ -127,14 +128,14 @@ function renderActivityCard(event: any, expanded: boolean) {
                 <ul className="list-disc pl-4">
                   {event.payload?.commits?.map((commit: any) => (
                     <li key={commit.sha}>
-                      <a
+                      <Link
                         href={`https://github.com/${event.repo.name}/commit/${commit.sha}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="hover:text-[#5BC898]"
                       >
                         {commit.message}
-                      </a>
+                      </Link>
                     </li>
                   ))}
                 </ul>
