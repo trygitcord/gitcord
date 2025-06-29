@@ -258,9 +258,8 @@ const ProfilePage = ({ params }: Props) => {
                 )}
 
                 {/* Popular Badge - Show if user has high view count (registered users) or high GitHub stats (all users) */}
-                {(gitcordUser?.stats?.view_count > 1000 ||
-                  githubUser.followers > 1000 ||
-                  githubUser.public_repos > 50) && (
+                {(gitcordUser?.stats?.view_count > 200 
+                  ) && (
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
@@ -281,9 +280,8 @@ const ProfilePage = ({ params }: Props) => {
                 )}
 
                 {/* GitHub Verified Badge - Show for users with verified email or high activity */}
-                {(githubUser.followers > 500 ||
-                  githubUser.public_repos > 20 ||
-                  githubUser.following > 200) && (
+                {(githubUser.followers > 50 ||
+                  githubUser.public_repos > 15 ) && (
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
