@@ -188,7 +188,7 @@ const ProfilePage = ({ params }: Props) => {
                   @{githubUser.login}
                 </div>
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center">
                 {/* Gitcord Member Badge - Show if user is registered in Gitcord */}
                 {gitcordUser && (
                   <TooltipProvider>
@@ -196,7 +196,7 @@ const ProfilePage = ({ params }: Props) => {
                       <TooltipTrigger>
                         <div className="p-0.5 rounded-full text-neutral-950 transition-colors">
                           <Image
-                            src="/badge-2.png"
+                            src="/gitcordMember.svg"
                             alt="Gitcord Logo"
                             width={22}
                             height={22}
@@ -217,7 +217,7 @@ const ProfilePage = ({ params }: Props) => {
                       <TooltipTrigger>
                         <div className="p-0.5 rounded-full text-[#ED4245] transition-colors">
                           <Image
-                            src="/badge-4.png"
+                            src="/gitcordModerator.svg"
                             alt="Moderator"
                             width={22}
                             height={22}
@@ -238,7 +238,7 @@ const ProfilePage = ({ params }: Props) => {
                       <TooltipTrigger>
                         <div className="p-0.5 rounded-full text-[#FEE75C] transition-colors">
                           <Image
-                            src="/badge-3.png"
+                            src="/gitcordPremium.svg"
                             alt="Premium"
                             width={22}
                             height={22}
@@ -261,7 +261,7 @@ const ProfilePage = ({ params }: Props) => {
                       <TooltipTrigger>
                         <div className="p-0.5 rounded-full transition-colors">
                           <Image
-                            src="/badge-1.png"
+                            src="/gitcordHype.svg"
                             alt="Popular"
                             width={22}
                             height={22}
