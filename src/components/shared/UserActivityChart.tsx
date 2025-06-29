@@ -24,13 +24,13 @@ function UserActivityChart() {
     userEventsError
   )
     return (
-      <div className="w-full h-72 sm:h-96">
-        <Skeleton className="w-full h-72 sm:h-96" />
+      <div className="w-full h-full">
+        <Skeleton className="w-full h-full" />
       </div>
     );
 
   return (
-    <div className="w-full h-72 sm:h-96 bg-neutral-50 rounded-xl px-3 sm:px-6 py-3 sm:py-4 dark:bg-neutral-900">
+    <div className="w-full h-full bg-neutral-50 rounded-xl px-3 sm:px-6 py-3 sm:py-4 dark:bg-neutral-900">
       <div className="h-full flex flex-col">
         <div className="flex items-center gap-2 sm:gap-4">
           <div className="bg-neutral-100 rounded-lg p-1.5 sm:p-2 dark:bg-neutral-800">

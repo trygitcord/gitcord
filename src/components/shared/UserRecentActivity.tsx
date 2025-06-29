@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import { useUserEvents } from "@/hooks/useGitHubQueries";
 import { useUserProfile } from "@/hooks/useMyApiQueries";
+import { useIsMobile } from "@/hooks/use-mobile";
 import Link from "next/link";
 
 enum RecentActivityType {
@@ -31,15 +32,15 @@ function UserRecentActivity() {
     userEventsError
   )
     return (
-      <div className="w-full h-96">
-        <Skeleton className="w-full h-96" />
+      <div className="w-full h-full">
+        <Skeleton className="w-full h-full" />
       </div>
     );
 
   return (
-    <div className="w-full h-96 bg-neutral-50 rounded-xl px-4 sm:px-6 py-4 dark:bg-neutral-900">
+    <div className="w-full h-full bg-neutral-50 rounded-xl px-4 sm:px-6 py-4 dark:bg-neutral-900">
       <div>
-        <div className="flex items-center gap-3 sm:gap-4">
+        <div className="flex items-center w-full h-full gap-3 sm:gap-4">
           <div className="bg-neutral-100 rounded-lg p-2 dark:bg-neutral-800">
             <FileChartColumn className="text-neutral-800 w-5 h-5 sm:w-6 sm:h-6 dark:text-neutral-300" />
           </div>
@@ -227,7 +228,30 @@ function renderActivityCard(event: any) {
 }
 
 function MessageCard({ events }: { events: any[] }) {
-  const shownEvents = events.slice(0, 5);
+  const isMobile = useIsMobile();
+
+  const getEventCount = () => {
+    if (typeof window === "undefined") return 5;
+    const width = window.innerWidth;
+    if (width < 640) return 3;
+    if (width < 768) return 4;
+    if (width < 1024) return 5;
+    if (width < 1280) return 6;
+    if (width < 1536) return 8;
+    if (width < 1920) return 10;
+    return 12;
+  };
+
+  const [eventCount, setEventCount] = useState(5);
+
+  useEffect(() => {
+    const updateEventCount = () => setEventCount(getEventCount());
+    updateEventCount();
+    window.addEventListener("resize", updateEventCount);
+    return () => window.removeEventListener("resize", updateEventCount);
+  }, []);
+
+  const shownEvents = events.slice(0, eventCount);
 
   return (
     <div className="space-y-4 mt-4">
