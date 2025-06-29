@@ -48,14 +48,10 @@ function Page() {
   const params = useParams();
   const repositoryId = params.repositoryId as string;
 
-  // Debug: Log the repositoryId to understand its format
-  console.log("repositoryId:", repositoryId);
-
   // Since repositoryId might be URL encoded, decode it first
   const decodedRepositoryId = repositoryId
     ? decodeURIComponent(repositoryId)
     : "";
-  console.log("decodedRepositoryId:", decodedRepositoryId);
 
   // Get user profile to determine owner if not provided
   const { data: userProfile, isLoading: profileLoading } = useUserProfile();

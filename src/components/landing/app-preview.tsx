@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useTheme } from "next-themes";
+import Image from "next/image";
 
 const previewImages = [
   {
@@ -69,7 +70,7 @@ export default function AppPreview() {
     if (!mounted) return;
 
     // Load first image to get exact dimensions
-    const img = new Image();
+    const img = new window.Image();
     img.onload = () => {
       setContainerStyle({
         aspectRatio: `${img.width}/${img.height}`,
@@ -173,11 +174,13 @@ export default function AppPreview() {
                           : "opacity-0 scale-105"
                       }`}
                     >
-                      <img
+                      <Image
                         ref={index === 0 ? imgRef : null}
                         src={getCurrentImageSrc(image)}
                         alt={image.title}
                         className="w-full h-full object-contain"
+                        width={2000}
+                        height={2000}
                         loading={index === 0 ? "eager" : "lazy"}
                       />
                     </div>

@@ -16,6 +16,7 @@ import { ShareProfileButton } from "@/components/shared/ShareProfileButton";
 import { useGitHubUser } from "@/hooks/useGitHubQueries";
 import { useProfileByUsername } from "@/hooks/useMyApiQueries";
 import { useGithubContributions } from "@/hooks/useGithubContributions";
+import Link from "next/link";
 
 interface Props {
   params: Promise<{ username: string }>;
@@ -31,7 +32,7 @@ function formatNumber(num: number): string {
 }
 
 function ensureHttps(url: string): string {
-  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+  if (!url.startsWith("http://") && !url.startsWith("https://")) {
     return `https://${url}`;
   }
   return url;
@@ -161,16 +162,20 @@ const ProfilePage = ({ params }: Props) => {
           <div className="absolute top-4 right-4 z-10 flex items-center gap-1 text-neutral-100">
             <Eye className="w-4 h-4 font-semibold" />
             <span className="text-sm font-semibold">
-              {gitcordUser ? formatNumber(gitcordUser.stats?.view_count || 0) : "~"}
+              {gitcordUser
+                ? formatNumber(gitcordUser.stats?.view_count || 0)
+                : "~"}
             </span>
           </div>
           {/* Profile Picture */}
           <div className="absolute left-1/2 top-full -translate-x-1/2 -translate-y-1/2 z-10">
             <div className="rounded-full w-24 h-24 border border-neutral-800 flex items-center justify-center text-2xl font-bold text-white shadow-lg overflow-hidden bg-neutral-900">
-              <img
+              <Image
                 src={githubUser.avatar_url}
                 alt={githubUser.name}
                 className="w-full h-full object-cover"
+                width={500}
+                height={500}
               />
             </div>
           </div>
@@ -253,8 +258,8 @@ const ProfilePage = ({ params }: Props) => {
                 )}
 
                 {/* Popular Badge - Show if user has high view count (registered users) or high GitHub stats (all users) */}
-                {(gitcordUser?.stats?.view_count > 1000 || 
-                  githubUser.followers > 1000 || 
+                {(gitcordUser?.stats?.view_count > 1000 ||
+                  githubUser.followers > 1000 ||
                   githubUser.public_repos > 50) && (
                   <TooltipProvider>
                     <Tooltip>
@@ -276,8 +281,8 @@ const ProfilePage = ({ params }: Props) => {
                 )}
 
                 {/* GitHub Verified Badge - Show for users with verified email or high activity */}
-                {(githubUser.followers > 500 || 
-                  githubUser.public_repos > 20 || 
+                {(githubUser.followers > 500 ||
+                  githubUser.public_repos > 20 ||
                   githubUser.following > 200) && (
                   <TooltipProvider>
                     <Tooltip>
@@ -289,7 +294,7 @@ const ProfilePage = ({ params }: Props) => {
                             viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg"
                           >
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                           </svg>
                         </div>
                       </TooltipTrigger>
@@ -349,14 +354,14 @@ const ProfilePage = ({ params }: Props) => {
               {githubUser.blog && (
                 <div className="flex items-center gap-2 text-sm text-neutral-400">
                   <LinkIcon className="w-4 h-4" />
-                  <a
+                  <Link
                     href={ensureHttps(githubUser.blog)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-400 hover:text-blue-300 hover:underline"
                   >
                     {githubUser.blog}
-                  </a>
+                  </Link>
                 </div>
               )}
               <div className="flex items-center gap-2 text-sm text-neutral-400">

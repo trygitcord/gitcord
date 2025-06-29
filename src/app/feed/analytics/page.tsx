@@ -55,6 +55,7 @@ import {
   useUserOrganizations,
 } from "@/hooks/useGitHubQueries";
 import { useUserProfile } from "@/hooks/useMyApiQueries";
+import Image from "next/image";
 
 // Time formatting functions
 function timeAgo(dateString: string) {
@@ -316,7 +317,7 @@ export default function AnalyticsPage() {
               <div className="absolute inset-1 bg-white dark:bg-neutral-900 rounded-full"></div>
               <div className="absolute inset-0 flex items-center justify-center">
                 {profile?.avatar_url ? (
-                  <img
+                  <Image
                     src={profile.avatar_url}
                     alt={profile.name || profile.username || "User"}
                     className="w-20 h-20 rounded-full border-2 border-white dark:border-neutral-900"
