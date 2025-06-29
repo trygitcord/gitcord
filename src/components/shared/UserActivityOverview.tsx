@@ -48,14 +48,14 @@ function UserActivityOverview() {
   )
     return (
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full h-full">
-        <Skeleton className="w-full h-32 sm:h-36" />
-        <Skeleton className="w-full h-32 sm:h-36" />
-        <Skeleton className="w-full h-32 sm:h-36" />
+        <Skeleton className="w-full h-full" />
+        <Skeleton className="w-full h-full" />
+        <Skeleton className="w-full h-full" />
       </div>
     );
 
   return (
-    <div className="w-full h-auto sm:h-36">
+    <div className="w-full h-full">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full h-full">
         {/* Push Events */}
         <Card

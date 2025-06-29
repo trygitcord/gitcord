@@ -11,7 +11,7 @@ function UserProfileOverview() {
   const { data: userData, isLoading, error } = useUserProfile();
 
   if (isLoading || !userData || error) {
-    return <Skeleton className="w-full h-48" />;
+    return <Skeleton className="w-full h-full" />;
   }
 
   if (error || !userData) {
@@ -25,7 +25,7 @@ function UserProfileOverview() {
   }
 
   return (
-    <div className="w-full bg-neutral-50 rounded-xl dark:bg-neutral-900">
+    <div className="w-full h-full bg-neutral-50 rounded-xl dark:bg-neutral-900">
       <div className="p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
           {/* Avatar Section */}

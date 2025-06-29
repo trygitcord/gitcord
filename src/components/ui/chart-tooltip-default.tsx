@@ -7,6 +7,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const chartConfig = {
   pullRequests: {
@@ -24,6 +25,8 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function ChartTooltipDefault({ data }: { data: any }) {
+  const isMobile = useIsMobile();
+
   const chartData =
     data && data.length > 0
       ? (() => {
@@ -81,27 +84,31 @@ export function ChartTooltipDefault({ data }: { data: any }) {
       : null;
 
   return (
-    <div className="w-full h-full min-h-[300px]">
+    <div className="w-full h-full min-h-[120px] sm:min-h-[160px] lg:min-h-[200px]">
       <ChartContainer config={chartConfig} className="w-full h-full">
         <BarChart
           accessibilityLayer
           data={chartData || []}
           margin={{
-            top: 20,
-            right: 30,
-            left: 20,
-            bottom: 5,
+            top: 2,
+            right: 2,
+            left: 2,
+            bottom: 35,
           }}
         >
           <XAxis
             dataKey="date"
             tickLine={false}
-            tickMargin={10}
+            tickMargin={8}
             axisLine={false}
+            tick={{ fontSize: 10, fill: "#6b7280" }}
+            height={30}
+            interval={0}
             tickFormatter={(value) => {
-              return new Date(value).toLocaleDateString("en-US", {
-                weekday: "short",
-              });
+              const date = new Date(value);
+              return isMobile
+                ? date.toLocaleDateString("en-US", { weekday: "narrow" })
+                : date.toLocaleDateString("en-US", { weekday: "short" });
             }}
           />
           <Bar
