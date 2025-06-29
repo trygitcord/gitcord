@@ -126,7 +126,7 @@ export default function AppPreview() {
   }
 
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8 mt-24">
+    <section id="preview" className="py-20 px-4 sm:px-6 lg:px-8 mt-24">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="mb-3 text-3xl font-semibold md:mb-4 lg:mb-6 lg:text-4xl text-center">

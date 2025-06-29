@@ -62,46 +62,6 @@ const shopItems = [
     description: "Beautiful sunflower decoration for summer vibes",
     rarity: "common",
   },
-  {
-    id: "galaxy-bundle",
-    title: "Galaxy Bundle",
-    price: 1500,
-    discount: 12,
-    image: "/premium.png",
-    previewImage: "/light-preview-3.png",
-    description: "Stunning galaxy effects with shooting stars",
-    rarity: "legendary",
-  },
-  {
-    id: "ocean-waves",
-    title: "Ocean Waves",
-    price: 850,
-    discount: 5,
-    image: "/fire.png",
-    previewImage: "/light-preview-4.png",
-    description: "Calming ocean waves animation for your profile",
-    rarity: "rare",
-  },
-  {
-    id: "cherry-blossom",
-    title: "Cherry Blossom",
-    price: 350,
-    discount: 10,
-    image: "/badge-1.png",
-    previewImage: "/light-preview-5.png",
-    description: "Falling cherry blossom petals effect",
-    rarity: "epic",
-  },
-  {
-    id: "northern-lights",
-    title: "Northern Lights",
-    price: 999,
-    discount: 15,
-    image: "/badge-2.png",
-    previewImage: "/preview1.png",
-    description: "Aurora borealis animated background",
-    rarity: "legendary",
-  },
 ];
 
 // Modal component
@@ -109,7 +69,7 @@ const ItemModal = ({ item, isOpen, onClose }: any) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0e2d23]/95 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0e2d23]/95">
       <div className="relative w-full max-w-2xl bg-gradient-to-br from-[#19382e] via-[#145c43]/80 to-[#19382e] rounded-3xl p-8 shadow-2xl border border-[#145c43]/40">
         <button
           onClick={onClose}
@@ -185,26 +145,26 @@ function ShopPage() {
 
   return (
     <div className="h-screen w-full relative overflow-hidden">
-      {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
         {[...Array(20)].map((_, i) => (
           <AnimatedSparkle key={i} delay={i * 200} />
         ))}
       </div>
-
-      <div className="relative z-10 h-full flex flex-col px-4 py-8">
+      <div className="relative z-10 h-full flex flex-col py-2.5">
         {/* Header */}
-        <div className="w-full flex flex-col items-center justify-center text-center mb-10">
-          <h1 className="text-5xl font-extrabold mb-2 tracking-tight bg-gradient-to-r from-[#5BC898] via-[#145c43] to-[#19382e] bg-clip-text text-transparent drop-shadow-lg relative inline-block mx-auto">
-            Shop
-            <span className="block h-1 w-16 mx-auto mt-3 rounded-full bg-gradient-to-r from-[#5BC898] via-[#145c43] to-[#19382e] opacity-80"></span>
-          </h1>
-          <p className="text-neutral-500 dark:text-neutral-400 text-lg">Get awesome items to customize your profile and stand out in the community!</p>
+        <div className="flex items-center justify-start mb-8">
+          <div>
+            <h1 className="text-2xl font-bold">Shop</h1>
+            <p className="text-neutral-500 dark:text-neutral-400 text-sm">
+              Get awesome items to customize your profile and stand out in the
+              community!
+            </p>
+          </div>
         </div>
 
         {/* Shop Grid - 2 rows, 4 columns */}
         <div>
-          <div className="h-full grid grid-cols-2 md:grid-cols-4 grid-rows-2 gap-4 lg:gap-6">
+          <div className="h-full grid grid-cols-2 md:grid-cols-4 grid-rows-2 gap-4 lg:gap-6 px-4">
             {shopItems.map((item, index) => (
               <div
                 key={item.id}
@@ -218,7 +178,9 @@ function ShopPage() {
                   {/* Item image container */}
                   <div className="relative mb-3 mx-auto w-20 h-20 lg:w-24 lg:h-24 flex items-center justify-center">
                     {/* Gri soru işareti */}
-                    <span className="text-6xl lg:text-7xl font-extrabold text-gray-400 select-none">?</span>
+                    <span className="text-6xl lg:text-7xl font-extrabold text-gray-400 select-none">
+                      ?
+                    </span>
                   </div>
 
                   {/* Item details */}
@@ -250,7 +212,6 @@ function ShopPage() {
           </div>
         </div>
       </div>
-
       {/* Modal */}
       <ItemModal
         item={selectedItem}
