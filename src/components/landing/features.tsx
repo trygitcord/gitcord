@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 export function Features() {
   return (
-    <div>
+    <div id="features">
       <div className="flex flex-col items-center justify-center max-w-[750px] mx-auto py-16">
         <h2 className="mb-3 text-3xl font-semibold md:mb-4 lg:mb-6 lg:text-4xl text-center">
           Powerful Features for Developers

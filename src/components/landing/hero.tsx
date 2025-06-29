@@ -61,7 +61,7 @@ export function HeroSection() {
               <div className="text-center sm:mx-auto lg:mr-auto lg:mt-0">
                 <AnimatedGroup variants={transitionVariants}>
                   <Link
-                    href="#link"
+                    href="#features"
                     className="hover:bg-background dark:hover:border-t-border bg-muted group mx-auto flex w-fit items-center gap-4 rounded-full border p-1 pl-4 shadow-md shadow-black/5 transition-all duration-300 dark:border-t-white/5 dark:shadow-zinc-950"
                   >
                     <span className="text-sm">
@@ -193,10 +193,10 @@ export function HeroSection() {
 }
 
 const menuItems = [
-  { name: "Features", href: "#link" },
-  { name: "Solution", href: "#link" },
-  { name: "Pricing", href: "#link" },
-  { name: "About", href: "#link" },
+  { name: "Features", href: "#features" },
+  { name: "Preview", href: "#preview" },
+  { name: "FAQ", href: "#faq" },
+  { name: "Team", href: "/team" },
 ];
 
 export const HeroHeader = () => {
