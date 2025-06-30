@@ -14,7 +14,7 @@ export default function TermsOfService() {
       <HeroHeader />
 
       {/* Content */}
-      <div className="max-w-4xl mx-auto px-6 py-16">
+      <div className="max-w-4xl mx-auto px-6 py-24">
         {/* Header */}
         <div className="mb-16 pt-16">
           <h1 className="text-3xl font-bold text-foreground mb-6">
