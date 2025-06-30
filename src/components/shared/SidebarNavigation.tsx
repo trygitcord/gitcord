@@ -19,6 +19,7 @@ import {
   GitBranch,
   Activity,
   ShoppingCart,
+  Shield,
 } from "lucide-react";
 
 import { usePathname, useRouter } from "next/navigation";
@@ -450,6 +451,35 @@ export function SidebarNavigation() {
                 </SidebarMenuItem>
               );
             })}
+
+            {/* Moderator Menu Item - Only visible for moderators */}
+            {profile?.isModerator && (
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link
+                    href="/feed/moderator"
+                    className={`flex items-center gap-2 w-full p-2 rounded-md transition-all ${
+                      pathname === "/feed/moderator"
+                        ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border border-neutral-100 dark:border-neutral-800"
+                        : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                    }`}
+                  >
+                    <Shield
+                      className={`${
+                        pathname === "/feed/moderator" ? "text-[#5BC898]" : ""
+                      }`}
+                    />
+                    <span
+                      className={`${
+                        pathname === "/feed/moderator" ? "text-[#5BC898]" : ""
+                      }`}
+                    >
+                      Moderator
+                    </span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            )}
           </SidebarMenu>
         </SidebarGroupContent>
       </SidebarContent>
