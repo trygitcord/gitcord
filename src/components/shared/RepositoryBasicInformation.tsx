@@ -1,4 +1,4 @@
-import { Clock } from "lucide-react";
+import { Clock, RefreshCw } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -7,6 +7,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function timeAgo(dateString: string) {
   const now = new Date();
@@ -31,6 +32,10 @@ interface RepositoryBasicInformationProps {
   watchers: number;
   lastUpdate: string;
   commitGraph: any[];
+  isLoadingCommitActivity?: boolean;
+  isFetchingCommitActivity?: boolean;
+  activityError?: any;
+  refetchActivity?: () => void;
 }
 
 export const RepositoryBasicInformation = ({
@@ -43,7 +48,17 @@ export const RepositoryBasicInformation = ({
   watchers,
   lastUpdate,
   commitGraph,
+  isLoadingCommitActivity = false,
+  isFetchingCommitActivity = false,
+  activityError,
+  refetchActivity,
 }: RepositoryBasicInformationProps) => {
+  // Check if activity data is computing
+  const isActivityComputing =
+    activityError &&
+    (activityError.message?.includes("computed") ||
+      activityError.response?.status === 202);
+
   return (
     <div className="w-full bg-neutral-50 dark:bg-neutral-900 mt-4 rounded-xl p-4.5">
       <div className="flex items-center justify-between w-full">
@@ -74,36 +89,78 @@ export const RepositoryBasicInformation = ({
           </div>
         </div>
         <div className="flex flex-col items-end gap-1">
-          <span className="text-xs text-neutral-500 dark:text-neutral-400">
-            Commit Activity
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-neutral-500 dark:text-neutral-400">
+              Commit Activity
+            </span>
+            {isFetchingCommitActivity && (
+              <RefreshCw className="w-3 h-3 text-neutral-400 animate-spin" />
+            )}
+          </div>
           <div className="w-[250px] h-[80px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={commitGraph}>
-                <XAxis dataKey="date" hide={true} />
-                <YAxis hide={true} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "rgba(0, 0, 0, 0.8)",
-                    border: "none",
-                    borderRadius: "4px",
-                    fontSize: "12px",
-                  }}
-                  labelStyle={{ color: "#fff" }}
-                  formatter={(value: number) => [`${value} commits`, "Commits"]}
-                  labelFormatter={(label) =>
-                    new Date(label).toLocaleDateString()
-                  }
-                />
-                <Line
-                  type="monotone"
-                  dataKey="commits"
-                  stroke="#5BC898"
-                  strokeWidth={2}
-                  dot={false}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            {isLoadingCommitActivity ||
+            (isFetchingCommitActivity && !commitGraph?.length) ? (
+              <div className="w-full h-full bg-neutral-100 dark:bg-neutral-800 rounded border border-neutral-200 dark:border-neutral-700 p-2 flex items-end justify-between gap-1">
+                {Array.from({ length: 20 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="bg-neutral-300 dark:bg-neutral-600 rounded-sm animate-pulse"
+                    style={{
+                      width: "8px",
+                      height: `${Math.random() * 40 + 10}px`,
+                      animationDelay: `${i * 50}ms`,
+                      animationDuration: "1.5s",
+                    }}
+                  />
+                ))}
+              </div>
+            ) : isActivityComputing ? (
+              <div className="w-full h-full bg-neutral-100 dark:bg-neutral-800 rounded border border-neutral-200 dark:border-neutral-700 flex flex-col items-center justify-center gap-1">
+                <RefreshCw className="w-4 h-4 text-neutral-500 animate-spin" />
+                <p className="text-xs text-neutral-500 font-medium">
+                  Computing
+                </p>
+                {refetchActivity && (
+                  <button
+                    onClick={refetchActivity}
+                    className="text-xs px-2 py-1 bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600 rounded text-neutral-600 dark:text-neutral-400 transition-colors"
+                    disabled={isFetchingCommitActivity}
+                  >
+                    Retry
+                  </button>
+                )}
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={commitGraph}>
+                  <XAxis dataKey="date" hide={true} />
+                  <YAxis hide={true} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "rgba(0, 0, 0, 0.8)",
+                      border: "none",
+                      borderRadius: "4px",
+                      fontSize: "12px",
+                    }}
+                    labelStyle={{ color: "#fff" }}
+                    formatter={(value: number) => [
+                      `${value} commits`,
+                      "Commits",
+                    ]}
+                    labelFormatter={(label) =>
+                      new Date(label).toLocaleDateString()
+                    }
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="commits"
+                    stroke="#5BC898"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
       </div>

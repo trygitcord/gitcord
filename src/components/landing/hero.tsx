@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import Link from "next/link";
-import { ArrowRight, ChevronRight, Menu, X } from "lucide-react";
+import { ArrowRight, Github, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AnimatedGroup } from "@/components/ui/animated-group";
 import { cn } from "@/lib/utils";
@@ -11,8 +11,8 @@ import LoginButton from "@/components/landing/login-btn";
 import SearchUserInput from "@/components/shared/SearchUserInput";
 import HeroImage from "@/assets/hero.png";
 import HeroImageLight from "@/assets/herolight.png";
-import LightHeroImage from "@/assets/herolight.png";
 import { signIn } from "next-auth/react";
+import { annotate } from "rough-notation";
 
 const transitionVariants = {
   item: {
@@ -35,6 +35,25 @@ const transitionVariants = {
 } as const;
 
 export function HeroSection() {
+  const smarterRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    if (smarterRef.current) {
+      const annotation = annotate(smarterRef.current, {
+        type: "underline",
+        color: "#42DB96",
+        strokeWidth: 4,
+        animationDuration: 1000,
+        padding: -5,
+        multiline: false,
+      });
+
+      setTimeout(() => {
+        annotation.show();
+      }, 1500);
+    }
+  }, []);
+
   const handleGithubLogin = () => {
     signIn("github", { callbackUrl: "/feed/dashboard" });
   };
@@ -61,8 +80,8 @@ export function HeroSection() {
               <div className="text-center sm:mx-auto lg:mr-auto lg:mt-0">
                 <AnimatedGroup variants={transitionVariants}>
                   <Link
-                    href="#features"
-                    className="hover:bg-background dark:hover:border-t-border bg-muted group mx-auto flex w-fit items-center gap-4 rounded-full border p-1 pl-4 shadow-md shadow-black/5 transition-all duration-300 dark:border-t-white/5 dark:shadow-zinc-950"
+                    href="/#preview"
+                    className="mt-6 hover:bg-background dark:hover:border-t-border bg-muted group mx-auto flex w-fit items-center gap-4 rounded-full border p-1 pl-3.5 shadow-md shadow-black/5 transition-all duration-300 dark:border-t-white/5 dark:shadow-zinc-950"
                   >
                     <span className="text-sm">
                       All your data, one dashboard
@@ -81,18 +100,12 @@ export function HeroSection() {
                     </div>
                   </Link>
 
-                  <h1 className="mt-8 max-w-4xl font-semibold mx-auto text-balance text-6xl md:text-7xl lg:mt-16 xl:text-[5.25rem]">
-                    Track{" "}
-                    <span className="bg-gradient-to-r from-[#4CFFAF] to-[#3ABA81] bg-clip-text text-transparent">
-                      smarter
-                    </span>{" "}
-                    Code better.
+                  <h1 className="mt-10 max-w-4xl font-semibold mx-auto text-balance text-7xl md:text-7xl lg:mt-10 xl:text-[5.25rem]">
+                    Track smarter Code <span ref={smarterRef}>better.</span>
                   </h1>
-                  <p className="mx-auto mt-8 max-w-2xl text-balance text-lg text-neutral-400">
-                    Gitcord makes it effortless to monitor and analyze all your
-                    GitHub repositories. Gain deep insights with real-time
-                    stats, issue patterns, and contributor activity — all from a
-                    single, unified dashboard.
+                  <p className="mx-auto mt-8 max-w-2xl text-balance text-neutral-400">
+                    Gitcord helps you track and analyze your GitHub repos with
+                    real-time stats and insights in one simple dashboard.
                   </p>
                 </AnimatedGroup>
 
@@ -115,35 +128,32 @@ export function HeroSection() {
 
                   {/* Action Buttons */}
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <Button
+                    <button
                       onClick={handleGithubLogin}
-                      size="lg"
-                      className="cursor-pointer group relative rounded-xl px-6 py-2.5 text-sm font-medium bg-gradient-to-r from-[#4CFFAF] to-[#3ABA81] text-neutral-950 dark:text-neutral-800 hover:shadow-lg hover:shadow-green-500/25 dark:hover:shadow-green-500/25 transition-all duration-300 hover:scale-105 border-0 flex items-center gap-2"
+                      className="group relative flex items-center gap-3 px-6 py-3 cursor-pointer
+                      bg-gradient-to-r from-[#42DB96] to-[#3BC284] text-white rounded-2xl font-semibold text-sm
+                      shadow-sm 
+                      hover:shadow-md hover:-translate-y-0.5 hover:scale-[1.02]
+                      active:scale-[0.98] active:translate-y-0
+                      transition-all duration-200 ease-out
+                      focus:outline-none focus:ring-2 focus:ring-[#42DB96]/50 focus:ring-offset-2 focus:ring-offset-background"
                     >
-                      Get Started Free
+                      <span className="font-medium">Get Started Free</span>
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-200" />
-                    </Button>
-                    <Button
-                      asChild
-                      size="lg"
-                      variant="outline"
-                      className="group rounded-xl px-6 py-2.5 text-sm font-medium border border-neutral-300 bg-white/80 hover:bg-neutral-50 text-neutral-700 hover:text-neutral-900 dark:border-neutral-800/50 dark:bg-neutral-900/50 dark:hover:bg-neutral-800/50 dark:text-neutral-300 dark:hover:text-white backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-neutral-400 dark:hover:border-neutral-700"
+                    </button>
+
+                    <Link
+                      href="https://github.com/lumi-work/gitcord"
+                      target="_blank"
+                      className="group relative flex items-center gap-2 px-6 py-3 bg-white/90 text-neutral-900 border border-neutral-300/50 font-medium text-sm
+                      hover:bg-neutral-50/90 hover:border-neutral-400/50 hover:shadow-xl hover:shadow-neutral-300/25 hover:-translate-y-0.5
+                      dark:bg-neutral-900/80 dark:text-white dark:border-neutral-600/50 dark:hover:bg-neutral-700/80 dark:hover:border-neutral-500/50 dark:hover:shadow-neutral-900/25
+                      transition-all duration-300 ease-out backdrop-blur-sm rounded-2xl
+                      focus:outline-none focus:ring-2 focus:ring-neutral-500/50 focus:ring-offset-2 focus:ring-offset-transparent"
                     >
-                      <Link
-                        href="https://github.com/lumi-work/gitcord"
-                        target="_blank"
-                        className="flex items-center gap-2"
-                      >
-                        <svg
-                          className="w-4 h-4"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-                        </svg>
-                        GitHub
-                      </Link>
-                    </Button>
+                      <Github className="w-4 h-4" />
+                      <span>GitHub</span>
+                    </Link>
                   </div>
                 </AnimatedGroup>
               </div>
@@ -162,7 +172,7 @@ export function HeroSection() {
                 ...transitionVariants,
               }}
             >
-              <div className="relative -mr-56 mt-6 overflow-hidden px-2 sm:mr-0 sm:mt-8 md:mt-12">
+              <div className="relative -mr-56 mt-8 overflow-hidden px-2 sm:mr-0 sm:mt-8 md:mt-16">
                 <div
                   aria-hidden
                   className="bg-gradient-to-b to-background absolute inset-0 z-10 from-transparent from-35%"
@@ -193,9 +203,9 @@ export function HeroSection() {
 }
 
 const menuItems = [
-  { name: "Features", href: "#features" },
-  { name: "Preview", href: "#preview" },
-  { name: "FAQ", href: "#faq" },
+  { name: "Features", href: "/#features" },
+  { name: "Preview", href: "/#preview" },
+  { name: "FAQ", href: "/#faq" },
   { name: "Team", href: "/team" },
 ];
 
@@ -219,7 +229,7 @@ export const HeroHeader = () => {
         <div
           className={cn(
             "mx-auto mt-2 max-w-5xl px-6 transition-all duration-300 lg:px-12",
-            isScrolled && "bg-background/50 backdrop-blur-lg rounded-xl"
+            isScrolled && "bg-background/50 rounded-2xl backdrop-blur-lg"
           )}
         >
           <AnimatedGroup variants={transitionVariants}>

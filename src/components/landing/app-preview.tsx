@@ -143,15 +143,15 @@ export default function AppPreview() {
           {/* Main Preview Container */}
           <div className="relative rounded-3xl">
             {/* Device Frame */}
-            <div className="relative bg-gray-50 dark:bg-neutral-900 rounded-2xl p-4 border border-gray-200 dark:border-neutral-700">
+            <div className="relative bg-gray-50 dark:bg-background rounded-2xl p-4 border border-gray-200 dark:border-neutral-900">
               {/* Browser Bar */}
-              <div className="flex items-center gap-2 mb-4 bg-gray-200 dark:bg-neutral-800 rounded-t-lg p-3">
+              <div className="flex items-center gap-2 mb-4 bg-gray-200 dark:bg-neutral-900 rounded-lg p-3">
                 <div className="flex gap-2">
                   <div className="w-3 h-3 bg-red-500 rounded-full opacity-80 hover:opacity-100 transition-opacity cursor-pointer"></div>
                   <div className="w-3 h-3 bg-yellow-500 rounded-full opacity-80 hover:opacity-100 transition-opacity cursor-pointer"></div>
                   <div className="w-3 h-3 bg-green-500 rounded-full opacity-80 hover:opacity-100 transition-opacity cursor-pointer"></div>
                 </div>
-                <div className="flex-1 bg-white dark:bg-neutral-700 rounded-md px-3 py-1 text-sm text-gray-600 dark:text-neutral-300 border border-gray-300 dark:border-neutral-600 mx-4">
+                <div className="flex-1 bg-white dark:bg-neutral-900 rounded-md px-3 py-1 text-sm text-gray-600 dark:text-neutral-200 border border-gray-300 dark:border-neutral-800 mx-4">
                   https://gitcord.dev/
                   {previewImages[currentIndex].title
                     .toLowerCase()

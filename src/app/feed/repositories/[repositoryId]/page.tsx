@@ -98,6 +98,8 @@ function Page() {
     data: activityData,
     isLoading: activityLoading,
     error: activityError,
+    isFetching: activityFetching,
+    refetch: refetchActivity,
   } = useRepositoryCommitActivity(owner, repo);
 
   const {
@@ -153,11 +155,10 @@ function Page() {
 
   // Show loading state
   const isLoading =
-    profileLoading ||
-    repoLoading ||
-    languagesLoading ||
-    activityLoading ||
-    commitsLoading;
+    profileLoading || repoLoading || languagesLoading || commitsLoading;
+
+  // Show commit activity loading separately
+  const isActivityLoading = activityLoading;
 
   if (isLoading) {
     return (
@@ -229,6 +230,10 @@ function Page() {
             watchers={repoData.watchers_count}
             lastUpdate={repoData.updated_at}
             commitGraph={chartData}
+            isLoadingCommitActivity={isActivityLoading}
+            isFetchingCommitActivity={activityFetching}
+            activityError={activityError}
+            refetchActivity={refetchActivity}
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full mt-4">

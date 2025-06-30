@@ -318,7 +318,7 @@ function page() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
-            className="text-center bg-neutral-50 dark:bg-neutral-900 rounded-3xl p-12 mb-24"
+            className="text-center rounded-3xl p-12 mb-24"
           >
             <h2 className="text-3xl font-bold mb-4">Want to Join Us?</h2>
             <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
@@ -326,7 +326,7 @@ function page() {
               passion for building great developer tools.
             </p>
             <Link
-              href="mailto:careers@gitcord.pro"
+              href="mailto:works.lumi@gmail.com"
               className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#4CFFAF] to-[#3ABA81] text-white font-medium rounded-xl hover:shadow-lg hover:shadow-green-500/25 transition-all duration-300 hover:scale-105"
             >
               <Mail className="w-5 h-5" />

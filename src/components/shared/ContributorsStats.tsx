@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useRepositoryContributors } from "@/hooks/useGitHubQueries";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -11,99 +10,83 @@ interface ContributorsStatsProps {
 }
 
 export function ContributorsStats({ owner, repo }: ContributorsStatsProps) {
-  const [attemptCount, setAttemptCount] = useState(0);
   const { data, isLoading, error, isFetching, isError, refetch } =
     useRepositoryContributors(owner, repo);
 
-  // GitHub stats API'si veriyi hesaplamaya başladığında retry yapmak için
-  useEffect(() => {
-    if (error && error.message?.includes("computed") && attemptCount < 10) {
-      const timer = setTimeout(() => {
-        setAttemptCount((prev) => prev + 1);
-        refetch();
-      }, (attemptCount + 1) * 3000); // 3s, 6s, 9s, 12s... artan intervals
-
-      return () => clearTimeout(timer);
-    }
-  }, [error, attemptCount, refetch]);
-
-  // Reset attempt count when component unmounts or props change
-  useEffect(() => {
-    setAttemptCount(0);
-  }, [owner, repo]);
+  // Debug logs
+  console.log("ContributorsStats Debug:", {
+    owner,
+    repo,
+    data,
+    isLoading,
+    error,
+    isFetching,
+    isError,
+    dataType: typeof data,
+    dataLength: Array.isArray(data) ? data.length : "not array",
+  });
 
   if (isLoading || (isFetching && !data)) {
     return (
-      <div className="bg-neutral-900 rounded-xl p-4 h-[230px]">
-        <h3 className="text-sm font-medium mb-4">
-          Top Contributors
-          {isFetching && !isLoading && (
-            <span className="ml-2 text-xs text-neutral-400">(Updating...)</span>
-          )}
-        </h3>
+      <div className="bg-gradient-to-br from-neutral-500/10 to-neutral-500/10 rounded-xl p-6 h-[230px]">
+        <div className="flex items-center gap-2 mb-4">
+          <RefreshCw className="w-4 h-4 text-neutral-400 animate-spin" />
+          <h3 className="text-sm font-medium text-neutral-400">
+            Loading Contributors
+          </h3>
+        </div>
         <div className="space-y-3">
           {[1, 2, 3].map((i: number) => (
-            <div key={i} className="flex items-start justify-between">
-              <div className="flex items-start gap-2">
-                <Skeleton className="w-8 h-8 rounded-full" />
-                <div className="space-y-2">
-                  <Skeleton className="w-24 h-4" />
-                  <Skeleton className="w-16 h-3" />
-                </div>
+            <div key={i} className="flex items-center gap-3">
+              <Skeleton className="w-10 h-10 rounded-full bg-neutral-500/20" />
+              <div className="space-y-2 flex-1">
+                <Skeleton className="w-32 h-4 bg-neutral-500/20" />
+                <Skeleton className="w-20 h-3 bg-neutral-500/20" />
               </div>
-              <Skeleton className="w-20 h-2" />
             </div>
           ))}
-        </div>
-        <div className="text-xs text-neutral-500 text-center mt-4">
-          {isLoading
-            ? "Loading contributors data... This might take a few moments."
-            : isFetching
-            ? "Refreshing data..."
-            : null}
         </div>
       </div>
     );
   }
 
-  // GitHub stats hesaplama durumu - daha kullanıcı dostu mesajlar
+  // GitHub stats hesaplama durumu - boş object da computing anlamına gelebilir
   if (
-    error &&
-    (error.message?.includes("computed") || error.response?.status === 202)
+    (error &&
+      (error.message?.includes("computed") ||
+        error.response?.status === 202)) ||
+    (data &&
+      typeof data === "object" &&
+      !Array.isArray(data) &&
+      Object.keys(data).length === 0)
   ) {
     return (
-      <div className="bg-neutral-900 rounded-xl p-4 h-[230px] flex flex-col items-center justify-center gap-3">
-        <div className="flex items-center gap-2">
-          <RefreshCw className="w-6 h-6 text-blue-400 animate-spin" />
-          <p className="text-blue-400 text-center font-medium">
-            Computing Contributors Data
-          </p>
-        </div>
-        <p className="text-xs text-neutral-400 text-center leading-relaxed">
-          GitHub is calculating contributor statistics for this repository.
-          <br />
-          This process can take 1-2 minutes for large repositories.
-        </p>
-        <div className="text-xs text-neutral-500 text-center">
-          Attempt {attemptCount + 1} of 10
+      <div className="bg-neutral-100 dark:bg-neutral-800 rounded-xl p-6 h-[230px] border border-neutral-200 dark:border-neutral-700 flex flex-col items-center justify-center gap-4">
+        <div className="flex items-center gap-3">
+          <RefreshCw className="w-8 h-8 text-neutral-500 animate-spin" />
+          <div>
+            <p className="text-neutral-600 dark:text-neutral-400 font-semibold">
+              Computing Stats
+            </p>
+            <p className="text-neutral-500 dark:text-neutral-500 text-xs">
+              Please wait...
+            </p>
+          </div>
         </div>
         <button
-          onClick={() => {
-            setAttemptCount(0);
-            refetch();
-          }}
-          className="mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-xs font-medium transition-colors flex items-center gap-2"
+          onClick={() => refetch()}
+          className="px-6 py-2 bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600 rounded-lg text-sm font-medium text-neutral-700 dark:text-neutral-300 transition-all duration-200 flex items-center gap-2"
           disabled={isFetching}
         >
           {isFetching ? (
             <>
-              <RefreshCw className="w-3 h-3 animate-spin" />
+              <RefreshCw className="w-4 h-4 animate-spin" />
               Checking...
             </>
           ) : (
             <>
-              <RefreshCw className="w-3 h-3" />
-              Check Again
+              <RefreshCw className="w-4 h-4" />
+              Try Again
             </>
           )}
         </button>

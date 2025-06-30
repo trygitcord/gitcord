@@ -18,25 +18,34 @@ interface FaqSectionProps extends React.HTMLAttributes<HTMLElement> {
 const FaqSection = React.forwardRef<HTMLElement, FaqSectionProps>(
   ({ className, title, description, items, ...props }, ref) => {
     return (
-      <section ref={ref} className={cn("py-16 w-full", className)} {...props}>
+      <section
+        ref={ref}
+        className={cn(
+          "py-8 md:py-12 lg:py-16 w-full px-4 sm:px-6 lg:px-8",
+          className
+        )}
+        {...props}
+      >
         <div>
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="max-w-2xl mx-auto text-center mb-12"
+            className="max-w-2xl mx-auto text-center mb-8 md:mb-10 lg:mb-12"
           >
-            <h2 className="text-3xl font-semibold mb-3 bg-gradient-to-r from-foreground via-foreground/80 to-foreground bg-clip-text text-transparent">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-3 bg-gradient-to-r from-foreground via-foreground/80 to-foreground bg-clip-text text-transparent">
               {title}
             </h2>
             {description && (
-              <p className="text-sm text-muted-foreground">{description}</p>
+              <p className="text-sm sm:text-base text-muted-foreground">
+                {description}
+              </p>
             )}
           </motion.div>
 
           {/* FAQ Items */}
-          <div className="max-w-2xl mx-auto space-y-2">
+          <div className="max-w-2xl mx-auto space-y-2 md:space-y-3">
             {items.map((item, index) => (
               <FaqItem
                 key={index}
@@ -83,11 +92,11 @@ const FaqItem = React.forwardRef<
       <Button
         variant="ghost"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full cursor-pointer px-6 py-4 h-auto justify-between hover:bg-transparent"
+        className="w-full cursor-pointer px-4 sm:px-6 py-3 sm:py-4 h-auto justify-between hover:bg-transparent"
       >
         <h3
           className={cn(
-            "text-base font-medium transition-colors duration-200 text-left",
+            "text-sm sm:text-base font-medium transition-colors duration-200 text-left",
             "text-foreground/70",
             isOpen && "text-foreground"
           )}
@@ -101,7 +110,7 @@ const FaqItem = React.forwardRef<
           }}
           transition={{ duration: 0.2 }}
           className={cn(
-            "p-0.5 rounded-full flex-shrink-0",
+            "p-0.5 rounded-full flex-shrink-0 ml-2",
             "transition-colors duration-200",
             isOpen ? "text-primary" : "text-muted-foreground"
           )}
@@ -124,12 +133,12 @@ const FaqItem = React.forwardRef<
               transition: { duration: 0.2, ease: "easeIn" },
             }}
           >
-            <div className="px-6 pb-4 pt-2">
+            <div className="px-4 sm:px-6 pb-3 sm:pb-4 pt-1 sm:pt-2">
               <motion.p
                 initial={{ y: -10, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -10, opacity: 0 }}
-                className="text-sm text-muted-foreground leading-relaxed"
+                className="text-sm sm:text-base text-muted-foreground leading-relaxed"
               >
                 {answer}
               </motion.p>

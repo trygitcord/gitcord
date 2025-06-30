@@ -1,11 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
-import { githubFetcher } from '@/lib/fetcher';
+import { useQuery } from "@tanstack/react-query";
+import { githubFetcher } from "@/lib/fetcher";
 
 // User Repositories Query
 export const useUserRepositories = (username: string | null) => {
   return useQuery({
-    queryKey: ['user-repos', username],
-    queryFn: async () => githubFetcher(`/users/${username}/repos?per_page=100&sort=updated`),
+    queryKey: ["user-repos", username],
+    queryFn: async () =>
+      githubFetcher(`/users/${username}/repos?per_page=100&sort=updated`),
     staleTime: 5 * 60 * 1000, // 5 minutes
     enabled: !!username,
   });
@@ -14,7 +15,7 @@ export const useUserRepositories = (username: string | null) => {
 // User Organizations Query
 export const useUserOrganizations = (username: string | null) => {
   return useQuery({
-    queryKey: ['user-orgs', username],
+    queryKey: ["user-orgs", username],
     queryFn: async () => githubFetcher(`/users/${username}/orgs`),
     staleTime: 15 * 60 * 1000, // 15 minutes
     enabled: !!username,
@@ -24,8 +25,9 @@ export const useUserOrganizations = (username: string | null) => {
 // User Events Query
 export const useUserEvents = (username: string | null) => {
   return useQuery({
-    queryKey: ['user-events', username],
-    queryFn: async () => githubFetcher(`/users/${username}/events?per_page=100`),
+    queryKey: ["user-events", username],
+    queryFn: async () =>
+      githubFetcher(`/users/${username}/events?per_page=100`),
     staleTime: 2 * 60 * 1000, // 2 minutes
     enabled: !!username,
   });
@@ -34,7 +36,7 @@ export const useUserEvents = (username: string | null) => {
 // Repository Query
 export const useRepository = (owner: string | null, repo: string | null) => {
   return useQuery({
-    queryKey: ['repository', owner, repo],
+    queryKey: ["repository", owner, repo],
     queryFn: async () => githubFetcher(`/repos/${owner}/${repo}`),
     staleTime: 10 * 60 * 1000, // 10 minutes
     enabled: !!(owner && repo),
@@ -42,9 +44,12 @@ export const useRepository = (owner: string | null, repo: string | null) => {
 };
 
 // Repository Languages Query
-export const useRepositoryLanguages = (owner: string | null, repo: string | null) => {
+export const useRepositoryLanguages = (
+  owner: string | null,
+  repo: string | null
+) => {
   return useQuery({
-    queryKey: ['repo-languages', owner, repo],
+    queryKey: ["repo-languages", owner, repo],
     queryFn: async () => githubFetcher(`/repos/${owner}/${repo}/languages`),
     staleTime: 30 * 60 * 1000, // 30 minutes
     enabled: !!(owner && repo),
@@ -52,16 +57,22 @@ export const useRepositoryLanguages = (owner: string | null, repo: string | null
 };
 
 // Repository Commits Query
-export const useRepositoryCommits = (owner: string | null, repo: string | null) => {
+export const useRepositoryCommits = (
+  owner: string | null,
+  repo: string | null
+) => {
   return useQuery({
-    queryKey: ['repo-commits', owner, repo],
+    queryKey: ["repo-commits", owner, repo],
     queryFn: async () => {
       let allCommits: any[] = [];
       let page = 1;
       let hasMore = true;
 
-      while (hasMore && allCommits.length < 1000) { // Limit to prevent infinite requests
-        const commits = await githubFetcher(`/repos/${owner}/${repo}/commits?per_page=100&page=${page}`);
+      while (hasMore && allCommits.length < 1000) {
+        // Limit to prevent infinite requests
+        const commits = await githubFetcher(
+          `/repos/${owner}/${repo}/commits?per_page=100&page=${page}`
+        );
 
         allCommits = [...allCommits, ...commits];
 
@@ -80,99 +91,150 @@ export const useRepositoryCommits = (owner: string | null, repo: string | null) 
 };
 
 // Repository Commit Activity Query
-export const useRepositoryCommitActivity = (owner: string | null, repo: string | null) => {
+export const useRepositoryCommitActivity = (
+  owner: string | null,
+  repo: string | null
+) => {
   return useQuery({
-    queryKey: ['repo-commit-activity', owner, repo],
+    queryKey: ["repo-commit-activity", owner, repo],
     queryFn: async () => {
-      const response = await githubFetcher(`/repos/${owner}/${repo}/stats/commit_activity`);
+      const response = await githubFetcher(
+        `/repos/${owner}/${repo}/stats/commit_activity`
+      );
+
+      console.log("Commit Activity API Raw Response:", response);
+
+      // GitHub stats API returns 202 when computing, empty array when no data
       if (Array.isArray(response) && response.length === 0) {
-        throw new Error('Commit activity data is still being computed');
+        console.log("Commit Activity: Empty array received - likely computing");
+        throw new Error("Commit activity data is still being computed");
+      }
+
+      // GitHub stats döndürdüğü response tipini kontrol et
+      if (
+        !response ||
+        (typeof response === "object" &&
+          !Array.isArray(response) &&
+          Object.keys(response).length === 0)
+      ) {
+        console.log(
+          "Commit Activity: Empty object received - likely computing"
+        );
+        throw new Error("Commit activity data is still being computed");
       }
 
       return response;
     },
-    staleTime: 60 * 60 * 1000, // 1 hour
+    staleTime: 5 * 60 * 1000, // 5 minutes (reduced from 1 hour)
     enabled: !!(owner && repo),
     retry: (failureCount, error: any) => {
       if (error?.response?.status === 202) {
-        return failureCount < 5;
+        return failureCount < 8; // Increased from 5
       }
 
-      if (error?.message?.includes('computed')) {
-        return failureCount < 3;
+      if (error?.message?.includes("computed")) {
+        return failureCount < 5; // Increased from 3
       }
-      return failureCount < 2;
+      return failureCount < 3; // Increased from 2
     },
     retryDelay: (attemptIndex) => {
       if (attemptIndex < 2) {
-        return 1000; // 1 saniye
+        return 2000; // Increased from 1000ms
       }
-      return Math.min(3000 * attemptIndex, 15000);
+      return Math.min(4000 * attemptIndex, 20000); // 4s, 8s, 12s... max 20s
     },
-    gcTime: 60 * 60 * 1000, // 1 hour cache
+    gcTime: 30 * 60 * 1000, // 30 minutes cache (reduced from 1 hour)
+    networkMode: "online",
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true, // Changed from false to true!
     refetchOnReconnect: true,
   });
 };
 
 // Repository Contributors Query
-export const useRepositoryContributors = (owner: string | null, repo: string | null) => {
+export const useRepositoryContributors = (
+  owner: string | null,
+  repo: string | null
+) => {
   return useQuery({
-    queryKey: ['repo-contributors', owner, repo],
+    queryKey: ["repo-contributors", owner, repo],
     queryFn: async () => {
-      const response = await githubFetcher(`/repos/${owner}/${repo}/stats/contributors`);
+      const response = await githubFetcher(
+        `/repos/${owner}/${repo}/stats/contributors`
+      );
 
+      console.log("Contributors API Raw Response:", response);
 
+      // GitHub API döndürdüğü response tipini kontrol et
+      if (
+        !response ||
+        (typeof response === "object" &&
+          !Array.isArray(response) &&
+          Object.keys(response).length === 0)
+      ) {
+        console.log("Contributors: Empty object received - likely computing");
+        throw new Error("Contributors data is still being computed");
+      }
+
+      // GitHub stats API returns 202 when computing, empty array when no data
       if (Array.isArray(response) && response.length === 0) {
-        throw new Error('Contributors data is still being computed');
+        // This might be legitimate "no contributors" rather than "still computing"
+        // Let's return the empty array and let the component handle it
+        console.log("Contributors: Empty array received");
+        return response;
       }
 
       return response;
     },
-    staleTime: 15 * 60 * 1000, // 15 minutes
+    staleTime: 5 * 60 * 1000, // 5 minutes (reduced from 15)
     enabled: !!(owner && repo),
     retry: (failureCount, error: any) => {
-
       if (error?.response?.status === 202) {
-        return failureCount < 5;
+        return failureCount < 8; // Increased from 5
       }
 
-      if (error?.message?.includes('computed')) {
-        return failureCount < 3;
+      if (error?.message?.includes("computed")) {
+        return failureCount < 5; // Increased from 3
       }
-      return failureCount < 2;
+      return failureCount < 3; // Increased from 2
     },
     retryDelay: (attemptIndex) => {
-
       if (attemptIndex < 2) {
-        return 1000;
+        return 2000; // Increased from 1000ms
       }
-      return Math.min(3000 * attemptIndex, 15000); // 3s, 6s, 9s... max 15s
+      return Math.min(4000 * attemptIndex, 20000); // 4s, 8s, 12s... max 20s
     },
-    gcTime: 60 * 60 * 1000, // 1 hour cache
-    networkMode: 'online',
+    gcTime: 30 * 60 * 1000, // 30 minutes cache (reduced from 1 hour)
+    networkMode: "online",
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true, // Changed from false to true!
     refetchOnReconnect: true,
   });
 };
 
 // Repository Issues Query
-export const useRepositoryIssues = (owner: string | null, repo: string | null) => {
+export const useRepositoryIssues = (
+  owner: string | null,
+  repo: string | null
+) => {
   return useQuery({
-    queryKey: ['repo-issues', owner, repo],
-    queryFn: async () => githubFetcher(`/repos/${owner}/${repo}/issues?state=all&per_page=100`),
+    queryKey: ["repo-issues", owner, repo],
+    queryFn: async () =>
+      githubFetcher(`/repos/${owner}/${repo}/issues?state=all&per_page=100`),
     staleTime: 5 * 60 * 1000, // 5 minutes
     enabled: !!(owner && repo),
   });
 };
 
 // Repository Pull Requests Query
-export const useRepositoryPulls = (owner: string | null, repo: string | null) => {
+export const useRepositoryPulls = (
+  owner: string | null,
+  repo: string | null
+) => {
   return useQuery({
-    queryKey: ['repo-pulls', owner, repo],
-    queryFn: async () => githubFetcher(`/repos/${owner}/${repo}/pulls?state=all&per_page=100`),
+    queryKey: ["repo-pulls", owner, repo],
+    queryFn: async () =>
+      githubFetcher(`/repos/${owner}/${repo}/pulls?state=all&per_page=100`),
     staleTime: 5 * 60 * 1000, // 5 minutes
     enabled: !!(owner && repo),
   });
@@ -181,7 +243,7 @@ export const useRepositoryPulls = (owner: string | null, repo: string | null) =>
 // Organization Query
 export const useOrganization = (org: string | null) => {
   return useQuery({
-    queryKey: ['organization', org],
+    queryKey: ["organization", org],
     queryFn: async () => {
       try {
         return await githubFetcher(`/orgs/${org}`);
@@ -200,8 +262,9 @@ export const useOrganization = (org: string | null) => {
 // Organization Repositories Query
 export const useOrganizationRepositories = (org: string | null) => {
   return useQuery({
-    queryKey: ['org-repos', org],
-    queryFn: async () => githubFetcher(`/orgs/${org}/repos?per_page=100&type=all`),
+    queryKey: ["org-repos", org],
+    queryFn: async () =>
+      githubFetcher(`/orgs/${org}/repos?per_page=100&type=all`),
     staleTime: 10 * 60 * 1000, // 10 minutes
     enabled: !!org,
   });
@@ -210,7 +273,7 @@ export const useOrganizationRepositories = (org: string | null) => {
 // Organization Members Query
 export const useOrganizationMembers = (org: string | null) => {
   return useQuery({
-    queryKey: ['org-members', org],
+    queryKey: ["org-members", org],
     queryFn: async () => githubFetcher(`/orgs/${org}/members?per_page=100`),
     staleTime: 15 * 60 * 1000, // 15 minutes
     enabled: !!org,
@@ -220,15 +283,19 @@ export const useOrganizationMembers = (org: string | null) => {
 // Organization Activity Query
 export const useOrganizationActivity = (org: string | null) => {
   return useQuery({
-    queryKey: ['org-activity', org],
+    queryKey: ["org-activity", org],
     queryFn: async () => {
       // Get all repositories for the organization
-      const repos = await githubFetcher(`/orgs/${org}/repos?per_page=100&type=all`);
+      const repos = await githubFetcher(
+        `/orgs/${org}/repos?per_page=100&type=all`
+      );
 
       // Fetch commit activity for each repository
       const activityPromises = repos.map(async (repo: any) => {
         try {
-          const response = await githubFetcher(`/repos/${org}/${repo.name}/stats/commit_activity`);
+          const response = await githubFetcher(
+            `/repos/${org}/${repo.name}/stats/commit_activity`
+          );
           return response;
         } catch (error) {
           console.warn(`Could not fetch activity for ${repo.name}:`, error);
@@ -239,21 +306,26 @@ export const useOrganizationActivity = (org: string | null) => {
       const activitiesResults = await Promise.all(activityPromises);
 
       // Combine activities from all repositories
-      const combinedActivities = activitiesResults.reduce((acc: any[], curr: any[]) => {
-        if (!Array.isArray(curr)) return acc;
+      const combinedActivities = activitiesResults.reduce(
+        (acc: any[], curr: any[]) => {
+          if (!Array.isArray(curr)) return acc;
 
-        curr.forEach((week: any) => {
-          const existingWeek = acc.find(w => w.week === week.week);
-          if (existingWeek) {
-            existingWeek.total += week.total;
-            existingWeek.days = existingWeek.days.map((day: number, idx: number) => day + (week.days[idx] || 0));
-          } else {
-            acc.push({ ...week });
-          }
-        });
+          curr.forEach((week: any) => {
+            const existingWeek = acc.find((w) => w.week === week.week);
+            if (existingWeek) {
+              existingWeek.total += week.total;
+              existingWeek.days = existingWeek.days.map(
+                (day: number, idx: number) => day + (week.days[idx] || 0)
+              );
+            } else {
+              acc.push({ ...week });
+            }
+          });
 
-        return acc;
-      }, []);
+          return acc;
+        },
+        []
+      );
 
       // Sort by week
       return combinedActivities.sort((a: any, b: any) => a.week - b.week);
@@ -274,15 +346,19 @@ export const useOrganizationActivity = (org: string | null) => {
 // Organization Languages Query
 export const useOrganizationLanguages = (org: string | null) => {
   return useQuery({
-    queryKey: ['org-languages', org],
+    queryKey: ["org-languages", org],
     queryFn: async () => {
       // Get all repositories for the organization
-      const repos = await githubFetcher(`/orgs/${org}/repos?per_page=100&type=all`);
+      const repos = await githubFetcher(
+        `/orgs/${org}/repos?per_page=100&type=all`
+      );
 
       // Fetch languages for each repository
       const languagesPromises = repos.map(async (repo: any) => {
         try {
-          const languages = await githubFetcher(`/repos/${org}/${repo.name}/languages`);
+          const languages = await githubFetcher(
+            `/repos/${org}/${repo.name}/languages`
+          );
           return languages;
         } catch (error) {
           console.warn(`Could not fetch languages for ${repo.name}:`, error);
@@ -293,12 +369,15 @@ export const useOrganizationLanguages = (org: string | null) => {
       const languagesResults = await Promise.all(languagesPromises);
 
       // Combine languages from all repositories
-      const combinedLanguages = languagesResults.reduce((acc: { [key: string]: number }, curr: { [key: string]: number }) => {
-        Object.entries(curr).forEach(([lang, bytes]) => {
-          acc[lang] = (acc[lang] || 0) + bytes;
-        });
-        return acc;
-      }, {});
+      const combinedLanguages = languagesResults.reduce(
+        (acc: { [key: string]: number }, curr: { [key: string]: number }) => {
+          Object.entries(curr).forEach(([lang, bytes]) => {
+            acc[lang] = (acc[lang] || 0) + bytes;
+          });
+          return acc;
+        },
+        {}
+      );
 
       // Sort languages by total bytes and return as array
       return Object.entries(combinedLanguages)
@@ -316,8 +395,9 @@ export const useOrganizationLanguages = (org: string | null) => {
 // Private Repositories Query
 export const usePrivateRepositories = () => {
   return useQuery({
-    queryKey: ['private-repos'],
-    queryFn: async () => githubFetcher(`/user/repos?visibility=all&per_page=100`),
+    queryKey: ["private-repos"],
+    queryFn: async () =>
+      githubFetcher(`/user/repos?visibility=all&per_page=100`),
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
 };
@@ -325,7 +405,7 @@ export const usePrivateRepositories = () => {
 // GitHub User Query
 export const useGitHubUser = (username: string | null) => {
   return useQuery({
-    queryKey: ['github-user', username],
+    queryKey: ["github-user", username],
     queryFn: async () => {
       try {
         return await githubFetcher(`/users/${username}`);
