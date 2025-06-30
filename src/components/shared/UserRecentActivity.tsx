@@ -40,18 +40,26 @@ function UserRecentActivity() {
   return (
     <div className="w-full h-full bg-neutral-50 rounded-xl px-4 sm:px-6 py-4 dark:bg-neutral-900">
       <div>
-        <div className="flex items-center w-full h-full gap-3 sm:gap-4">
-          <div className="bg-neutral-100 rounded-lg p-2 dark:bg-neutral-800">
-            <FileChartColumn className="text-neutral-800 w-5 h-5 sm:w-6 sm:h-6 dark:text-neutral-300" />
+        <div className="flex items-center w-full h-full gap-3 sm:gap-4 justify-between">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="bg-neutral-100 rounded-lg p-2 dark:bg-neutral-800">
+              <FileChartColumn className="text-neutral-800 w-5 h-5 sm:w-6 sm:h-6 dark:text-neutral-300" />
+            </div>
+            <div>
+              <h2 className="text-neutral-800 text-lg sm:text-xl font-medium dark:text-neutral-200">
+                Recent Activities
+              </h2>
+              <p className="text-xs sm:text-sm text-neutral-500">
+                Your recent activities
+              </p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-neutral-800 text-lg sm:text-xl font-medium dark:text-neutral-200">
-              Recent Activities
-            </h2>
-            <p className="text-xs sm:text-sm text-neutral-500">
-              Your recent activities
-            </p>
-          </div>
+          <Link
+            href="/feed/activity"
+            className="text-xs text-neutral-600 dark:text-neutral-400 hover:text-[#5BC898] dark:hover:text-[#5BC898] hover:cursor-pointer"
+          >
+            More Details
+          </Link>
         </div>
         <div className="w-full h-full">
           <MessageCard events={userEventsData} />
@@ -228,41 +236,44 @@ function renderActivityCard(event: any) {
 }
 
 function MessageCard({ events }: { events: any[] }) {
-  const isMobile = useIsMobile();
+  // Sadece desteklenen türleri filtrele
+  const validEvents = events.filter(
+    (event) =>
+      event.type === "PushEvent" ||
+      event.type === "PullRequestEvent" ||
+      event.type === "IssuesEvent"
+  );
+  const shownEvents = validEvents.slice(0, 5);
 
-  const getEventCount = () => {
-    if (typeof window === "undefined") return 5;
-    const width = window.innerWidth;
-    if (width < 640) return 3;
-    if (width < 768) return 4;
-    if (width < 1024) return 5;
-    if (width < 1280) return 6;
-    if (width < 1536) return 8;
-    if (width < 1920) return 10;
-    return 12;
-  };
-
-  const [eventCount, setEventCount] = useState(5);
-
-  useEffect(() => {
-    const updateEventCount = () => setEventCount(getEventCount());
-    updateEventCount();
-    window.addEventListener("resize", updateEventCount);
-    return () => window.removeEventListener("resize", updateEventCount);
-  }, []);
-
-  const shownEvents = events.slice(0, eventCount);
+  // Eksikse boş kutu ekle
+  while (shownEvents.length < 5) {
+    shownEvents.push(null);
+  }
 
   return (
     <div className="space-y-4 mt-4">
-      {shownEvents.map((event, idx) => (
-        <div
-          key={idx}
-          className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors"
-        >
-          {renderActivityCard(event)}
-        </div>
-      ))}
+      {shownEvents.map((event, idx) => {
+        if (!event) {
+          return (
+            <div
+              key={idx}
+              className="p-2 rounded-lg bg-neutral-50 dark:bg-neutral-900 border border-dashed border-neutral-200 dark:border-neutral-800 text-neutral-400 text-center"
+            >
+              Aktivite yok
+            </div>
+          );
+        }
+        const card = renderActivityCard(event);
+        if (!card) return null;
+        return (
+          <div
+            key={idx}
+            className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors overflow-x-auto whitespace-nowrap"
+          >
+            {card}
+          </div>
+        );
+      })}
     </div>
   );
 }
