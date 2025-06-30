@@ -52,24 +52,26 @@ function page() {
   // Error state
   if (commitsError) {
     return (
-      <div>
-        <div className="pt-1">
-          <Link
-            href={`/feed/repositories`}
-            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back</span>
-          </Link>
-        </div>
-        <div className="pt-2">
-          <h1 className="text-lg font-medium">Activity</h1>
-          <p className="text-neutral-500 text-sm dark:text-neutral-400">
-            Latest activity in this repository.
-          </p>
+      <div className="min-h-screen flex flex-col">
+        <div className="flex-shrink-0">
+          <div className="pt-1">
+            <Link
+              href={`/feed/repositories`}
+              className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back</span>
+            </Link>
+          </div>
+          <div className="pt-2">
+            <h1 className="text-lg font-medium">Activity</h1>
+            <p className="text-neutral-500 text-sm dark:text-neutral-400">
+              Latest activity in this repository.
+            </p>
+          </div>
         </div>
 
-        <div className="mt-8 flex flex-col items-center justify-center py-12">
+        <div className="flex-1 flex flex-col items-center justify-center py-12">
           <div className="rounded-full bg-red-100 dark:bg-red-900/20 p-3 mb-4">
             <AlertCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
           </div>
@@ -95,24 +97,26 @@ function page() {
   // Loading state
   if (isLoading) {
     return (
-      <div>
-        <div className="pt-1">
-          <Link
-            href={`/feed/repositories`}
-            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back</span>
-          </Link>
-        </div>
-        <div className="pt-2">
-          <h1 className="text-lg font-medium">Activity</h1>
-          <p className="text-neutral-500 text-sm dark:text-neutral-400">
-            Latest activity in this repository.
-          </p>
+      <div className="min-h-screen flex flex-col">
+        <div className="flex-shrink-0">
+          <div className="pt-1">
+            <Link
+              href={`/feed/repositories`}
+              className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back</span>
+            </Link>
+          </div>
+          <div className="pt-2">
+            <h1 className="text-lg font-medium">Activity</h1>
+            <p className="text-neutral-500 text-sm dark:text-neutral-400">
+              Latest activity in this repository.
+            </p>
+          </div>
         </div>
 
-        <div className="mt-6 space-y-4">
+        <div className="flex-1 mt-6 space-y-4 overflow-hidden">
           {/* Repository info skeleton */}
           <div className="bg-neutral-50 dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-900 p-4">
             <div className="flex items-center justify-between">
@@ -155,24 +159,26 @@ function page() {
   }
 
   return (
-    <div>
-      <div className="pt-1">
-        <Link
-          href={`/feed/repositories`}
-          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back</span>
-        </Link>
-      </div>
-      <div className="pt-2">
-        <h1 className="text-lg font-medium">Activity</h1>
-        <p className="text-neutral-500 text-sm dark:text-neutral-400">
-          Latest activity in this repository.
-        </p>
+    <div className="min-h-screen flex flex-col">
+      <div className="flex-shrink-0">
+        <div className="pt-1">
+          <Link
+            href={`/feed/repositories`}
+            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back</span>
+          </Link>
+        </div>
+        <div className="pt-2">
+          <h1 className="text-lg font-medium">Activity</h1>
+          <p className="text-neutral-500 text-sm dark:text-neutral-400">
+            Latest activity in this repository.
+          </p>
+        </div>
       </div>
 
-      <div className="mt-4 pb-8">
+      <div className="flex-1 mt-4 overflow-hidden mb-8">
         <LastCommits
           commits={commitsData || []}
           owner={owner || ""}
