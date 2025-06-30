@@ -22,6 +22,7 @@ import {
   AlertCircle,
   Mail,
   User,
+  KeyRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -59,6 +60,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useCreateCode } from "@/hooks/useCodeQueries";
 
 export default function ModeratorPage() {
   const router = useRouter();
@@ -73,6 +75,14 @@ export default function ModeratorPage() {
     subject: "",
     content: "",
   });
+  const [isCreateCodeModalOpen, setIsCreateCodeModalOpen] = useState(false);
+  const [codeData, setCodeData] = useState({
+    code: "",
+    credit: 0,
+    premium: false,
+    premiumDays: 0,
+    usageLimit: 1,
+  });
 
   // Queries and mutations - search parametresi kaldırıldı, tüm kullanıcıları çekiyoruz
   const {
@@ -86,6 +96,7 @@ export default function ModeratorPage() {
   const { data: messageStats } = useGetMessageStats();
   const sendMessage = useSendMessage();
   const broadcastMessage = useBroadcastMessage();
+  const createCode = useCreateCode();
 
   useEffect(() => {
     // If not authenticated, redirect to home
@@ -147,6 +158,12 @@ export default function ModeratorPage() {
     setIsBroadcastModalOpen(false);
   };
 
+  const handleCreateCode = async () => {
+    await createCode.mutateAsync(codeData);
+    setCodeData({ code: "", credit: 0, premium: false, premiumDays: 0, usageLimit: 1 });
+    setIsCreateCodeModalOpen(false);
+  };
+
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-6">
       {/* Header */}
@@ -204,6 +221,25 @@ export default function ModeratorPage() {
             <div className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
               {messageStats?.data?.totalUnreadMessages || 0}
             </div>
+          </CardContent>
+        </Card>
+
+        <Card className="hover:shadow-lg transition-all duration-200 cursor-pointer group">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 group-hover:text-[#5BC898] transition-colors">
+              <KeyRound className="w-5 h-5" />
+              Create Code
+            </CardTitle>
+            <CardDescription>Create a new code for users</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button
+              className="w-full bg-[#5BC898] hover:bg-[#4BA87B] text-white"
+              onClick={() => setIsCreateCodeModalOpen(true)}
+            >
+              <KeyRound className="w-4 h-4 mr-2" />
+              Create Code
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -521,6 +557,107 @@ export default function ModeratorPage() {
                 <>
                   <Users className="w-4 h-4 mr-2" />
                   Broadcast to All
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Code Modal */}
+      <Dialog open={isCreateCodeModalOpen} onOpenChange={setIsCreateCodeModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl flex items-center gap-2">
+              <KeyRound className="w-6 h-6 text-[#5BC898]" />
+              Create Code
+            </DialogTitle>
+            <DialogDescription>
+              Create a new code for premium or credit rewards.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-6 py-4">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="code">Code</Label>
+                <Input
+                  id="code"
+                  placeholder="Enter code (e.g. GITCORD2024)"
+                  value={codeData.code}
+                  onChange={e => setCodeData({ ...codeData, code: e.target.value.toUpperCase() })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="credit">Credit</Label>
+                <Input
+                  id="credit"
+                  type="number"
+                  min={0}
+                  value={codeData.credit}
+                  onChange={e => setCodeData({ ...codeData, credit: Number(e.target.value) })}
+                />
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="space-y-2 flex-1">
+                  <Label htmlFor="premium">Premium</Label>
+                  <Select
+                    value={codeData.premium ? "true" : "false"}
+                    onValueChange={val => setCodeData({ ...codeData, premium: val === "true" })}
+                  >
+                    <SelectTrigger id="premium" className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="false">No</SelectItem>
+                      <SelectItem value="true">Yes</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2 flex-1">
+                  <Label htmlFor="premiumDays">Premium Days</Label>
+                  <Input
+                    id="premiumDays"
+                    type="number"
+                    min={0}
+                    value={codeData.premiumDays}
+                    onChange={e => setCodeData({ ...codeData, premiumDays: Number(e.target.value) })}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="usageLimit">Usage Limit</Label>
+                <Input
+                  id="usageLimit"
+                  type="number"
+                  min={1}
+                  value={codeData.usageLimit}
+                  onChange={e => setCodeData({ ...codeData, usageLimit: Number(e.target.value) })}
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsCreateCodeModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              className="bg-[#5BC898] hover:bg-[#4BA87B] text-white"
+              onClick={handleCreateCode}
+              disabled={
+                !codeData.code ||
+                codeData.credit < 0 ||
+                createCode.isPending
+              }
+            >
+              {createCode.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                <>
+                  <KeyRound className="w-4 h-4 mr-2" />
+                  Create Code
                 </>
               )}
             </Button>
