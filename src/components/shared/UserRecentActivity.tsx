@@ -81,7 +81,7 @@ function renderActivityCard(event: any) {
       const commitShortSha = firstCommit ? firstCommit.sha.slice(0, 7) : null;
       return (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-2">
             {commitUrl && (
               <Link
                 href={commitUrl}
@@ -118,7 +118,7 @@ function renderActivityCard(event: any) {
               </Link>
             </span>
           </div>
-          <span className="text-neutral-400 text-xs ml-2">
+          <span className="text-neutral-400 text-xs sm:ml-2 mt-1 sm:mt-0">
             {timeAgo(event.created_at)}
           </span>
         </div>
@@ -130,7 +130,7 @@ function renderActivityCard(event: any) {
       const prNumber = pr ? `#${pr.number}` : null;
       return (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-2">
             {prUrl && (
               <Link
                 href={prUrl}
@@ -167,7 +167,7 @@ function renderActivityCard(event: any) {
               </Link>
             </span>
           </div>
-          <span className="text-neutral-400 text-xs ml-2">
+          <span className="text-neutral-400 text-xs sm:ml-2 mt-1 sm:mt-0">
             {timeAgo(event.created_at)}
           </span>
         </div>
@@ -179,7 +179,7 @@ function renderActivityCard(event: any) {
       const issueNumber = issue ? `#${issue.number}` : null;
       return (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-2">
             {issueUrl && (
               <Link
                 href={issueUrl}
@@ -216,7 +216,7 @@ function renderActivityCard(event: any) {
               </Link>
             </span>
           </div>
-          <span className="text-neutral-400 text-xs ml-2">
+          <span className="text-neutral-400 text-xs sm:ml-2 mt-1 sm:mt-0">
             {timeAgo(event.created_at)}
           </span>
         </div>
