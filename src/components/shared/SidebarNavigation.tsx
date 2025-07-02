@@ -100,7 +100,7 @@ const profileItems = [
     title: "Shop",
     url: "/feed/shop",
     icon: ShoppingCart,
-    live: true,
+    live: false,
   },
   {
     title: "Profile",
@@ -205,7 +205,7 @@ export function SidebarNavigation() {
         <SidebarGroupContent>
           <SidebarMenu>
             {mainItems.map((item) => {
-              const isActive = pathname === item.url;
+              const isActive = item.live && pathname === item.url;
               const isItemPremium = item.premium && !isPremium;
 
               return (
@@ -264,7 +264,7 @@ export function SidebarNavigation() {
         <SidebarGroupContent>
           <SidebarMenu>
             {dataItems.map((item) => {
-              const isActive = pathname === item.url;
+              const isActive = item.live && pathname === item.url;
 
               return (
                 <React.Fragment key={item.title}>
@@ -408,7 +408,7 @@ export function SidebarNavigation() {
         <SidebarGroupContent>
           <SidebarMenu>
             {profileItems.map((item) => {
-              const isActive = pathname === item.url;
+              const isActive = item.live && pathname === item.url;
               const url = item.title === "Profile" ? profileUrl : item.url;
               return (
                 <SidebarMenuItem key={item.title}>
