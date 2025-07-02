@@ -60,7 +60,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCreateCode } from "@/hooks/useCodeQueries";
+import { useCreateCode, useGetCodes, useDeleteCode } from "@/hooks/useCodeQueries";
 
 export default function ModeratorPage() {
   const router = useRouter();
@@ -97,6 +97,10 @@ export default function ModeratorPage() {
   const sendMessage = useSendMessage();
   const broadcastMessage = useBroadcastMessage();
   const createCode = useCreateCode();
+  const { data: codesData, isLoading: codesLoading } = useGetCodes();
+  const deleteCode = useDeleteCode();
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  console.log('codesData', codesData);
 
   useEffect(() => {
     // If not authenticated, redirect to home
@@ -664,6 +668,70 @@ export default function ModeratorPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Codes Table */}
+      <div className="bg-white dark:bg-neutral-900 rounded-lg shadow p-6 mt-6">
+        <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+          <KeyRound className="w-5 h-5 text-[#5BC898]" />
+          Created Codes
+        </h2>
+        {codesLoading ? (
+          <div className="flex justify-center py-8">
+            <Loader2 className="w-6 h-6 animate-spin text-neutral-500" />
+          </div>
+        ) : codesData?.data?.length === 0 ? (
+          <div className="text-center text-neutral-500 py-8">No codes found.</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm border">
+              <thead>
+                <tr className="bg-neutral-100 dark:bg-neutral-800">
+                  <th className="px-4 py-2 text-left">Code</th>
+                  <th className="px-4 py-2 text-left">Credit</th>
+                  <th className="px-4 py-2 text-left">Premium</th>
+                  <th className="px-4 py-2 text-left">Premium Days</th>
+                  <th className="px-4 py-2 text-left">Usage Limit</th>
+                  <th className="px-4 py-2 text-left">Used</th>
+                  <th className="px-4 py-2 text-left">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {codesData?.data?.map((code: any) => (
+                  <tr key={code._id} className="border-b">
+                    <td className="px-4 py-2 font-mono">{code.code}</td>
+                    <td className="px-4 py-2">{code.credit}</td>
+                    <td className="px-4 py-2">{code.premium ? "Yes" : "No"}</td>
+                    <td className="px-4 py-2">{code.premiumDays}</td>
+                    <td className="px-4 py-2">{code.usageLimit}</td>
+                    <td className="px-4 py-2">{code.usedCount}</td>
+                    <td className="px-4 py-2">
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        disabled={deleteCode.isPending && deletingId === code._id}
+                        onClick={() => {
+                          if (window.confirm(`Are you sure you want to delete code '${code.code}'?`)) {
+                            setDeletingId(code._id);
+                            deleteCode.mutate(code._id, {
+                              onSettled: () => setDeletingId(null),
+                            });
+                          }
+                        }}
+                      >
+                        {deleteCode.isPending && deletingId === code._id ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          "Delete"
+                        )}
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

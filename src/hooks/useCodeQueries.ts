@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "@/lib/axios-client";
 import { toast } from "sonner";
 
@@ -21,6 +21,33 @@ export const useCreateCode = () => {
         },
         onError: (error: any) => {
             toast.error(error.response?.data?.error || "Failed to create code");
+        },
+    });
+};
+
+export const useGetCodes = () => {
+    return useQuery({
+        queryKey: ["codes"],
+        queryFn: async () => {
+            const response = await axios.get("/code/getAll");
+            return response.data;
+        },
+    });
+};
+
+export const useDeleteCode = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (id: string) => {
+            const response = await axios.delete("/code/delete", { data: { id } });
+            return response.data;
+        },
+        onSuccess: () => {
+            toast.success("Code deleted successfully!");
+            queryClient.invalidateQueries({ queryKey: ["codes"] });
+        },
+        onError: (error: any) => {
+            toast.error(error.response?.data?.error || "Failed to delete code");
         },
     });
 }; 
