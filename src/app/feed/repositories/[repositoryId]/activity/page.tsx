@@ -9,7 +9,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import React, { useMemo } from "react";
 
-function page() {
+function Page() {
   const params = useParams();
   const repositoryId = params.repositoryId as string;
 
@@ -79,7 +79,7 @@ function page() {
             Error Loading Activity
           </h3>
           <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6 max-w-md">
-            We couldn't load the repository activity. This might be due to
+            We couldn&apos;t load the repository activity. This might be due to
             network issues or the repository being private.
           </p>
           <button
@@ -190,4 +190,4 @@ function page() {
   );
 }
 
-export default page;
+export default Page;

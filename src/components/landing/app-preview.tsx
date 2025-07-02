@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 
@@ -33,7 +33,7 @@ const previewImages = [
 ];
 
 export default function AppPreview() {
-  const { theme, resolvedTheme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [containerStyle, setContainerStyle] = useState<React.CSSProperties>({
@@ -47,14 +47,17 @@ export default function AppPreview() {
   }, []);
 
   // Get current image source based on theme
-  const getCurrentImageSrc = (image: (typeof previewImages)[0]) => {
-    if (!mounted) {
-      // Return default dark image during SSR
-      return image.src;
-    }
-    // Use resolvedTheme for better theme detection (handles 'system' theme)
-    return resolvedTheme === "light" ? image.lightSrc : image.src;
-  };
+  const getCurrentImageSrc = useCallback(
+    (image: (typeof previewImages)[0]) => {
+      if (!mounted) {
+        // Return default dark image during SSR
+        return image.src;
+      }
+      // Use resolvedTheme for better theme detection (handles 'system' theme)
+      return resolvedTheme === "light" ? image.lightSrc : image.src;
+    },
+    [mounted, resolvedTheme]
+  );
 
   useEffect(() => {
     if (!mounted) return;
@@ -77,7 +80,7 @@ export default function AppPreview() {
       });
     };
     img.src = getCurrentImageSrc(previewImages[0]);
-  }, [mounted, resolvedTheme]); // Use resolvedTheme instead of theme
+  }, [mounted, resolvedTheme, getCurrentImageSrc]);
 
   // Show loading state during SSR and initial client render
   if (!mounted) {

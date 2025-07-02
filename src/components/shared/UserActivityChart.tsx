@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { ChartColumnBig } from "lucide-react";
 import { ChartTooltipDefault } from "../ui/chart-tooltip-default";
 import { Skeleton } from "@/components/ui/skeleton";

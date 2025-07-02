@@ -29,8 +29,18 @@ function ReedemCode() {
           setIsSuccess(false);
         }, 3000);
       }
-    } catch (error: any) {
-      const message = error?.response?.data?.message || "An error occurred";
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error &&
+        "response" in error &&
+        error.response &&
+        typeof error.response === "object" &&
+        "data" in error.response &&
+        error.response.data &&
+        typeof error.response.data === "object" &&
+        "message" in error.response.data
+          ? (error.response.data as { message: string }).message
+          : "An error occurred";
       setErrorMessage(message);
       setTimeout(() => {
         setErrorMessage("");

@@ -1,15 +1,14 @@
 import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 import { connect } from "@/lib/db";
+import User from "@/models/user";
+import UserStats from "@/models/userStats";
+import UserPremium from "@/models/userPremium";
+import Message from "@/models/message";
 
 let connectionPromise: Promise<typeof mongoose> | null = null;
 
 const getModels = () => {
-  const User = require("@/models/user").default;
-  const UserStats = require("@/models/userStats").default;
-  const UserPremium = require("@/models/userPremium").default;
-  const Message = require("@/models/message").default;
-
   return {
     User,
     UserStats,
@@ -20,13 +19,13 @@ const getModels = () => {
 
 export type DbModels = ReturnType<typeof getModels>;
 
-export type WithDbHandler<T = any> = (
+export type WithDbHandler<T = unknown> = (
   req: NextRequest,
   context: T,
   models: DbModels
 ) => Promise<NextResponse> | NextResponse;
 
-export function withDb<T = any>(handler: WithDbHandler<T>) {
+export function withDb<T = unknown>(handler: WithDbHandler<T>) {
   return async (req: NextRequest, context: T): Promise<NextResponse> => {
     try {
       const readyState = mongoose.connection.readyState;

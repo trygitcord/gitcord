@@ -1,10 +1,54 @@
 import { NextResponse, NextRequest } from "next/server";
 import { withDb, DbModels } from "@/lib/withDb";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+
+// Define types for better type safety
+interface UserQuery {
+  $or?: Array<{
+    username?: { $regex: string; $options: string };
+    name?: { $regex: string; $options: string };
+    email?: { $regex: string; $options: string };
+  }>;
+}
+
+interface UserResponse {
+  id: string;
+  name: string;
+  username: string;
+  email: string;
+  avatar_url: string | null;
+  isModerator: boolean;
+}
+
+interface PaginationInfo {
+  currentPage: number;
+  totalPages: number;
+  totalCount: number;
+  limit: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+}
+
+interface AllUsersOption {
+  id: string;
+  name: string;
+  username: string;
+  avatar_url: null;
+  userCount: number;
+}
+
+interface ApiResponse {
+  success: boolean;
+  data: {
+    pagination: PaginationInfo;
+    allUsersOption?: AllUsersOption;
+    users?: UserResponse[];
+  };
+}
 
 export const GET = withDb(
-  async (request: NextRequest, context: any, models: DbModels) => {
+  async (request: NextRequest, context: unknown, models: DbModels) => {
     try {
       // Check authentication
       const session = await getServerSession(authOptions);
@@ -35,7 +79,7 @@ export const GET = withDb(
       const validLimit = Math.min(Math.max(1, limit), 100); // Max 100 items per page
 
       // Build query for search
-      const query: any = {};
+      const query: UserQuery = {};
 
       if (search) {
         query.$or = [
@@ -53,7 +97,7 @@ export const GET = withDb(
       const totalPages = Math.ceil(totalCount / validLimit);
 
       // Build response structure
-      const response: any = {
+      const response: ApiResponse = {
         success: true,
         data: {
           pagination: {
@@ -86,14 +130,16 @@ export const GET = withDb(
         .limit(validLimit)
         .lean();
 
-      response.data.users = users.map((user) => ({
-        id: user._id,
-        name: user.name,
-        username: user.username,
-        email: user.email,
-        avatar_url: user.avatar_url,
-        isModerator: user.isModerator,
-      }));
+      response.data.users = users.map(
+        (user): UserResponse => ({
+          id: String(user._id),
+          name: String(user.name),
+          username: String(user.username),
+          email: String(user.email),
+          avatar_url: user.avatar_url ? String(user.avatar_url) : null,
+          isModerator: Boolean(user.isModerator),
+        })
+      );
 
       return NextResponse.json(response);
     } catch (error) {

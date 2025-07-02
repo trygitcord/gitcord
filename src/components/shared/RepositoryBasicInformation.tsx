@@ -1,4 +1,4 @@
-import { Clock, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -7,7 +7,6 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { Skeleton } from "@/components/ui/skeleton";
 
 function timeAgo(dateString: string) {
   const now = new Date();
@@ -22,19 +21,21 @@ function timeAgo(dateString: string) {
   return `${Math.floor(diff / 31536000)} years ago`;
 }
 
+interface CommitData {
+  date: string;
+  commits: number;
+}
+
 interface RepositoryBasicInformationProps {
   name: string;
   description: string | null;
   visibility: string;
   language: string | null;
-  stars: number;
-  forks: number;
-  watchers: number;
   lastUpdate: string;
-  commitGraph: any[];
+  commitGraph: CommitData[];
   isLoadingCommitActivity?: boolean;
   isFetchingCommitActivity?: boolean;
-  activityError?: any;
+  activityError?: Error | null;
   refetchActivity?: () => void;
 }
 
@@ -43,9 +44,6 @@ export const RepositoryBasicInformation = ({
   description,
   visibility,
   language,
-  stars,
-  forks,
-  watchers,
   lastUpdate,
   commitGraph,
   isLoadingCommitActivity = false,
@@ -57,7 +55,8 @@ export const RepositoryBasicInformation = ({
   const isActivityComputing =
     activityError &&
     (activityError.message?.includes("computed") ||
-      activityError.response?.status === 202);
+      (activityError as { response?: { status?: number } }).response?.status ===
+        202);
 
   return (
     <div className="w-full bg-neutral-50 dark:bg-neutral-900 mt-4 rounded-xl p-4.5">

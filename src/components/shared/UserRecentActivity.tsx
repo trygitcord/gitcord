@@ -1,18 +1,54 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { FileChartColumn } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import { useUserEvents } from "@/hooks/useGitHubQueries";
 import { useUserProfile } from "@/hooks/useMyApiQueries";
-import { useIsMobile } from "@/hooks/use-mobile";
 import Link from "next/link";
 
 enum RecentActivityType {
   Issue = "IssuesEvent",
   PullRequest = "PullRequestEvent",
   Commit = "PushEvent",
+}
+
+interface GitHubActor {
+  avatar_url: string;
+  display_login: string;
+}
+
+interface GitHubRepo {
+  name: string;
+}
+
+interface GitHubCommit {
+  sha: string;
+}
+
+interface GitHubPullRequest {
+  html_url: string;
+  number: number;
+}
+
+interface GitHubIssue {
+  html_url: string;
+  number: number;
+}
+
+interface GitHubEventPayload {
+  commits?: GitHubCommit[];
+  pull_request?: GitHubPullRequest;
+  issue?: GitHubIssue;
+}
+
+interface GitHubEvent {
+  type: string;
+  actor: GitHubActor;
+  repo: GitHubRepo;
+  payload?: GitHubEventPayload;
+  created_at: string;
 }
 
 function UserRecentActivity() {
@@ -79,7 +115,7 @@ function timeAgo(dateString: string) {
   return `${Math.floor(diff / 86400)} days ago`;
 }
 
-function renderActivityCard(event: any) {
+function renderActivityCard(event: GitHubEvent) {
   switch (event.type) {
     case RecentActivityType.Commit: {
       const firstCommit = event.payload?.commits?.[0];
@@ -235,7 +271,7 @@ function renderActivityCard(event: any) {
   }
 }
 
-function MessageCard({ events }: { events: any[] }) {
+function MessageCard({ events }: { events: GitHubEvent[] }) {
   // Sadece desteklenen türleri filtrele
   const validEvents = events.filter(
     (event) =>
@@ -243,7 +279,7 @@ function MessageCard({ events }: { events: any[] }) {
       event.type === "PullRequestEvent" ||
       event.type === "IssuesEvent"
   );
-  const shownEvents = validEvents.slice(0, 5);
+  const shownEvents: (GitHubEvent | null)[] = validEvents.slice(0, 5);
 
   // Eksikse boş kutu ekle
   while (shownEvents.length < 5) {

@@ -9,6 +9,35 @@ import {
 } from "@/components/ui/chart";
 import { useIsMobile } from "@/hooks/use-mobile";
 
+// Type definitions for GitHub events
+interface GitHubCommit {
+  sha: string;
+  message: string;
+  author: {
+    name: string;
+    email: string;
+  };
+}
+
+interface GitHubEvent {
+  created_at: string;
+  type: string;
+  payload?: {
+    commits?: GitHubCommit[];
+  };
+}
+
+interface ProcessedEvent {
+  date: string;
+  commits: number;
+  issues: number;
+  pullRequests: number;
+}
+
+interface GroupedEvents {
+  [date: string]: ProcessedEvent;
+}
+
 const chartConfig = {
   pullRequests: {
     label: "Pull Requests",
@@ -24,13 +53,13 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function ChartTooltipDefault({ data }: { data: any }) {
+export function ChartTooltipDefault({ data }: { data: GitHubEvent[] }) {
   const isMobile = useIsMobile();
 
   const chartData =
     data && data.length > 0
       ? (() => {
-          const processedEvents = data.map((event: any) => {
+          const processedEvents = data.map((event: GitHubEvent) => {
             const date = new Date(event.created_at).toDateString();
 
             return {
@@ -45,7 +74,7 @@ export function ChartTooltipDefault({ data }: { data: any }) {
           });
 
           const groupedByDate = processedEvents.reduce(
-            (acc: any, curr: any) => {
+            (acc: GroupedEvents, curr: ProcessedEvent) => {
               if (!acc[curr.date]) {
                 acc[curr.date] = {
                   date: curr.date,

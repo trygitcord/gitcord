@@ -3,7 +3,6 @@
 import React, { useEffect, useRef } from "react";
 import Link from "next/link";
 import { ArrowRight, Github, Menu, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { AnimatedGroup } from "@/components/ui/animated-group";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -297,7 +296,7 @@ export const HeroHeader = () => {
 
 const Logo = ({ className }: { className?: string }) => {
   return (
-    <div className="flex items-center gap-2">
+    <div className={cn("flex items-center gap-2", className)}>
       <Image src="/logo.svg" alt="Gitcord Logo" width={24} height={24} />
       <h1 className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
         Gitcord

@@ -14,6 +14,46 @@ enum RecentActivityType {
   Commit = "PushEvent",
 }
 
+interface Commit {
+  sha: string;
+  message: string;
+}
+
+interface PullRequest {
+  number: number;
+  title: string;
+  body?: string;
+}
+
+interface Issue {
+  number: number;
+  body?: string;
+}
+
+interface Actor {
+  avatar_url: string;
+  display_login: string;
+}
+
+interface Repo {
+  name: string;
+}
+
+interface EventPayload {
+  commits?: Commit[];
+  pull_request?: PullRequest;
+  issue?: Issue;
+  action?: string;
+}
+
+interface GitHubEvent {
+  type: RecentActivityType;
+  actor: Actor;
+  repo: Repo;
+  payload?: EventPayload;
+  created_at: string;
+}
+
 function timeAgo(dateString: string) {
   const now = new Date();
   const date = new Date(dateString);
@@ -24,7 +64,7 @@ function timeAgo(dateString: string) {
   return `${Math.floor(diff / 86400)} days ago`;
 }
 
-function renderActivityCard(event: any, expanded: boolean) {
+function renderActivityCard(event: GitHubEvent, expanded: boolean) {
   let icon: React.ReactElement | null = null;
   let borderColor = "";
   switch (event.type) {
@@ -52,7 +92,7 @@ function renderActivityCard(event: any, expanded: boolean) {
           <div className="flex flex-wrap items-center gap-2">
             {event.type === RecentActivityType.Commit && (
               <div className="flex flex-wrap gap-1">
-                {event.payload?.commits?.slice(0, 3).map((commit: any) => (
+                {event.payload?.commits?.slice(0, 3).map((commit: Commit) => (
                   <Link
                     key={commit.sha}
                     href={`https://github.com/${event.repo.name}/commit/${commit.sha}`}
@@ -63,11 +103,12 @@ function renderActivityCard(event: any, expanded: boolean) {
                     #{commit.sha.slice(0, 7)}
                   </Link>
                 ))}
-                {event.payload?.commits?.length > 3 && (
-                  <span className="text-xs font-mono bg-neutral-200 dark:bg-neutral-700 text-neutral-500 px-2 py-1 rounded">
-                    +{event.payload?.commits?.length - 3} more
-                  </span>
-                )}
+                {event.payload?.commits?.length &&
+                  event.payload.commits.length > 3 && (
+                    <span className="text-xs font-mono bg-neutral-200 dark:bg-neutral-700 text-neutral-500 px-2 py-1 rounded">
+                      +{event.payload.commits.length - 3} more
+                    </span>
+                  )}
               </div>
             )}
             {event.type === RecentActivityType.PullRequest && (
@@ -126,7 +167,7 @@ function renderActivityCard(event: any, expanded: boolean) {
               <div>
                 <div className="font-semibold mb-1">All Commits:</div>
                 <ul className="list-disc pl-4">
-                  {event.payload?.commits?.map((commit: any) => (
+                  {event.payload?.commits?.map((commit: Commit) => (
                     <li key={commit.sha}>
                       <Link
                         href={`https://github.com/${event.repo.name}/commit/${commit.sha}`}
@@ -245,7 +286,7 @@ function ActivityPage() {
       </div>
     );
 
-  const filteredEvents = userEventsData.filter((event: any) => {
+  const filteredEvents = userEventsData.filter((event: GitHubEvent) => {
     if (activeFilter === "all") return true;
     return event.type === activeFilter;
   });
@@ -327,7 +368,7 @@ function ActivityPage() {
           </div>
         ) : (
           <div className="flex flex-col gap-4">
-            {shownEvents.map((event: any, idx: number) => (
+            {shownEvents.map((event: GitHubEvent, idx: number) => (
               <div
                 key={idx}
                 className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-4 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors shadow-sm cursor-pointer"

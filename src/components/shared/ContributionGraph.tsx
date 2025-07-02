@@ -13,17 +13,23 @@ interface ContributionDay {
 }
 
 interface ContributionGraphProps {
-  username: string;
   contributions?: ContributionDay[];
 }
 
+// Define types for the grid structure
+interface GridDay {
+  date: string;
+  count: number;
+  level: number;
+  dayOfWeek: number;
+}
+
 const ContributionGraph: React.FC<ContributionGraphProps> = ({
-  username,
   contributions = [],
 }) => {
   // Generate the grid for exactly 53 weeks (371 days max to cover a full year)
-  const generateDateGrid = () => {
-    const weeks = [];
+  const generateDateGrid = (): (GridDay | null)[][] => {
+    const weeks: (GridDay | null)[][] = [];
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -43,7 +49,7 @@ const ContributionGraph: React.FC<ContributionGraphProps> = ({
     const weeksToShow = Math.ceil(daysToShow / 7);
 
     for (let week = 0; week < weeksToShow; week++) {
-      const days = [];
+      const days: (GridDay | null)[] = [];
       for (let day = 0; day < 7; day++) {
         const currentDate = new Date(startDate);
         currentDate.setDate(startDate.getDate() + week * 7 + day);
@@ -86,42 +92,6 @@ const ContributionGraph: React.FC<ContributionGraphProps> = ({
   };
 
   const weeks = generateDateGrid();
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  const daysOfWeek = ["", "Mon", "", "Wed", "", "Fri", ""]; // Only show Mon, Wed, Fri
-
-  // Get month labels with proper positioning
-  const getMonthLabels = () => {
-    const labels: { month: string; weekIndex: number }[] = [];
-    let lastMonth = -1;
-
-    weeks.forEach((week, weekIndex) => {
-      const firstValidDay = week.find((day) => day !== null);
-      if (firstValidDay) {
-        const month = new Date(firstValidDay.date).getMonth();
-        if (month !== lastMonth && weekIndex > 0) {
-          labels.push({ month: months[month], weekIndex });
-          lastMonth = month;
-        }
-      }
-    });
-
-    return labels;
-  };
-
-  const monthLabels = getMonthLabels();
 
   // Calculate total contributions for the displayed period (last 180 days)
   const today = new Date();

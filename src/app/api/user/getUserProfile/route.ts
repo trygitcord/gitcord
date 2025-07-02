@@ -2,7 +2,7 @@
 
 import { getServerSession } from "next-auth/next";
 import { NextResponse, NextRequest } from "next/server";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { withDb, DbModels } from "@/lib/withDb";
 import { UserProfile, UserType } from "@/types/userTypes";
 import { Session } from "next-auth";
@@ -33,7 +33,7 @@ interface UserPremiumDocument {
 }
 
 export const GET = withDb(
-  async (request: NextRequest, context: any, models: DbModels) => {
+  async (request: NextRequest, context: unknown, models: DbModels) => {
     try {
       const session = (await getServerSession(authOptions)) as CustomSession;
 
@@ -64,8 +64,6 @@ export const GET = withDb(
           credit: 0,
           view_count: 0,
         };
-
-        const createdStats = await models.UserStats.create(statsData);
       } else {
         statsData = userStats;
       }
@@ -77,8 +75,6 @@ export const GET = withDb(
           premium_expires_at: null,
           premium_plan: "free",
         };
-
-        const createdPremium = await models.UserPremium.create(premiumData);
       } else {
         premiumData = userPremium;
       }

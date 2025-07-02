@@ -1,22 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import {
   Trophy,
-  GitPullRequest,
-  GitCommit,
   AlertCircle,
-  Flame,
   ChevronLeft,
   ChevronRight,
   Activity,
@@ -24,6 +15,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useActivityLeaderboard } from "@/hooks/useMyApiQueries";
+import { LeaderboardUser } from "@/types/userTypes";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -116,7 +108,7 @@ export default function LeaderboardPage() {
       {/* Leaderboard List - Modern card based approach */}
       {currentData.length > 0 ? (
         <div className="space-y-2">
-          {currentData.map((user: any, index: number) => {
+          {currentData.map((user: LeaderboardUser, index: number) => {
             const rank = startIndex + index + 1;
             const isTopThree = rank <= 3;
 

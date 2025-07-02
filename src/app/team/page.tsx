@@ -8,7 +8,6 @@ import {
   Github,
   Twitter,
   Linkedin,
-  Globe,
   Mail,
   Sparkles,
   Code,
@@ -44,7 +43,7 @@ const teamMembers = [
     icon: <Code className="w-4 h-4" />,
   },
   {
-    name: "We're Hiring.",
+    name: "We&apos;re Hiring.",
     role: "Product Designer",
     bio: "",
     gradient: "from-[#5a922c] to-[#4c7894]",
@@ -52,7 +51,7 @@ const teamMembers = [
     isHiring: true,
   },
   {
-    name: "We're Hiring!",
+    name: "We&apos;re Hiring!",
     role: "Frontend Engineer",
     bio: "",
     gradient: "from-[#FF6B6B] to-[#4ECDC4]",
@@ -86,26 +85,13 @@ const itemVariants = {
   },
 };
 
-function TeamMemberCard({
-  member,
-  index,
-}: {
-  member: (typeof teamMembers)[0];
-  index: number;
-}) {
-  const [isHovered, setIsHovered] = React.useState(false);
-
+function TeamMemberCard({ member }: { member: (typeof teamMembers)[0] }) {
   useEffect(() => {
     document.title = "Gitcord | Team";
   }, []);
 
   return (
-    <motion.div
-      variants={itemVariants}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-      className="group relative"
-    >
+    <motion.div variants={itemVariants} className="group relative">
       <div
         className={cn(
           "relative rounded-2xl p-6 border transition-all duration-300 h-90 overflow-hidden",
@@ -253,7 +239,7 @@ function page() {
               </span>
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              We're a passionate group of developers and designers working
+              We&apos;re a passionate group of developers and designers working
               together to revolutionize how developers track and showcase their
               GitHub activity.
             </p>
@@ -266,8 +252,8 @@ function page() {
             animate="visible"
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-24"
           >
-            {teamMembers.map((member, index) => (
-              <TeamMemberCard key={member.name} member={member} index={index} />
+            {teamMembers.map((member) => (
+              <TeamMemberCard key={member.name} member={member} />
             ))}
           </motion.div>
 
@@ -322,7 +308,7 @@ function page() {
           >
             <h2 className="text-3xl font-bold mb-4">Want to Join Us?</h2>
             <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-              We're always looking for talented individuals who share our
+              We&apos;re always looking for talented individuals who share our
               passion for building great developer tools.
             </p>
             <Link

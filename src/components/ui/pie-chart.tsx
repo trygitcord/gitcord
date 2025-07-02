@@ -47,7 +47,7 @@ export function PieChart({ data }: PieChartProps) {
         </ResponsiveContainer>
       </div>
       <div className="flex flex-wrap gap-2 max-w-[200px]">
-        {data.map((entry, index) => (
+        {data.map((entry) => (
           <div key={entry.name} className="flex items-center gap-2">
             <div
               className="w-3 h-3 rounded-full flex-shrink-0"

@@ -1,6 +1,8 @@
 import { withAuth } from "next-auth/middleware";
+import type { NextRequestWithAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import type { JWT } from "next-auth/jwt";
 import { rateLimiters, getClientIdentifier } from "@/lib/rate-limiter";
 
 // Rate limiting configuration for different API paths
@@ -15,7 +17,7 @@ const API_RATE_LIMITS = {
   default: rateLimiters.general,
 };
 
-async function handleApiRateLimit(req: NextRequest, token?: any) {
+async function handleApiRateLimit(req: NextRequest, token?: JWT | null) {
   const pathname = req.nextUrl.pathname;
 
   // Determine which rate limiter to use
@@ -67,7 +69,7 @@ async function handleApiRateLimit(req: NextRequest, token?: any) {
 }
 
 export default withAuth(
-  async function middleware(req: NextRequest & { nextauth?: { token?: any } }) {
+  async function middleware(req: NextRequestWithAuth) {
     const pathname = req.nextUrl.pathname;
     const token = req.nextauth?.token;
 

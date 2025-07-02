@@ -109,8 +109,8 @@ export function LastCommits({
 
   // Detay sayfası için genişletilmiş görünüm - tüm commitler scroll ile görüntülenir
   return (
-    <div className="space-y-3 h-full overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
-      {commits.map((commit, index) => (
+    <div className="space-y-3 h-full overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      {commits.map((commit) => (
         <div
           key={commit.sha}
           className="bg-neutral-50 dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800 p-3 hover:shadow-sm transition-shadow"
@@ -179,7 +179,7 @@ export function LastCommits({
             No commits yet
           </h3>
           <p className="text-xs text-neutral-500 dark:text-neutral-400">
-            Commits will appear here once they're made to this repository.
+            Commits will appear here once they&apos;re made to this repository.
           </p>
         </div>
       )}

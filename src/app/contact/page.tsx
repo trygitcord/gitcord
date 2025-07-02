@@ -84,20 +84,20 @@ export default function ContactPage() {
                 <div className="inline-flex items-center gap-2 bg-neutral-100/50 dark:bg-neutral-800/50 px-4 py-1.5 rounded-full border border-neutral-200/50 dark:border-neutral-700/50 mb-6">
                   <Sparkles className="w-4 h-4 text-neutral-600 dark:text-neutral-400" />
                   <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
-                    We're here to help
+                    We&apos;re here to help
                   </span>
                 </div>
 
                 <h1 className="text-5xl md:text-7xl font-bold text-balance mb-6">
-                  Let's{" "}
+                  Let&apos;s{" "}
                   <span className="bg-gradient-to-r from-[#4CFFAF] to-[#3ABA81] bg-clip-text text-transparent">
                     Connect
                   </span>
                 </h1>
 
                 <p className="mx-auto max-w-2xl text-balance text-xl text-neutral-400 leading-relaxed">
-                  Have questions or want to learn more about Gitcord? We're just
-                  a message away.
+                  Have questions or want to learn more about Gitcord? We&apos;re
+                  just a message away.
                 </p>
               </AnimatedGroup>
             </div>

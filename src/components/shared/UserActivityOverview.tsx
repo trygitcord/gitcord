@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Clock, MessageCircle, HardDriveUpload } from "lucide-react";
 import Link from "next/link";
