@@ -60,7 +60,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCreateCode, useGetCodes, useDeleteCode } from "@/hooks/useCodeQueries";
+import {
+  useCreateCode,
+  useGetCodes,
+  useDeleteCode,
+} from "@/hooks/useCodeQueries";
 
 export default function ModeratorPage() {
   const router = useRouter();
@@ -100,7 +104,6 @@ export default function ModeratorPage() {
   const { data: codesData, isLoading: codesLoading } = useGetCodes();
   const deleteCode = useDeleteCode();
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  console.log('codesData', codesData);
 
   useEffect(() => {
     // If not authenticated, redirect to home
@@ -164,7 +167,13 @@ export default function ModeratorPage() {
 
   const handleCreateCode = async () => {
     await createCode.mutateAsync(codeData);
-    setCodeData({ code: "", credit: 0, premium: false, premiumDays: 0, usageLimit: 1 });
+    setCodeData({
+      code: "",
+      credit: 0,
+      premium: false,
+      premiumDays: 0,
+      usageLimit: 1,
+    });
     setIsCreateCodeModalOpen(false);
   };
 
@@ -569,7 +578,10 @@ export default function ModeratorPage() {
       </Dialog>
 
       {/* Create Code Modal */}
-      <Dialog open={isCreateCodeModalOpen} onOpenChange={setIsCreateCodeModalOpen}>
+      <Dialog
+        open={isCreateCodeModalOpen}
+        onOpenChange={setIsCreateCodeModalOpen}
+      >
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle className="text-2xl flex items-center gap-2">
@@ -588,7 +600,12 @@ export default function ModeratorPage() {
                   id="code"
                   placeholder="Enter code (e.g. GITCORD2024)"
                   value={codeData.code}
-                  onChange={e => setCodeData({ ...codeData, code: e.target.value.toUpperCase() })}
+                  onChange={(e) =>
+                    setCodeData({
+                      ...codeData,
+                      code: e.target.value.toUpperCase(),
+                    })
+                  }
                 />
               </div>
               <div className="space-y-2">
@@ -598,7 +615,9 @@ export default function ModeratorPage() {
                   type="number"
                   min={0}
                   value={codeData.credit}
-                  onChange={e => setCodeData({ ...codeData, credit: Number(e.target.value) })}
+                  onChange={(e) =>
+                    setCodeData({ ...codeData, credit: Number(e.target.value) })
+                  }
                 />
               </div>
               <div className="flex items-center gap-4">
@@ -606,7 +625,9 @@ export default function ModeratorPage() {
                   <Label htmlFor="premium">Premium</Label>
                   <Select
                     value={codeData.premium ? "true" : "false"}
-                    onValueChange={val => setCodeData({ ...codeData, premium: val === "true" })}
+                    onValueChange={(val) =>
+                      setCodeData({ ...codeData, premium: val === "true" })
+                    }
                   >
                     <SelectTrigger id="premium" className="w-full">
                       <SelectValue />
@@ -624,7 +645,12 @@ export default function ModeratorPage() {
                     type="number"
                     min={0}
                     value={codeData.premiumDays}
-                    onChange={e => setCodeData({ ...codeData, premiumDays: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setCodeData({
+                        ...codeData,
+                        premiumDays: Number(e.target.value),
+                      })
+                    }
                   />
                 </div>
               </div>
@@ -635,22 +661,28 @@ export default function ModeratorPage() {
                   type="number"
                   min={1}
                   value={codeData.usageLimit}
-                  onChange={e => setCodeData({ ...codeData, usageLimit: Number(e.target.value) })}
+                  onChange={(e) =>
+                    setCodeData({
+                      ...codeData,
+                      usageLimit: Number(e.target.value),
+                    })
+                  }
                 />
               </div>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsCreateCodeModalOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setIsCreateCodeModalOpen(false)}
+            >
               Cancel
             </Button>
             <Button
               className="bg-[#5BC898] hover:bg-[#4BA87B] text-white"
               onClick={handleCreateCode}
               disabled={
-                !codeData.code ||
-                codeData.credit < 0 ||
-                createCode.isPending
+                !codeData.code || codeData.credit < 0 || createCode.isPending
               }
             >
               {createCode.isPending ? (
@@ -680,7 +712,9 @@ export default function ModeratorPage() {
             <Loader2 className="w-6 h-6 animate-spin text-neutral-500" />
           </div>
         ) : codesData?.data?.length === 0 ? (
-          <div className="text-center text-neutral-500 py-8">No codes found.</div>
+          <div className="text-center text-neutral-500 py-8">
+            No codes found.
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm border">
@@ -708,9 +742,15 @@ export default function ModeratorPage() {
                       <Button
                         variant="destructive"
                         size="sm"
-                        disabled={deleteCode.isPending && deletingId === code._id}
+                        disabled={
+                          deleteCode.isPending && deletingId === code._id
+                        }
                         onClick={() => {
-                          if (window.confirm(`Are you sure you want to delete code '${code.code}'?`)) {
+                          if (
+                            window.confirm(
+                              `Are you sure you want to delete code '${code.code}'?`
+                            )
+                          ) {
                             setDeletingId(code._id);
                             deleteCode.mutate(code._id, {
                               onSettled: () => setDeletingId(null),
