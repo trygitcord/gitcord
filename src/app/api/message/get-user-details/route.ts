@@ -1,10 +1,12 @@
 import { NextResponse, NextRequest } from "next/server";
 import { withDb, DbModels } from "@/lib/withDb";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+import { UserType } from "@/types/userTypes";
+import { MessageType } from "@/models/message";
 
 export const GET = withDb(
-  async (request: NextRequest, context: any, models: DbModels) => {
+  async (request: NextRequest, context: unknown, models: DbModels) => {
     try {
       // Check authentication
       const session = await getServerSession(authOptions);
@@ -35,11 +37,11 @@ export const GET = withDb(
       }
 
       // Get user details
-      const user = await models.User.findById(userId)
+      const user = (await models.User.findById(userId)
         .select(
           "_id name username email bio avatar_url github_profile_url isModerator createdAt"
         )
-        .lean();
+        .lean()) as (UserType & { createdAt: Date }) | null;
 
       if (!user) {
         return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -52,10 +54,10 @@ export const GET = withDb(
       ]);
 
       // Get last message sent to this user (if any)
-      const lastMessage = await models.Message.findOne({ recipient: userId })
+      const lastMessage = (await models.Message.findOne({ recipient: userId })
         .sort({ createdAt: -1 })
         .select("subject createdAt isRead")
-        .lean();
+        .lean()) as MessageType | null;
 
       const response = {
         success: true,

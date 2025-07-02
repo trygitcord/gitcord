@@ -26,6 +26,20 @@ export interface UserStatsType extends mongoose.Document {
   view_count: number;
 }
 
+export interface LeaderboardUser {
+  _id: string;
+  username: string;
+  name: string;
+  avatar_url: string;
+  github_profile_url: string;
+  weeklyScore: number;
+  pushEvents: number;
+  pullRequests: number;
+  issues: number;
+  lastActivityDate?: string;
+  daysIncluded?: number;
+}
+
 export interface UserProfile {
   id: string;
   github_id: string;
@@ -39,14 +53,14 @@ export interface UserProfile {
   role: string;
   isModerator: boolean;
   stats: {
-      _id: string;
-      credit: number;
-      view_count: number;
+    _id: string;
+    credit: number;
+    view_count: number;
   };
   premium: {
-      _id: string;
-      isPremium: boolean;
-      expiresAt: Date | null;
-      plan: string;
+    _id: string;
+    isPremium: boolean;
+    expiresAt: Date | null;
+    plan: string;
   };
 }

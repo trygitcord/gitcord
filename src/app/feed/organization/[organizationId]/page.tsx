@@ -22,6 +22,26 @@ import {
 } from "@/hooks/useGitHubQueries";
 import ProjectHealthChart from "@/components/shared/ProjectHealthChart";
 
+// TypeScript interfaces
+interface Repository {
+  id: number;
+  name: string;
+  description: string | null;
+  visibility: string;
+  stargazers_count: number;
+  forks_count: number;
+  watchers_count: number;
+  updated_at: string;
+  commits_count?: number;
+  open_issues_count?: number;
+  last_commit_date?: string;
+}
+
+interface ActivityItem {
+  week: number;
+  total: number;
+}
+
 function timeAgo(dateString: string) {
   const now = new Date();
   const date = new Date(dateString);
@@ -35,7 +55,7 @@ function timeAgo(dateString: string) {
   return `${Math.floor(diff / 31536000)} years ago`;
 }
 
-function calculateHealthScore(repo: any) {
+function calculateHealthScore(repo: Repository) {
   const daysSinceUpdate =
     (Date.now() - new Date(repo.updated_at).getTime()) / (1000 * 60 * 60 * 24);
   let updateScore = 0;
@@ -44,9 +64,9 @@ function calculateHealthScore(repo: any) {
   else if (daysSinceUpdate < 30) updateScore = 25;
   else if (daysSinceUpdate < 90) updateScore = 10;
   let commitScore = 0;
-  if (repo.commits_count >= 100) commitScore = 30;
-  else if (repo.commits_count >= 50) commitScore = 20;
-  else if (repo.commits_count >= 10) commitScore = 10;
+  if (repo.commits_count && repo.commits_count >= 100) commitScore = 30;
+  else if (repo.commits_count && repo.commits_count >= 50) commitScore = 20;
+  else if (repo.commits_count && repo.commits_count >= 10) commitScore = 10;
   let issueScore = 15;
   if ((repo.open_issues_count || 0) > 20) issueScore = 0;
   else if ((repo.open_issues_count || 0) > 10) issueScore = 5;
@@ -112,7 +132,7 @@ function Page() {
     // Get the last 52 weeks of data
     const last52Weeks = activityData.slice(-52);
 
-    return last52Weeks.map((item: any) => ({
+    return last52Weeks.map((item: ActivityItem) => ({
       date: new Date(item.week * 1000).toISOString().split("T")[0],
       commits: item.total,
     }));
@@ -151,10 +171,7 @@ function Page() {
 
   // Error state - prioritize org error since it's most critical
   const error =
-    orgError?.message ||
-    reposError?.message ||
-    languagesError?.message ||
-    activityError?.message;
+    orgError?.message || reposError?.message || languagesError || activityError;
 
   return (
     <div>
@@ -181,7 +198,7 @@ function Page() {
         </div>
       ) : error ? (
         <div className="w-full h-48 bg-neutral-900 mt-4 rounded-xl flex items-center justify-center">
-          <p className="text-[#5BC898]">Error: {error}</p>
+          <p className="text-[#5BC898]">Error loading organization</p>
         </div>
       ) : orgData ? (
         <div className="space-y-8">
@@ -190,9 +207,6 @@ function Page() {
             description={orgData.description}
             visibility={orgData.type}
             language={mainLanguage}
-            stars={orgData.stargazers_count}
-            forks={orgData.forks_count}
-            watchers={orgData.watchers_count}
             lastUpdate={orgData.updated_at}
             commitGraph={chartData}
           />
@@ -213,7 +227,7 @@ function Page() {
             ) : (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {currentRepos.map((repo: any) => (
+                  {currentRepos.map((repo: Repository) => (
                     <Link
                       key={repo.id}
                       href={`/feed/organization/${orgData.login}/repository/${repo.name}`}

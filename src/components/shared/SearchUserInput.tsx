@@ -8,7 +8,6 @@ import { Search, ArrowRight } from "lucide-react";
 function SearchUserInput() {
   const [value, setValue] = useState("");
   const router = useRouter();
-  const [isFocused, setIsFocused] = useState(false);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && value.trim()) {
@@ -32,8 +31,6 @@ function SearchUserInput() {
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
         />
         {value.trim() && (
           <button

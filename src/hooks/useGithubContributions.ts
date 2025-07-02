@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 export interface ContributionDay {
   date: string;
@@ -7,8 +7,16 @@ export interface ContributionDay {
   level: number;
 }
 
+interface ApiContribution {
+  date: string;
+  count: number;
+  level: number;
+}
+
 // Standalone function for server-side usage
-export async function getGithubContributions(username: string): Promise<ContributionDay[]> {
+export async function getGithubContributions(
+  username: string
+): Promise<ContributionDay[]> {
   if (!username) return [];
 
   try {
@@ -19,11 +27,11 @@ export async function getGithubContributions(username: string): Promise<Contribu
     if (response.data && response.data.contributions) {
       const contributions: ContributionDay[] = [];
 
-      response.data.contributions.forEach((contribution: any) => {
+      response.data.contributions.forEach((contribution: ApiContribution) => {
         contributions.push({
           date: contribution.date,
           count: contribution.count,
-          level: contribution.level
+          level: contribution.level,
         });
       });
 
@@ -32,7 +40,7 @@ export async function getGithubContributions(username: string): Promise<Contribu
 
     return [];
   } catch (error) {
-    console.error('Error fetching GitHub contributions:', error);
+    console.error("Error fetching GitHub contributions:", error);
     // Return mock data on error
     return generateMockContributions();
   }
@@ -41,7 +49,7 @@ export async function getGithubContributions(username: string): Promise<Contribu
 // GitHub Contributions Query Hook
 export const useGithubContributions = (username: string | null) => {
   return useQuery({
-    queryKey: ['github-contributions', username],
+    queryKey: ["github-contributions", username],
     queryFn: async () => {
       if (!username) return [];
       return getGithubContributions(username);
@@ -55,7 +63,7 @@ export const useGithubContributions = (username: string | null) => {
 
 // Mock data generator for fallback
 function generateMockContributions(): ContributionDay[] {
-  const contributions = [];
+  const contributions: ContributionDay[] = [];
   const today = new Date();
   const startDate = new Date(today);
   startDate.setDate(startDate.getDate() - 364);
@@ -85,9 +93,9 @@ function generateMockContributions(): ContributionDay[] {
     }
 
     contributions.push({
-      date: date.toISOString().split('T')[0],
+      date: date.toISOString().split("T")[0],
       count,
-      level
+      level,
     });
   }
 

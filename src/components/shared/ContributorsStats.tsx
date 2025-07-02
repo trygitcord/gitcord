@@ -9,6 +9,37 @@ interface ContributorsStatsProps {
   repo: string;
 }
 
+interface ContributorWeek {
+  w: number; // week timestamp
+  a: number; // additions
+  d: number; // deletions
+  c: number; // commits
+}
+
+interface ContributorAuthor {
+  id: number;
+  login: string;
+  avatar_url: string;
+}
+
+interface GitHubContributor {
+  total: number;
+  weeks: ContributorWeek[];
+  author: ContributorAuthor;
+}
+
+interface ContributorWithStats extends GitHubContributor {
+  totalAdditions: number;
+  totalDeletions: number;
+}
+
+interface GitHubError {
+  response?: {
+    status: number;
+  };
+  message?: string;
+}
+
 export function ContributorsStats({ owner, repo }: ContributorsStatsProps) {
   const { data, isLoading, error, isFetching, isError, refetch } =
     useRepositoryContributors(owner, repo);
@@ -37,11 +68,14 @@ export function ContributorsStats({ owner, repo }: ContributorsStatsProps) {
     );
   }
 
+  // Cast error to the proper type
+  const githubError = error as GitHubError | null;
+
   // GitHub stats hesaplama durumu - boş object da computing anlamına gelebilir
   if (
-    (error &&
-      (error.message?.includes("computed") ||
-        error.response?.status === 202)) ||
+    (githubError &&
+      (githubError.message?.includes("computed") ||
+        githubError.response?.status === 202)) ||
     (data &&
       typeof data === "object" &&
       !Array.isArray(data) &&
@@ -82,7 +116,7 @@ export function ContributorsStats({ owner, repo }: ContributorsStatsProps) {
   }
 
   // Diğer hatalar için
-  if (isError && error && !error.message?.includes("computed")) {
+  if (isError && githubError && !githubError.message?.includes("computed")) {
     return (
       <div className="bg-neutral-900 rounded-xl p-4 h-[230px] flex flex-col items-center justify-center gap-2">
         <AlertCircle className="w-8 h-8 text-red-400" />
@@ -90,7 +124,7 @@ export function ContributorsStats({ owner, repo }: ContributorsStatsProps) {
           Failed to Load Contributors
         </p>
         <p className="text-xs text-neutral-500 text-center mt-1">
-          {error.message || "An error occurred while fetching data."}
+          {githubError.message || "An error occurred while fetching data."}
         </p>
         <button
           onClick={() => refetch()}
@@ -118,15 +152,15 @@ export function ContributorsStats({ owner, repo }: ContributorsStatsProps) {
 
   // Calculate total additions and deletions for each contributor
   const contributorsWithStats =
-    data?.map((contributor: any) => {
+    data?.map((contributor: GitHubContributor) => {
       const totalAdditions =
         contributor?.weeks?.reduce(
-          (sum: number, week: any) => sum + (week?.a || 0),
+          (sum: number, week: ContributorWeek) => sum + (week?.a || 0),
           0
         ) || 0;
       const totalDeletions =
         contributor?.weeks?.reduce(
-          (sum: number, week: any) => sum + (week?.d || 0),
+          (sum: number, week: ContributorWeek) => sum + (week?.d || 0),
           0
         ) || 0;
       return {
@@ -137,9 +171,9 @@ export function ContributorsStats({ owner, repo }: ContributorsStatsProps) {
     }) || [];
 
   // Sort contributors by total commits
-  const sortedContributors = [...contributorsWithStats].sort(
-    (a, b) => b.total - a.total
-  );
+  const sortedContributors: ContributorWithStats[] = [
+    ...contributorsWithStats,
+  ].sort((a, b) => b.total - a.total);
   const maxCommits = sortedContributors[0]?.total || 0;
 
   return (
@@ -153,7 +187,7 @@ export function ContributorsStats({ owner, repo }: ContributorsStatsProps) {
       <div className="space-y-3">
         {sortedContributors
           .slice(0, 5)
-          .map((contributor: any, index: number) => (
+          .map((contributor: ContributorWithStats, index: number) => (
             <div
               key={`${contributor?.author?.id || index}`}
               className="flex items-start justify-between min-w-0"

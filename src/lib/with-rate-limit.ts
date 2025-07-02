@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { RateLimiter, getClientIdentifier } from "./rate-limiter";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+import { RateLimiter, getClientIdentifier, rateLimiters } from "./rate-limiter";
+import { withDb, type DbModels } from "./withDb";
 
 interface RateLimitOptions {
   rateLimiter: RateLimiter;
@@ -18,12 +19,12 @@ interface RateLimitInfo {
 
 type ApiHandler = (
   request: NextRequest,
-  context: any,
+  context: unknown,
   rateLimitInfo?: RateLimitInfo
 ) => Promise<NextResponse>;
 
 export function withRateLimit(handler: ApiHandler, options: RateLimitOptions) {
-  return async (request: NextRequest, context: any) => {
+  return async (request: NextRequest, context: unknown) => {
     try {
       let identifier: string;
 
@@ -106,14 +107,12 @@ export function withRateLimit(handler: ApiHandler, options: RateLimitOptions) {
 export function withRateLimitAndDb(
   handler: (
     request: NextRequest,
-    context: any,
-    models: any,
+    context: unknown,
+    models: DbModels,
     rateLimitInfo?: RateLimitInfo
   ) => Promise<NextResponse>,
   rateLimitOptions: RateLimitOptions
 ) {
-  const { withDb } = require("./withDb");
-
   return withRateLimit(withDb(handler), rateLimitOptions);
 }
 
@@ -121,31 +120,31 @@ export function withRateLimitAndDb(
 export const rateLimitConfigs = {
   // For general API endpoints
   general: {
-    rateLimiter: require("./rate-limiter").rateLimiters.general,
+    rateLimiter: rateLimiters.general,
     useUserIdentifier: false,
   },
 
   // For authentication endpoints
   auth: {
-    rateLimiter: require("./rate-limiter").rateLimiters.auth,
+    rateLimiter: rateLimiters.auth,
     useUserIdentifier: false,
   },
 
   // For messaging endpoints
   messaging: {
-    rateLimiter: require("./rate-limiter").rateLimiters.messaging,
+    rateLimiter: rateLimiters.messaging,
     useUserIdentifier: true,
   },
 
   // For profile access
   profile: {
-    rateLimiter: require("./rate-limiter").rateLimiters.profile,
+    rateLimiter: rateLimiters.profile,
     useUserIdentifier: true,
   },
 
   // For sensitive operations
   strict: {
-    rateLimiter: require("./rate-limiter").rateLimiters.strict,
+    rateLimiter: rateLimiters.strict,
     useUserIdentifier: true,
   },
 };

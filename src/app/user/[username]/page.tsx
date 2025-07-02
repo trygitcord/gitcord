@@ -47,10 +47,8 @@ const ProfilePage = ({ params }: Props) => {
     isLoading: githubLoading,
     error: githubError,
   } = useGitHubUser(username);
-  const { data: gitcordUser, isLoading: gitcordLoading } =
-    useProfileByUsername(username);
-  const { data: contributions, isLoading: contributionsLoading } =
-    useGithubContributions(username);
+  const { data: gitcordUser } = useProfileByUsername(username);
+  const { data: contributions } = useGithubContributions(username);
 
   // Update document title when user data is loaded
   useEffect(() => {
@@ -123,8 +121,8 @@ const ProfilePage = ({ params }: Props) => {
                 User Not Found
               </h2>
               <p className="text-sm text-neutral-400 max-w-sm">
-                The GitHub user "{username}" could not be found. Please check
-                the username and try again.
+                The GitHub user &quot;{username}&quot; could not be found.
+                Please check the username and try again.
               </p>
             </div>
 
@@ -172,7 +170,7 @@ const ProfilePage = ({ params }: Props) => {
             <div className="rounded-full w-24 h-24 border border-neutral-800 flex items-center justify-center text-2xl font-bold text-white shadow-lg overflow-hidden bg-neutral-900">
               <Image
                 src={githubUser.avatar_url}
-                alt={githubUser.name}
+                alt={"user avatar"}
                 className="w-full h-full object-cover"
                 width={500}
                 height={500}
@@ -258,8 +256,7 @@ const ProfilePage = ({ params }: Props) => {
                 )}
 
                 {/* Popular Badge - Show if user has high view count (registered users) or high GitHub stats (all users) */}
-                {(gitcordUser?.stats?.view_count > 200 
-                  ) && (
+                {gitcordUser?.stats?.view_count > 200 && (
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
@@ -281,7 +278,7 @@ const ProfilePage = ({ params }: Props) => {
 
                 {/* GitHub Verified Badge - Show for users with verified email or high activity */}
                 {(githubUser.followers >= 50 ||
-                  githubUser.public_repos >= 15 ) && (
+                  githubUser.public_repos >= 15) && (
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
@@ -367,10 +364,7 @@ const ProfilePage = ({ params }: Props) => {
                 Joined {new Date(githubUser.created_at).toLocaleDateString()}
               </div>
 
-              <ContributionGraph
-                username={username}
-                contributions={contributions || []}
-              />
+              <ContributionGraph contributions={contributions || []} />
             </div>
           </div>
 

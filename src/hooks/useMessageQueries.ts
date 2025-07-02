@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import axios from "@/lib/axios-client";
 import { toast } from "sonner";
 
@@ -90,7 +91,7 @@ export const useSendMessage = () => {
       toast.success("Message sent successfully!");
       queryClient.invalidateQueries({ queryKey: ["user-messages"] });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ error?: string }>) => {
       toast.error(error.response?.data?.error || "Failed to send message");
     },
   });
@@ -109,7 +110,7 @@ export const useBroadcastMessage = () => {
       toast.success(`Message sent to ${data.data.totalRecipients} users!`);
       queryClient.invalidateQueries({ queryKey: ["user-messages"] });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ error?: string }>) => {
       toast.error(error.response?.data?.error || "Failed to send broadcast");
     },
   });
@@ -168,7 +169,7 @@ export const useDeleteMessage = () => {
       toast.success("Message deleted");
       queryClient.invalidateQueries({ queryKey: ["user-messages"] });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ error?: string }>) => {
       toast.error(error.response?.data?.error || "Failed to delete message");
     },
   });

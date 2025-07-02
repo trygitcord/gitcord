@@ -3,19 +3,7 @@ import React from "react";
 import type { ComponentProps, ReactNode } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { useTheme } from "next-themes";
-import {
-  Github,
-  Twitter,
-  Linkedin,
-  Mail,
-  Book,
-  BarChart3,
-  Users,
-  Shield,
-  Moon,
-  Sun,
-  Monitor,
-} from "lucide-react";
+import { Moon, Sun, Monitor } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 

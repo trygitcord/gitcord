@@ -41,9 +41,10 @@ export default function TermsOfService() {
             </h2>
 
             <p className="text-muted-foreground text-sm leading-relaxed mb-6">
-              By accessing or using Gitcord ("the Service"), you agree to be
-              bound by these Terms of Service ("Terms"). If you disagree with
-              any part of these terms, then you may not access the Service.
+              By accessing or using Gitcord (&ldquo;the Service&rdquo;), you
+              agree to be bound by these Terms of Service (&ldquo;Terms&rdquo;).
+              If you disagree with any part of these terms, then you may not
+              access the Service.
             </p>
             <p className="text-muted-foreground text-sm leading-relaxed">
               These Terms apply to all visitors, users, and others who access or
@@ -162,7 +163,9 @@ export default function TermsOfService() {
                 You can revoke our access at any time through your GitHub
                 settings
               </li>
-              <li>We respect GitHub's API rate limits and terms of service</li>
+              <li>
+                We respect GitHub&rsquo;s API rate limits and terms of service
+              </li>
               <li>
                 We only access data necessary for analytics and leaderboard
                 functionality
@@ -276,8 +279,8 @@ export default function TermsOfService() {
             </div>
 
             <p className="text-muted-foreground text-sm leading-relaxed mb-6">
-              THE SERVICE IS PROVIDED "AS IS" WITHOUT WARRANTIES. We disclaim
-              warranties including but not limited to:
+              THE SERVICE IS PROVIDED &ldquo;AS IS&rdquo; WITHOUT WARRANTIES. We
+              disclaim warranties including but not limited to:
             </p>
             <ul className="list-disc list-inside text-muted-foreground text-sm space-y-2 pl-4">
               <li>Accuracy of analytics and scoring calculations</li>
@@ -294,8 +297,8 @@ export default function TermsOfService() {
             </h2>
 
             <p className="text-muted-foreground text-sm leading-relaxed mb-6">
-              Gitcord's liability is limited to the maximum extent permitted by
-              law. We are not liable for:
+              Gitcord&rsquo;s liability is limited to the maximum extent
+              permitted by law. We are not liable for:
             </p>
             <ul className="list-disc list-inside text-muted-foreground text-sm space-y-2 pl-4">
               <li>Loss of data due to GitHub API limitations or changes</li>

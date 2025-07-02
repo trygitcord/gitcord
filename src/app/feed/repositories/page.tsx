@@ -12,10 +12,24 @@ import {
   Crown,
 } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePrivateRepositories } from "@/hooks/useGitHubQueries";
 import { useUserProfile } from "@/hooks/useMyApiQueries";
 import ProjectHealthChart from "@/components/shared/ProjectHealthChart";
+
+// Repository interface based on the usage in the component
+interface Repository {
+  id: string | number;
+  name: string;
+  updated_at: string;
+  commits_count?: number;
+  open_issues_count?: number;
+  last_commit_date?: string;
+  visibility: "public" | "private";
+  description?: string;
+  stargazers_count: number;
+  forks_count: number;
+  watchers_count: number;
+}
 
 function timeAgo(dateString: string) {
   const now = new Date();
@@ -31,7 +45,7 @@ function timeAgo(dateString: string) {
 }
 
 // Sağlık skoru hesaplama fonksiyonu - dengeli puanlama sistemi
-function calculateHealthScore(repo: any) {
+function calculateHealthScore(repo: Repository) {
   // Son güncellenme skoru (0-35 puan)
   const daysSinceUpdate =
     (Date.now() - new Date(repo.updated_at).getTime()) / (1000 * 60 * 60 * 24);
@@ -46,12 +60,13 @@ function calculateHealthScore(repo: any) {
 
   // Commit sayısı skoru (0-30 puan)
   let commitScore = 0;
-  if (repo.commits_count >= 500) commitScore = 30;
-  else if (repo.commits_count >= 200) commitScore = 25;
-  else if (repo.commits_count >= 100) commitScore = 20;
-  else if (repo.commits_count >= 50) commitScore = 15;
-  else if (repo.commits_count >= 20) commitScore = 10;
-  else if (repo.commits_count >= 5) commitScore = 5;
+  const commitCount = repo.commits_count || 0;
+  if (commitCount >= 500) commitScore = 30;
+  else if (commitCount >= 200) commitScore = 25;
+  else if (commitCount >= 100) commitScore = 20;
+  else if (commitCount >= 50) commitScore = 15;
+  else if (commitCount >= 20) commitScore = 10;
+  else if (commitCount >= 5) commitScore = 5;
   // 5'den az commit = 0 puan
 
   // Açık issue yönetimi skoru (0-15 puan)
@@ -148,7 +163,7 @@ function Repositories() {
   // Filter repositories based on user premium status
   const isPremium = userData.premium?.isPremium || false;
 
-  const filteredRepos = reposData.filter((repo: any) => {
+  const filteredRepos = reposData.filter((repo: Repository) => {
     // Public repositories are always visible
     if (repo.visibility === "public") {
       return true;
@@ -201,7 +216,7 @@ function Repositories() {
       </div>
       <div className="flex-1 overflow-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-rows-4 gap-4 h-full">
-          {currentRepos.map((repo: any) => (
+          {currentRepos.map((repo: Repository) => (
             <Link
               key={repo.id}
               href={`/feed/repositories/${repo.name}`}

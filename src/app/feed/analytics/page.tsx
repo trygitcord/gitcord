@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import {
@@ -14,7 +14,6 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   TrendingUp,
-  TrendingDown,
   Activity,
   GitBranch,
   GitCommit,
@@ -22,7 +21,6 @@ import {
   Code2,
   Clock,
   Sparkles,
-  Lock,
   Crown,
   AlertCircle,
 } from "lucide-react";
@@ -42,7 +40,6 @@ import {
   Tooltip,
   ResponsiveContainer,
   RadarChart,
-  RadarProps,
   PolarGrid,
   PolarAngleAxis,
   PolarRadiusAxis,
@@ -57,17 +54,83 @@ import {
 import { useUserProfile } from "@/hooks/useMyApiQueries";
 import Image from "next/image";
 
-// Time formatting functions
-function timeAgo(dateString: string) {
-  const now = new Date();
-  const date = new Date(dateString);
-  const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
-  if (diff < 60) return `${diff} seconds ago`;
-  if (diff < 3600) return `${Math.floor(diff / 60)} minutes ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
-  return `${Math.floor(diff / 86400)} days ago`;
+// Type definitions
+interface GitHubEvent {
+  id: string;
+  type: string;
+  created_at: string;
+  repo?: {
+    name: string;
+  };
 }
 
+interface GitHubRepository {
+  id: number;
+  name: string;
+  language: string | null;
+  private: boolean;
+  fork: boolean;
+  size: number;
+  stargazers_count: number;
+  forks_count: number;
+  watchers_count: number;
+}
+
+interface GitHubOrganization {
+  id: number;
+  login: string;
+  avatar_url: string;
+}
+
+interface ActivityData {
+  date: string;
+  count: number;
+}
+
+interface LanguageData {
+  name: string;
+  value: number;
+}
+
+interface RepoStats {
+  total: number;
+  public: number;
+  private: number;
+  forked: number;
+}
+
+interface ContributionData {
+  subject: string;
+  A: number;
+  fullMark: number;
+}
+
+interface TopRepo {
+  name: string;
+  size: number;
+  stars: number;
+  forks: number;
+}
+
+interface CommitTimeData {
+  hour: number;
+  commits: number;
+}
+
+interface AnalyticsData {
+  activityData: ActivityData[];
+  languageData: LanguageData[];
+  repoStats: RepoStats;
+  contributionData: ContributionData[];
+  topReposBySize: TopRepo[];
+  commitTimeData: CommitTimeData[];
+  totalStars: number;
+  totalForks: number;
+  totalWatchers: number;
+  organizations: number;
+}
+
+// Time formatting functions
 function formatMonthDay(date: Date): string {
   const months = [
     "Jan",
@@ -102,7 +165,9 @@ export default function AnalyticsPage() {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(true);
   const [isPremium, setIsPremium] = useState(false);
-  const [analyticsData, setAnalyticsData] = useState<any>(null);
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(
+    null
+  );
 
   useEffect(() => {
     document.title = `Feed |Analytics`;
@@ -135,29 +200,16 @@ export default function AnalyticsPage() {
     }
   }, [profile, profileLoading]);
 
-  // Process analytics data when store data changes
-  useEffect(() => {
-    if (
-      isPremium &&
-      !dataLoading &&
-      (privateRepos || repos) &&
-      events &&
-      orgs
-    ) {
-      processAnalyticsData();
-    }
-  }, [privateRepos, repos, events, orgs, isPremium, dataLoading]);
-
-  const processAnalyticsData = () => {
+  const processAnalyticsData = useCallback(() => {
     // Use privateRepos if available (for premium users), otherwise use public repos
-    const reposData = privateRepos || repos;
+    const reposData = (privateRepos || repos) as GitHubRepository[];
 
     // Activity over time
-    const activityData =
+    const activityData: ActivityData[] =
       events && events.length > 0
-        ? events
+        ? (events as GitHubEvent[])
             .slice(0, 30)
-            .reduce((acc: any[], event: any) => {
+            .reduce((acc: ActivityData[], event: GitHubEvent) => {
               const date = formatMonthDay(new Date(event.created_at));
               const existing = acc.find((item) => item.date === date);
               if (existing) {
@@ -171,10 +223,10 @@ export default function AnalyticsPage() {
         : [];
 
     // Language distribution
-    const languageData =
+    const languageData: LanguageData[] =
       reposData && reposData.length > 0
         ? reposData
-            .reduce((acc: any[], repo: any) => {
+            .reduce((acc: LanguageData[], repo: GitHubRepository) => {
               if (repo.language) {
                 const existing = acc.find(
                   (item) => item.name === repo.language
@@ -187,59 +239,71 @@ export default function AnalyticsPage() {
               }
               return acc;
             }, [])
-            .sort((a: any, b: any) => b.value - a.value)
+            .sort((a: LanguageData, b: LanguageData) => b.value - a.value)
             .slice(0, 6)
         : [];
 
     // Repository stats
-    const repoStats = {
+    const repoStats: RepoStats = {
       total: reposData?.length || 0,
-      public: reposData?.filter((r: any) => !r.private).length || 0,
-      private: reposData?.filter((r: any) => r.private).length || 0,
-      forked: reposData?.filter((r: any) => r.fork).length || 0,
+      public:
+        reposData?.filter((r: GitHubRepository) => !r.private).length || 0,
+      private:
+        reposData?.filter((r: GitHubRepository) => r.private).length || 0,
+      forked: reposData?.filter((r: GitHubRepository) => r.fork).length || 0,
     };
 
     // Contribution stats
-    const contributionData = [
+    const contributionData: ContributionData[] = [
       {
         subject: "Push Events",
-        A: events?.filter((e: any) => e.type === "PushEvent").length || 0,
+        A:
+          (events as GitHubEvent[])?.filter(
+            (e: GitHubEvent) => e.type === "PushEvent"
+          ).length || 0,
         fullMark: 100,
       },
       {
         subject: "Pull Requests",
         A:
-          events?.filter((e: any) => e.type === "PullRequestEvent").length || 0,
+          (events as GitHubEvent[])?.filter(
+            (e: GitHubEvent) => e.type === "PullRequestEvent"
+          ).length || 0,
         fullMark: 100,
       },
       {
         subject: "Issues",
-        A: events?.filter((e: any) => e.type === "IssuesEvent").length || 0,
+        A:
+          (events as GitHubEvent[])?.filter(
+            (e: GitHubEvent) => e.type === "IssuesEvent"
+          ).length || 0,
         fullMark: 100,
       },
       {
         subject: "Reviews",
         A:
-          events?.filter((e: any) => e.type === "PullRequestReviewEvent")
-            .length || 0,
+          (events as GitHubEvent[])?.filter(
+            (e: GitHubEvent) => e.type === "PullRequestReviewEvent"
+          ).length || 0,
         fullMark: 100,
       },
       {
         subject: "Comments",
         A:
-          events?.filter((e: any) => e.type.includes("CommentEvent")).length ||
-          0,
+          (events as GitHubEvent[])?.filter((e: GitHubEvent) =>
+            e.type.includes("CommentEvent")
+          ).length || 0,
         fullMark: 100,
       },
     ];
 
     // Top repositories by size
-    const topReposBySize =
+    const topReposBySize: TopRepo[] =
       reposData && reposData.length > 0
         ? reposData
-            .sort((a: any, b: any) => b.size - a.size)
+            .sort((a: GitHubRepository, b: GitHubRepository) => b.size - a.size)
             .slice(0, 5)
-            .map((repo: any) => ({
+            .map((repo: GitHubRepository) => ({
               name: repo.name,
               size: repo.size,
               stars: repo.stargazers_count || 0,
@@ -248,10 +312,13 @@ export default function AnalyticsPage() {
         : [];
 
     // Commit time distribution (simulated)
-    const commitTimeData = Array.from({ length: 24 }, (_, i) => ({
-      hour: i,
-      commits: Math.floor(Math.random() * 20) + 1,
-    }));
+    const commitTimeData: CommitTimeData[] = Array.from(
+      { length: 24 },
+      (_, i) => ({
+        hour: i,
+        commits: Math.floor(Math.random() * 20) + 1,
+      })
+    );
 
     setAnalyticsData({
       activityData,
@@ -262,22 +329,43 @@ export default function AnalyticsPage() {
       commitTimeData,
       totalStars:
         reposData?.reduce(
-          (sum: number, repo: any) => sum + repo.stargazers_count,
+          (sum: number, repo: GitHubRepository) => sum + repo.stargazers_count,
           0
         ) || 0,
       totalForks:
         reposData?.reduce(
-          (sum: number, repo: any) => sum + repo.forks_count,
+          (sum: number, repo: GitHubRepository) => sum + repo.forks_count,
           0
         ) || 0,
       totalWatchers:
         reposData?.reduce(
-          (sum: number, repo: any) => sum + repo.watchers_count,
+          (sum: number, repo: GitHubRepository) => sum + repo.watchers_count,
           0
         ) || 0,
-      organizations: orgs?.length || 0,
+      organizations: (orgs as GitHubOrganization[])?.length || 0,
     });
-  };
+  }, [privateRepos, repos, events, orgs]);
+
+  // Process analytics data when store data changes
+  useEffect(() => {
+    if (
+      isPremium &&
+      !dataLoading &&
+      (privateRepos || repos) &&
+      events &&
+      orgs
+    ) {
+      processAnalyticsData();
+    }
+  }, [
+    privateRepos,
+    repos,
+    events,
+    orgs,
+    isPremium,
+    dataLoading,
+    processAnalyticsData,
+  ]);
 
   if (isLoading) {
     return (
@@ -553,7 +641,7 @@ export default function AnalyticsPage() {
                       dataKey="value"
                     >
                       {analyticsData.languageData.map(
-                        (entry: any, index: number) => (
+                        (entry: LanguageData, index: number) => (
                           <Cell
                             key={`cell-${index}`}
                             fill={COLORS[index % COLORS.length]}

@@ -25,7 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import Image from "next/image";
 
 interface Message {
   id: string;
@@ -293,7 +292,10 @@ function Page() {
                     <div className="flex items-center gap-2">
                       <h2 className="font-medium text-lg">Gitcord</h2>
                       {/* Glowing Official Message Badge */}
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-[#5BC898] text-white shadow-md" style={{boxShadow: '0 0 3px 1.5px #5BC89844'}}>
+                      <span
+                        className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-[#5BC898] text-white shadow-md"
+                        style={{ boxShadow: "0 0 3px 1.5px #5BC89844" }}
+                      >
                         Official Message
                       </span>
                     </div>

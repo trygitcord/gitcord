@@ -2,7 +2,6 @@
 
 import React from "react";
 import { signIn } from "next-auth/react";
-import { useUserProfile } from "@/hooks/useMyApiQueries";
 import { Github } from "lucide-react";
 
 function LoginButton() {

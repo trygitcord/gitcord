@@ -251,9 +251,9 @@ export default function PrivacyPolicy() {
                 information
               </li>
               <li>
-                We fetch public activity data through GitHub's official API
+                We fetch public activity data through GitHub&apos;s official API
               </li>
-              <li>We respect GitHub's rate limits and terms of service</li>
+              <li>We respect GitHub&apos;s rate limits and terms of service</li>
               <li>
                 You can revoke our access through your GitHub account settings
               </li>
@@ -315,17 +315,17 @@ export default function PrivacyPolicy() {
             </p>
           </section>
 
-          {/* Children's Privacy */}
+          {/* Children&apos;s Privacy */}
           <section className="mb-16">
             <h2 className="text-2xl font-bold text-foreground mb-8 pt-6">
-              Children's Privacy
+              Children&apos;s Privacy
             </h2>
 
             <p className="text-muted-foreground text-sm leading-relaxed">
               Our service is not intended for children under 13 years of age.
-              Since we rely on GitHub authentication, users must meet GitHub's
-              age requirements. We do not knowingly collect personal information
-              from children under 13.
+              Since we rely on GitHub authentication, users must meet
+              GitHub&apos;s age requirements. We do not knowingly collect
+              personal information from children under 13.
             </p>
           </section>
 

@@ -1,10 +1,10 @@
 import { NextResponse, NextRequest } from "next/server";
 import { withDb, DbModels } from "@/lib/withDb";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
 
 export const GET = withDb(
-  async (request: NextRequest, context: any, models: DbModels) => {
+  async (request: NextRequest, context: unknown, models: DbModels) => {
     try {
       // Check authentication
       const session = await getServerSession(authOptions);
@@ -24,7 +24,9 @@ export const GET = withDb(
       const validLimit = Math.min(Math.max(1, limit), 50); // Max 50 items per page
 
       // Build query
-      const query: any = { recipient: session.user.id };
+      const query: { recipient: string; isRead?: boolean } = {
+        recipient: session.user.id,
+      };
 
       if (filter === "read") {
         query.isRead = true;

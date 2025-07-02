@@ -1,6 +1,53 @@
 import { useQuery } from "@tanstack/react-query";
 import { githubFetcher } from "@/lib/fetcher";
 
+// GitHub API Type Definitions
+interface GitHubCommit {
+  sha: string;
+  commit: {
+    author: {
+      name: string;
+      email: string;
+      date: string;
+    };
+    message: string;
+  };
+  author: {
+    login: string;
+    avatar_url: string;
+  } | null;
+  html_url: string;
+}
+
+interface GitHubRepo {
+  id: number;
+  name: string;
+  full_name: string;
+  owner: {
+    login: string;
+    avatar_url: string;
+  };
+  html_url: string;
+  description: string | null;
+  stargazers_count: number;
+  forks_count: number;
+  language: string | null;
+  updated_at: string;
+}
+
+interface GitHubCommitActivity {
+  days: number[];
+  total: number;
+  week: number;
+}
+
+interface GitHubError {
+  response?: {
+    status: number;
+  };
+  message?: string;
+}
+
 // User Repositories Query
 export const useUserRepositories = (username: string | null) => {
   return useQuery({
@@ -64,7 +111,7 @@ export const useRepositoryCommits = (
   return useQuery({
     queryKey: ["repo-commits", owner, repo],
     queryFn: async () => {
-      let allCommits: any[] = [];
+      let allCommits: GitHubCommit[] = [];
       let page = 1;
       let hasMore = true;
 
@@ -125,12 +172,13 @@ export const useRepositoryCommitActivity = (
     },
     staleTime: 5 * 60 * 1000, // 5 minutes (reduced from 1 hour)
     enabled: !!(owner && repo),
-    retry: (failureCount, error: any) => {
-      if (error?.response?.status === 202) {
+    retry: (failureCount, error: unknown) => {
+      const gitHubError = error as GitHubError;
+      if (gitHubError?.response?.status === 202) {
         return failureCount < 8; // Increased from 5
       }
 
-      if (error?.message?.includes("computed")) {
+      if (gitHubError?.message?.includes("computed")) {
         return failureCount < 5; // Increased from 3
       }
       return failureCount < 3; // Increased from 2
@@ -184,12 +232,13 @@ export const useRepositoryContributors = (
     },
     staleTime: 5 * 60 * 1000, // 5 minutes (reduced from 15)
     enabled: !!(owner && repo),
-    retry: (failureCount, error: any) => {
-      if (error?.response?.status === 202) {
+    retry: (failureCount, error: unknown) => {
+      const gitHubError = error as GitHubError;
+      if (gitHubError?.response?.status === 202) {
         return failureCount < 8; // Increased from 5
       }
 
-      if (error?.message?.includes("computed")) {
+      if (gitHubError?.message?.includes("computed")) {
         return failureCount < 5; // Increased from 3
       }
       return failureCount < 3; // Increased from 2
@@ -243,8 +292,9 @@ export const useOrganization = (org: string | null) => {
     queryFn: async () => {
       try {
         return await githubFetcher(`/orgs/${org}`);
-      } catch (error: any) {
-        if (error?.response?.status === 404) {
+      } catch (error: unknown) {
+        const gitHubError = error as GitHubError;
+        if (gitHubError?.response?.status === 404) {
           throw new Error(`Organization ${org} not found`);
         }
         throw error;
@@ -287,7 +337,7 @@ export const useOrganizationActivity = (org: string | null) => {
       );
 
       // Fetch commit activity for each repository
-      const activityPromises = repos.map(async (repo: any) => {
+      const activityPromises = repos.map(async (repo: GitHubRepo) => {
         try {
           const response = await githubFetcher(
             `/repos/${org}/${repo.name}/stats/commit_activity`
@@ -303,10 +353,10 @@ export const useOrganizationActivity = (org: string | null) => {
 
       // Combine activities from all repositories
       const combinedActivities = activitiesResults.reduce(
-        (acc: any[], curr: any[]) => {
+        (acc: GitHubCommitActivity[], curr: GitHubCommitActivity[]) => {
           if (!Array.isArray(curr)) return acc;
 
-          curr.forEach((week: any) => {
+          curr.forEach((week: GitHubCommitActivity) => {
             const existingWeek = acc.find((w) => w.week === week.week);
             if (existingWeek) {
               existingWeek.total += week.total;
@@ -324,13 +374,16 @@ export const useOrganizationActivity = (org: string | null) => {
       );
 
       // Sort by week
-      return combinedActivities.sort((a: any, b: any) => a.week - b.week);
+      return combinedActivities.sort(
+        (a: GitHubCommitActivity, b: GitHubCommitActivity) => a.week - b.week
+      );
     },
     staleTime: 60 * 60 * 1000, // 1 hour
     enabled: !!org,
-    retry: (failureCount, error: any) => {
+    retry: (failureCount, error: unknown) => {
       // GitHub stats endpoints can return 202 while computing
-      if (error?.response?.status === 202) {
+      const gitHubError = error as GitHubError;
+      if (gitHubError?.response?.status === 202) {
         return failureCount < 5;
       }
       return failureCount < 2;
@@ -350,7 +403,7 @@ export const useOrganizationLanguages = (org: string | null) => {
       );
 
       // Fetch languages for each repository
-      const languagesPromises = repos.map(async (repo: any) => {
+      const languagesPromises = repos.map(async (repo: GitHubRepo) => {
         try {
           const languages = await githubFetcher(
             `/repos/${org}/${repo.name}/languages`
@@ -405,22 +458,27 @@ export const useGitHubUser = (username: string | null) => {
     queryFn: async () => {
       try {
         return await githubFetcher(`/users/${username}`);
-      } catch (error: any) {
+      } catch (error: unknown) {
         // Check if it's a 404 error (user not found on GitHub)
-        if (error.response?.status === 404) {
+        const gitHubError = error as GitHubError;
+        if (gitHubError.response?.status === 404) {
           console.log(`GitHub user ${username} not found`);
           return null;
         }
         // Log other errors
-        console.error("Error fetching GitHub user:", error.message || error);
+        console.error(
+          "Error fetching GitHub user:",
+          gitHubError.message || error
+        );
         throw error;
       }
     },
     staleTime: 30 * 60 * 1000, // 30 minutes
     enabled: !!username,
-    retry: (failureCount, error: any) => {
+    retry: (failureCount, error: unknown) => {
       // Don't retry 404 errors
-      if (error?.response?.status === 404) {
+      const gitHubError = error as GitHubError;
+      if (gitHubError?.response?.status === 404) {
         return false;
       }
       return failureCount < 2;

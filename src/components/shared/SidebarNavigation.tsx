@@ -12,17 +12,13 @@ import {
   LineChart,
   Crown,
   Trophy,
-  ChevronDown,
-  ChevronRight,
-  BarChart3,
   FileText,
-  GitBranch,
   Activity,
   ShoppingCart,
   Shield,
 } from "lucide-react";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Logo from "@/assets/logo.svg";
 
@@ -40,7 +36,7 @@ import {
 
 import Image from "next/image";
 import SidebarUserFooter from "@/components/shared/SidebarUserFooter";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useUserProfile } from "@/hooks/useMyApiQueries";
 import { useVersion } from "@/hooks/useVersion";
 import { useRepository } from "@/hooks/useGitHubQueries";
@@ -123,7 +119,6 @@ export function SidebarNavigation() {
   const { data: profile } = useUserProfile();
   const { data: versionData } = useVersion();
   const profileUrl = profile?.username ? `/user/${profile.username}` : "/user";
-  const isPremium = profile?.premium?.isPremium || false;
 
   // Extract repository info from URL
   const getRepositoryFromPath = () => {
@@ -175,14 +170,17 @@ export function SidebarNavigation() {
     );
   };
 
-  const isExpanded = (itemTitle: string) => expandedItems.includes(itemTitle);
+  const isExpanded = useCallback(
+    (itemTitle: string) => expandedItems.includes(itemTitle),
+    [expandedItems]
+  );
 
   // Auto-expand repository if user is on a repository page
   useEffect(() => {
     if (repositoryInfo && !isExpanded(repositoryInfo.repositoryId)) {
       setExpandedItems((prev) => [...prev, repositoryInfo.repositoryId]);
     }
-  }, [repositoryInfo, pathname]);
+  }, [repositoryInfo, pathname, isExpanded]);
 
   return (
     <Sidebar className="p-4 border-r-2 border-r-neutral-200 dark:bg-neutral-950 dark:border-r-neutral-800 overflow-hidden">
@@ -206,7 +204,6 @@ export function SidebarNavigation() {
           <SidebarMenu>
             {mainItems.map((item) => {
               const isActive = item.live && pathname === item.url;
-              const isItemPremium = item.premium && !isPremium;
 
               return (
                 <SidebarMenuItem key={item.title}>

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Building2, Users, Eye } from "lucide-react";
+import { Building2, Users } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -12,6 +12,19 @@ import {
   useUserOrganizations,
 } from "@/hooks/useGitHubQueries";
 import { useUserProfile } from "@/hooks/useMyApiQueries";
+
+interface Organization {
+  id: number;
+  login: string;
+  avatar_url: string;
+  description?: string;
+}
+
+interface OrganizationMember {
+  id: number;
+  login: string;
+  avatar_url: string;
+}
 
 function Organizations() {
   const { data: userData, isLoading: userLoading } = useUserProfile();
@@ -78,7 +91,7 @@ function Organizations() {
         </p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {orgsData?.map((org: any) => (
+        {orgsData?.map((org: Organization) => (
           <OrganizationCard
             key={org.id}
             org={org}
@@ -97,7 +110,7 @@ function OrganizationCard({
   hoveredMember,
   setHoveredMember,
 }: {
-  org: any;
+  org: Organization;
   hoveredMember: string | null;
   setHoveredMember: (member: string | null) => void;
 }) {
@@ -137,7 +150,7 @@ function OrganizationCard({
               <div className="flex items-center gap-1">
                 <Users className="w-4 h-4" />
                 <div className="flex -space-x-2">
-                  {orgMembers?.slice(0, 3).map((member: any) => (
+                  {orgMembers?.slice(0, 3).map((member: OrganizationMember) => (
                     <div
                       key={member.id}
                       className="relative w-6 h-6 rounded-full overflow-hidden hover:z-10"

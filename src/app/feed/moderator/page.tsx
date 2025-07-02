@@ -16,12 +16,9 @@ import {
   Send,
   Users,
   Loader2,
-  Search,
   MessageSquare,
-  CheckCircle2,
   AlertCircle,
   Mail,
-  User,
   KeyRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -65,10 +62,11 @@ import {
   useGetCodes,
   useDeleteCode,
 } from "@/hooks/useCodeQueries";
+import { CodeType } from "@/models/code";
 
 export default function ModeratorPage() {
   const router = useRouter();
-  const { data: session, status: sessionStatus } = useSession();
+  const { status: sessionStatus } = useSession();
   const { data: profile, isLoading: profileLoading } = useUserProfile();
 
   // State management
@@ -89,11 +87,10 @@ export default function ModeratorPage() {
   });
 
   // Queries and mutations - search parametresi kaldırıldı, tüm kullanıcıları çekiyoruz
-  const {
-    data: usersData,
-    isLoading: usersLoading,
-    error: usersError,
-  } = useGetUsers(undefined, true);
+  const { data: usersData, isLoading: usersLoading } = useGetUsers(
+    undefined,
+    true
+  );
   const { data: userDetails } = useGetUserDetails(
     selectedUserId && selectedUserId !== "all" ? selectedUserId : null
   );
@@ -730,7 +727,7 @@ export default function ModeratorPage() {
                 </tr>
               </thead>
               <tbody>
-                {codesData?.data?.map((code: any) => (
+                {codesData?.data?.map((code: CodeType) => (
                   <tr key={code._id} className="border-b">
                     <td className="px-4 py-2 font-mono">{code.code}</td>
                     <td className="px-4 py-2">{code.credit}</td>
@@ -743,10 +740,12 @@ export default function ModeratorPage() {
                         variant="destructive"
                         size="sm"
                         disabled={
-                          deleteCode.isPending && deletingId === code._id
+                          !code._id ||
+                          (deleteCode.isPending && deletingId === code._id)
                         }
                         onClick={() => {
                           if (
+                            code._id &&
                             window.confirm(
                               `Are you sure you want to delete code '${code.code}'?`
                             )

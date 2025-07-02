@@ -17,6 +17,21 @@ import { LanguagesPieChart } from "@/components/shared/LanguagesPieChart";
 import { ContributorsStats } from "@/components/shared/ContributorsStats";
 import { LastCommits } from "@/components/shared/LastCommits";
 
+// Type definitions
+type LanguageEntry = [string, number];
+
+interface CommitActivityItem {
+  week: number;
+  total: number;
+}
+
+interface ErrorWithResponse {
+  response?: {
+    status?: number;
+  };
+  message?: string;
+}
+
 function Page() {
   const params = useParams();
   const repoName = params.repoName as string;
@@ -52,10 +67,10 @@ function Page() {
     if (!languagesData || !repoData) return null;
 
     if (languagesData && typeof languagesData === "object") {
-      const languageEntries = Object.entries(languagesData);
+      const languageEntries = Object.entries(languagesData) as LanguageEntry[];
       if (languageEntries.length === 0) return null;
 
-      return languageEntries.reduce((a: any, b: any) =>
+      return languageEntries.reduce((a: LanguageEntry, b: LanguageEntry) =>
         a[1] > b[1] ? a : b
       )[0];
     }
@@ -69,7 +84,7 @@ function Page() {
     if (Array.isArray(activityData) && activityData.length > 0) {
       const last52Weeks = activityData.slice(-52);
 
-      return last52Weeks.map((item: any) => ({
+      return last52Weeks.map((item: CommitActivityItem) => ({
         date: new Date(item.week * 1000).toISOString().split("T")[0],
         commits: item.total,
       }));
@@ -86,7 +101,7 @@ function Page() {
   const error = useMemo(() => {
     if (!repoError) return null;
 
-    const errorResponse = (repoError as any)?.response;
+    const errorResponse = (repoError as ErrorWithResponse)?.response;
     if (errorResponse?.status === 404) {
       return "Repository not found or you don't have access to it.";
     } else if (errorResponse?.status === 403) {
@@ -95,7 +110,7 @@ function Page() {
       return "Authentication failed. Please try logging in again.";
     } else {
       return (
-        (repoError as any)?.message ||
+        (repoError as ErrorWithResponse)?.message ||
         "An error occurred while fetching repository data."
       );
     }
@@ -173,9 +188,6 @@ function Page() {
           description={repoData.description}
           visibility={repoData.visibility}
           language={mainLanguage}
-          stars={repoData.stargazers_count}
-          forks={repoData.forks_count}
-          watchers={repoData.watchers_count}
           lastUpdate={repoData.updated_at}
           commitGraph={chartData}
         />

@@ -18,30 +18,14 @@ import { useUserProfile } from "@/hooks/useMyApiQueries";
 import Link from "next/link";
 import { ArrowLeft, Star, GitFork, GitCommit } from "lucide-react";
 
-interface RepositoryData {
-  id: number;
-  name: string;
-  full_name: string;
-  description: string | null;
-  stargazers_count: number;
-  forks_count: number;
-  language: string | null;
-  updated_at: string;
-  watchers_count: number;
+interface ChartDataPoint {
+  date: string;
+  commits: number;
 }
 
-interface Commit {
-  sha: string;
-  commit: {
-    message: string;
-    author: {
-      date: string;
-    };
-  };
-  author: {
-    login: string;
-    avatar_url: string;
-  } | null;
+interface WeeklyActivity {
+  week: number;
+  total: number;
 }
 
 function Page() {
@@ -79,7 +63,7 @@ function Page() {
   }, [decodedRepositoryId, userProfile?.username]);
 
   const [mainLanguage, setMainLanguage] = useState<string | null>(null);
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
 
   // TanStack Query hooks - already have internal enabled checks
   const {
@@ -119,7 +103,7 @@ function Page() {
     if (languagesData && typeof languagesData === "object") {
       const languageEntries = Object.entries(languagesData);
       const totalBytes = languageEntries.reduce(
-        (sum, [_, bytes]) => sum + (bytes as number),
+        (sum, [, bytes]) => sum + (bytes as number),
         0
       );
 
@@ -140,8 +124,8 @@ function Page() {
   // Process activity data when it changes
   useEffect(() => {
     if (activityData && Array.isArray(activityData)) {
-      const formattedData = activityData.map((week: any) => ({
-        week: new Date(week.week * 1000).toLocaleDateString("en-US", {
+      const formattedData = activityData.map((week: WeeklyActivity) => ({
+        date: new Date(week.week * 1000).toLocaleDateString("en-US", {
           month: "short",
           day: "numeric",
         }),
@@ -225,14 +209,11 @@ function Page() {
             description={repoData.description}
             visibility="public"
             language={mainLanguage}
-            stars={repoData.stargazers_count}
-            forks={repoData.forks_count}
-            watchers={repoData.watchers_count}
             lastUpdate={repoData.updated_at}
             commitGraph={chartData}
             isLoadingCommitActivity={isActivityLoading}
             isFetchingCommitActivity={activityFetching}
-            activityError={activityError}
+            activityError={activityError as Error | null}
             refetchActivity={refetchActivity}
           />
 

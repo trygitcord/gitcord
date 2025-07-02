@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 type MongooseCache = {
   conn: typeof mongoose | null;
@@ -6,13 +6,16 @@ type MongooseCache = {
 };
 
 declare global {
+  // eslint-disable-next-line no-var
   var mongoose: MongooseCache;
 }
 
-const MONGODB_URI: string = process.env.MONGODB_URI || '';
+const MONGODB_URI: string = process.env.MONGODB_URI || "";
 
 if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable inside .env');
+  throw new Error(
+    "Please define the MONGODB_URI environment variable inside .env"
+  );
 }
 
 let cached: MongooseCache = global.mongoose;
@@ -41,10 +44,10 @@ export const connect = async () => {
   try {
     const mongoose = await cached.promise;
     cached.conn = mongoose;
-    console.log('Connected to MongoDB');
+    console.log("Connected to MongoDB");
   } catch (e) {
     cached.promise = null;
-    console.error('MongoDB connection error:', e);
+    console.error("MongoDB connection error:", e);
     throw e;
   }
 
