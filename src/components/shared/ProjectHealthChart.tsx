@@ -52,7 +52,7 @@ const ProjectHealthChart: React.FC<ProjectHealthChartProps> = ({
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke="#E0E0E0"
+          stroke="#D1D5DB"
           strokeWidth={6}
           fill="none"
         />
@@ -75,7 +75,7 @@ const ProjectHealthChart: React.FC<ProjectHealthChartProps> = ({
           dominantBaseline="central"
           fontSize={size * 0.32}
           fontWeight="bold"
-          fill="#fff"
+          className="fill-gray-700 dark:fill-white"
         >
           {score}
         </text>

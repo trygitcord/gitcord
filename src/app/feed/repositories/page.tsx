@@ -210,7 +210,7 @@ function Repositories() {
               {" "}
               {/* Silinebilir bug olursa -Harun */}
               <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-4 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors h-full relative">
-                <span className="absolute top-15 right-4 z-10 ">
+                <span className="absolute top-12 right-4 z-10 ">
                   <ProjectHealthChart
                     score={calculateHealthScore(repo)}
                     size={40}
@@ -230,7 +230,7 @@ function Repositories() {
                       </span>
                     </div>
                   </div>
-                  <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4 line-clamp-2">
+                  <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4 line-clamp-2 mr-16">
                     {repo.description || "No description provided."}
                   </p>
                   <div className="mt-auto">
