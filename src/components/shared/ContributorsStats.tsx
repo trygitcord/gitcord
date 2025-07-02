@@ -13,19 +13,6 @@ export function ContributorsStats({ owner, repo }: ContributorsStatsProps) {
   const { data, isLoading, error, isFetching, isError, refetch } =
     useRepositoryContributors(owner, repo);
 
-  // Debug logs
-  console.log("ContributorsStats Debug:", {
-    owner,
-    repo,
-    data,
-    isLoading,
-    error,
-    isFetching,
-    isError,
-    dataType: typeof data,
-    dataLength: Array.isArray(data) ? data.length : "not array",
-  });
-
   if (isLoading || (isFetching && !data)) {
     return (
       <div className="bg-gradient-to-br from-neutral-500/10 to-neutral-500/10 rounded-xl p-6 h-[230px]">

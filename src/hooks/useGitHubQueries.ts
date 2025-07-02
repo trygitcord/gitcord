@@ -102,8 +102,6 @@ export const useRepositoryCommitActivity = (
         `/repos/${owner}/${repo}/stats/commit_activity`
       );
 
-      console.log("Commit Activity API Raw Response:", response);
-
       // GitHub stats API returns 202 when computing, empty array when no data
       if (Array.isArray(response) && response.length === 0) {
         console.log("Commit Activity: Empty array received - likely computing");
@@ -162,8 +160,6 @@ export const useRepositoryContributors = (
       const response = await githubFetcher(
         `/repos/${owner}/${repo}/stats/contributors`
       );
-
-      console.log("Contributors API Raw Response:", response);
 
       // GitHub API döndürdüğü response tipini kontrol et
       if (

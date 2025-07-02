@@ -320,7 +320,9 @@ export default function AnalyticsPage() {
                   <Image
                     src={profile.avatar_url}
                     alt={profile.name || profile.username || "User"}
-                    className="w-20 h-20 rounded-full border-2 border-white dark:border-neutral-900"
+                    width={80}
+                    height={80}
+                    className="rounded-full border-2 border-white dark:border-neutral-900"
                   />
                 ) : (
                   <LineChart className="w-12 h-12 text-[#5BC898]" />

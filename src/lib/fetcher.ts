@@ -6,11 +6,6 @@ export const githubFetcher = (url: string) => {
   return githubAxios
     .get(url)
     .then((res) => {
-      console.log("GitHub API Response:", {
-        url,
-        status: res.status,
-        data: res.data,
-      });
       return res.data;
     })
     .catch((err) => {

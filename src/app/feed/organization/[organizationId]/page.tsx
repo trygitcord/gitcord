@@ -20,7 +20,7 @@ import {
   useOrganizationLanguages,
   useOrganizationActivity,
 } from "@/hooks/useGitHubQueries";
-import ProjectHealthChart from '@/components/shared/ProjectHealthChart';
+import ProjectHealthChart from "@/components/shared/ProjectHealthChart";
 
 function timeAgo(dateString: string) {
   const now = new Date();
@@ -36,7 +36,8 @@ function timeAgo(dateString: string) {
 }
 
 function calculateHealthScore(repo: any) {
-  const daysSinceUpdate = (Date.now() - new Date(repo.updated_at).getTime()) / (1000 * 60 * 60 * 24);
+  const daysSinceUpdate =
+    (Date.now() - new Date(repo.updated_at).getTime()) / (1000 * 60 * 60 * 24);
   let updateScore = 0;
   if (daysSinceUpdate < 1) updateScore = 40;
   else if (daysSinceUpdate < 7) updateScore = 35;
@@ -52,7 +53,9 @@ function calculateHealthScore(repo: any) {
   else if ((repo.open_issues_count || 0) > 3) issueScore = 10;
   let activityScore = 0;
   if (repo.last_commit_date) {
-    const daysSinceCommit = (Date.now() - new Date(repo.last_commit_date).getTime()) / (1000 * 60 * 60 * 24);
+    const daysSinceCommit =
+      (Date.now() - new Date(repo.last_commit_date).getTime()) /
+      (1000 * 60 * 60 * 24);
     if (daysSinceCommit < 30) activityScore = 15;
   }
   return Math.min(100, updateScore + commitScore + issueScore + activityScore);
@@ -217,7 +220,12 @@ function Page() {
                       className="group h-full"
                     >
                       <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-4 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors h-full relative">
-                        <span className="absolute top-15 right-4 z-10"><ProjectHealthChart score={calculateHealthScore(repo)} size={40} /></span>
+                        <span className="absolute top-12 right-4 z-10">
+                          <ProjectHealthChart
+                            score={calculateHealthScore(repo)}
+                            size={40}
+                          />
+                        </span>
                         <div className="flex flex-col h-full">
                           <div className="flex items-start justify-between mb-2">
                             <h3 className="text-neutral-800 dark:text-neutral-200 font-medium group-hover:text-[#5BC898] transition-colors">
@@ -227,7 +235,7 @@ function Page() {
                               {repo.visibility}
                             </span>
                           </div>
-                          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4 line-clamp-2">
+                          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4 line-clamp-2 mr-16">
                             {repo.description || "No description provided."}
                           </p>
                           <div className="mt-auto">
