@@ -125,7 +125,7 @@ export const rateLimiters = {
   // Strict rate limiter for sensitive operations - 3 requests per minute
   strict: new RateLimiter({
     windowMs: 60 * 1000, // 1 minute
-    maxRequests: 3,
+    maxRequests: 15,
   }),
 };
 
