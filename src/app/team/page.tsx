@@ -21,17 +21,6 @@ import Link from "next/link";
 // Team member data
 const teamMembers = [
   {
-    name: "Berke Kanber",
-    role: "Software Developer",
-    avatar: "https://avatars.githubusercontent.com/u/115804625?v=4",
-    bio: "Full-stack developer passionate about building tools that help developers track their progress.",
-    github: "https://github.com/chefberke",
-    twitter: "https://twitter.com/chef_berke",
-    linkedin: "www.linkedin.com/in/berke-kanber-942392265",
-    gradient: "from-[#4CFFAF] to-[#3ABA81]",
-    icon: <Rocket className="w-4 h-4" />,
-  },
-  {
     name: "Harun Demirci",
     role: "Software Developer",
     avatar: "https://avatars.githubusercontent.com/u/69716874?v=4",
@@ -41,6 +30,17 @@ const teamMembers = [
     linkedin: "https://www.linkedin.com/in/harun-demirci-727360230/",
     gradient: "from-[#dd7bbb] to-[#d79f1e]",
     icon: <Code className="w-4 h-4" />,
+  },
+  {
+    name: "Berke Kanber",
+    role: "Software Developer",
+    avatar: "https://avatars.githubusercontent.com/u/115804625?v=4",
+    bio: "Full-stack developer passionate about building tools that help developers track their progress.",
+    github: "https://github.com/chefberke",
+    twitter: "https://twitter.com/chef_berke",
+    linkedin: "www.linkedin.com/in/berke-kanber-942392265",
+    gradient: "from-[#4CFFAF] to-[#3ABA81]",
+    icon: <Rocket className="w-4 h-4" />,
   },
   {
     name: "We&apos;re Hiring.",

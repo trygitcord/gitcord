@@ -35,7 +35,7 @@ const footerLinks: FooterSection[] = [
         title: "GitHub API",
         href: "https://docs.github.com/en/rest",
       },
-      { title: "Status", href: "https://status.gitcord.pro" },
+      { title: "Status", href: "https://gitcord.betteruptime.com" },
     ],
   },
   {

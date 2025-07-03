@@ -106,6 +106,7 @@ Welcome to the Gitcord community! Here you can track your GitHub profile, connec
 • Discover more with premium features
 
 If you encounter any problems or need help, feel free to reach out to us.
+Also, if you have a magic code, you can activate this code from the Settings section.
 
 Good luck! 🚀
 

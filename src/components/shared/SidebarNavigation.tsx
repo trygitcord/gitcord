@@ -32,6 +32,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuBadge,
 } from "@/components/ui/sidebar";
 
 import Image from "next/image";
@@ -40,6 +41,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useUserProfile } from "@/hooks/useMyApiQueries";
 import { useVersion } from "@/hooks/useVersion";
 import { useRepository } from "@/hooks/useGitHubQueries";
+import { useGetUserMessages } from "@/hooks/useMessageQueries";
 
 // Menu items.
 const mainItems = [
@@ -162,6 +164,10 @@ export function SidebarNavigation() {
     repositoryInfo?.repo || null
   );
 
+  // Unread message count for Inbox badge
+  const { data: unreadMessagesData } = useGetUserMessages(1, 1, "unread");
+  const unreadCount = unreadMessagesData?.data?.unreadCount || 0;
+
   const toggleExpanded = (itemTitle: string) => {
     setExpandedItems((prev) =>
       prev.includes(itemTitle)
@@ -204,7 +210,8 @@ export function SidebarNavigation() {
           <SidebarMenu>
             {mainItems.map((item) => {
               const isActive = item.live && pathname === item.url;
-
+              // Badge only for Inbox
+              const showInboxBadge = item.title === "Inbox" && unreadCount > 0;
               return (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
@@ -215,15 +222,13 @@ export function SidebarNavigation() {
                           isActive
                             ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border border-neutral-100 dark:border-neutral-800"
                             : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
-                        }`}
+                        } relative`}
                       >
                         <item.icon
                           className={`${isActive ? "text-[#5BC898]" : ""}`}
                         />
                         <span
-                          className={`${
-                            isActive ? "text-[#5BC898]" : ""
-                          } flex-1`}
+                          className={`${isActive ? "text-[#5BC898]" : ""} flex-1`}
                         >
                           {item.title}
                         </span>
@@ -234,6 +239,11 @@ export function SidebarNavigation() {
                           <span className="text-xs text-neutral-400 dark:text-neutral-500 ml-1">
                             Soon
                           </span>
+                        )}
+                        {showInboxBadge && (
+                          <SidebarMenuBadge className="bg-red-500 text-white ml-2">
+                            {unreadCount > 9 ? "9+" : unreadCount}
+                          </SidebarMenuBadge>
                         )}
                       </Link>
                     ) : (
