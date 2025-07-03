@@ -5,6 +5,7 @@ import { ThemeProvider } from "next-themes";
 import SessionProvider from "@/components/providers/SessionProvider";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { Toaster } from "sonner";
+import Script from "next/script";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -27,6 +28,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={poppins.className} suppressHydrationWarning>
+      <head>
+        <Script
+          id="clarity-script"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(c,l,a,r,i,t,y){
+                  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+              })(window, document, "clarity", "script", "s97t5ojfcn");
+            `,
+          }}
+        />
+      </head>
       <body suppressHydrationWarning>
         <SessionProvider>
           <QueryProvider>
