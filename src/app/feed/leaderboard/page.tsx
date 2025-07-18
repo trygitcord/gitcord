@@ -147,6 +147,7 @@ export default function LeaderboardPage() {
                       </Avatar>
                       <div>
                         <Link
+                          target="_blank"
                           href={`/user/${user.username}`}
                           className="font-medium hover:underline underline-offset-4"
                         >

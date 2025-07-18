@@ -2,16 +2,24 @@
 
 import { LastCommits } from "@/components/shared/LastCommits";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useRepositoryCommits } from "@/hooks/useGitHubQueries";
 import { useUserProfile } from "@/hooks/useMyApiQueries";
-import { ArrowLeft, AlertCircle, RefreshCw } from "lucide-react";
+import { ArrowLeft, AlertCircle, RefreshCw, Filter, Users } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 
 function Page() {
   const params = useParams();
   const repositoryId = params.repositoryId as string;
+  const [selectedUser, setSelectedUser] = useState<string>("all");
 
   // Since repositoryId might be URL encoded, decode it first
   const decodedRepositoryId = repositoryId
@@ -46,6 +54,39 @@ function Page() {
     isLoading: commitsLoading,
     error: commitsError,
   } = useRepositoryCommits(owner, repo);
+
+  // Extract unique users from commits
+  const uniqueUsers = useMemo(() => {
+    if (!commitsData) return [];
+
+    const users = new Map<string, { login: string; avatar_url: string }>();
+
+    commitsData.forEach((commit) => {
+      if (commit.author) {
+        users.set(commit.author.login, {
+          login: commit.author.login,
+          avatar_url: commit.author.avatar_url,
+        });
+      }
+    });
+
+    return Array.from(users.values()).sort((a, b) =>
+      a.login.localeCompare(b.login)
+    );
+  }, [commitsData]);
+
+  // Filter commits based on selected user
+  const filteredCommits = useMemo(() => {
+    if (!commitsData) return [];
+
+    if (selectedUser === "all") {
+      return commitsData;
+    }
+
+    return commitsData.filter(
+      (commit) => commit.author?.login === selectedUser
+    );
+  }, [commitsData, selectedUser]);
 
   const isLoading = profileLoading || commitsLoading;
 
@@ -170,17 +211,70 @@ function Page() {
             <span>Back</span>
           </Link>
         </div>
-        <div className="pt-2">
-          <h1 className="text-lg font-medium">Activity</h1>
-          <p className="text-neutral-500 text-sm dark:text-neutral-400">
-            Latest activity in this repository.
-          </p>
+        <div className="pt-2 flex items-center justify-between">
+          <div>
+            <h1 className="text-lg font-medium">Activity</h1>
+            <p className="text-neutral-500 text-sm dark:text-neutral-400">
+              Latest activity in this repository.
+            </p>
+          </div>
+
+          {/* User Filter Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="inline-flex items-center gap-2 px-3 py-2 text-sm bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-md transition-colors">
+                <Filter className="w-4 h-4" />
+                <span>
+                  {selectedUser === "all"
+                    ? "All Users"
+                    : uniqueUsers.find((u) => u.login === selectedUser)
+                        ?.login || "All Users"}
+                </span>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuItem
+                onClick={() => setSelectedUser("all")}
+                className="flex items-center gap-2"
+              >
+                <Users className="w-4 h-4" />
+                <span>All Users</span>
+                {selectedUser === "all" && (
+                  <span className="ml-auto text-xs text-neutral-500">
+                    ({commitsData?.length || 0})
+                  </span>
+                )}
+              </DropdownMenuItem>
+
+              {uniqueUsers.map((user) => (
+                <DropdownMenuItem
+                  key={user.login}
+                  onClick={() => setSelectedUser(user.login)}
+                  className="flex items-center gap-2"
+                >
+                  <Image
+                    src={user.avatar_url}
+                    alt={user.login}
+                    width={16}
+                    height={16}
+                    className="w-4 h-4 rounded-full"
+                  />
+                  <span className="truncate">{user.login}</span>
+                  {selectedUser === user.login && (
+                    <span className="ml-auto text-xs text-neutral-500">
+                      ({filteredCommits.length})
+                    </span>
+                  )}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
       <div className="flex-1 mt-4 overflow-hidden mb-8">
         <LastCommits
-          commits={commitsData || []}
+          commits={filteredCommits}
           owner={owner || ""}
           repo={repo || ""}
           slice={1000}

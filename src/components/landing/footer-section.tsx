@@ -193,7 +193,7 @@ export function Footer() {
               </Link>
               <span>•</span>
               <Link
-                href="https://status.gitcord.pro"
+                href="https://gitcord.betteruptime.com"
                 className="hover:text-foreground transition-colors"
                 target="_blank"
               >
