@@ -30,17 +30,11 @@ export default function RootLayout({
     <html lang="en" className={poppins.className} suppressHydrationWarning>
       <head>
         <Script
-          id="clarity-script"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function(c,l,a,r,i,t,y){
-                  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-                  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-                  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-              })(window, document, "clarity", "script", "s97t5ojfcn");
-            `,
-          }}
+          src="https://cdn.databuddy.cc/databuddy.js"
+          data-client-id="gHClLwBIECrCEU3-Cb4fH"
+          data-enable-batching="true"
+          crossOrigin="anonymous"
+          async
         />
       </head>
       <body suppressHydrationWarning>
