@@ -29,13 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={poppins.className} suppressHydrationWarning>
       <head>
-        <Script
-          src="https://cdn.databuddy.cc/databuddy.js"
-          data-client-id="gHClLwBIECrCEU3-Cb4fH"
-          data-enable-batching="true"
-          crossOrigin="anonymous"
-          async
-        />
+        <Script defer src="https://assets.onedollarstats.com/stonks.js" />
       </head>
       <body suppressHydrationWarning>
         <SessionProvider>
