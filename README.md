@@ -144,6 +144,10 @@ This project is licensed under the MIT License.
 
 ---
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=lumi-work/gitcord&type=Date)](https://www.star-history.com/#lumi-work/gitcord&Date)
+
 <div align="center">
   <p>Made with ❤️ by the Lumi Works team</p>
 </div>
