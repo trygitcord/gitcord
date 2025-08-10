@@ -1,9 +1,9 @@
 import { HeroSection } from "@/components/landing/hero";
 import { Footer } from "@/components/landing/footer-section";
-import MarqueeColumns from "@/components/landing/marquee-columns";
 import { Features } from "@/components/landing/features";
 import AppPreview from "@/components/landing/app-preview";
 import { Faq } from "@/components/landing/faq";
+import { MarqueeColumns } from "@/components/landing/marquee-columns";
 
 export default function Home() {
   return (
