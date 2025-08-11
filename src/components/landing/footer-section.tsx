@@ -170,8 +170,6 @@ export function Footer() {
         <div className="border-t border-foreground/10 mt-16 pt-10 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-6 text-xs text-muted-foreground">
             <span>Built by developers, for developers</span>
-            <span className="hidden md:inline">•</span>
-            <span className="hidden md:inline">Powered by Lumi Works</span>
           </div>
           <div className="flex items-center gap-6">
             <ThemeToggle />

@@ -129,7 +129,7 @@ export function HeroSection() {
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                     <button
                       onClick={handleGithubLogin}
-                      className="bg-gradient-to-b from-neutral-700 hover:from-neutral-600 to-neutral-900 text-white py-2 px-4  rounded-lg shadow hover:brightness-105 cursor-pointer transition-all"
+                      className="bg-gradient-to-b from-neutral-700 hover:from-neutral-700/90 to-neutral-900 text-white py-1.5 px-3 rounded-lg shadow hover:brightness-105 cursor-pointer transition-all"
                     >
                       <span className="text-sm">
                         Get Started Free{" "}
@@ -311,7 +311,7 @@ export const HeroHeader = () => {
 
                   <button
                     onClick={handleGetStarted}
-                    className="w-full bg-gradient-to-b from-neutral-700 hover:from-neutral-600 to-neutral-900 text-white py-1 px-4 rounded-lg shadow hover:brightness-105 cursor-pointer transition-all"
+                    className="w-full bg-gradient-to-b from-neutral-700 hover:from-neutral-700/90 to-neutral-900 text-white py-1 px-4 rounded-lg shadow hover:brightness-105 cursor-pointer transition-all"
                   >
                     <span className="text-sm">Get Started</span>
                   </button>
