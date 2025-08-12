@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useTheme } from "next-themes";
 import Image from "next/image";
 
 const previewImages = [
@@ -28,7 +27,6 @@ const previewImages = [
 ];
 
 export default function AppPreview() {
-  const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [containerStyle, setContainerStyle] = useState<React.CSSProperties>({
@@ -36,22 +34,17 @@ export default function AppPreview() {
   });
   const imgRef = useRef<HTMLImageElement>(null);
 
-  // Ensure component is mounted before accessing theme
+  // Ensure component is mounted
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Get current image source based on theme
+  // Always use dark theme images for landing page
   const getCurrentImageSrc = useCallback(
     (image: (typeof previewImages)[0]) => {
-      if (!mounted) {
-        // Return default dark image during SSR
-        return image.src;
-      }
-      // Use resolvedTheme for better theme detection (handles 'system' theme)
-      return resolvedTheme === "light" ? image.lightSrc : image.src;
+      return image.src; // Always use dark theme images
     },
-    [mounted, resolvedTheme]
+    []
   );
 
   useEffect(() => {
@@ -65,7 +58,7 @@ export default function AppPreview() {
       });
     };
     img.src = getCurrentImageSrc(previewImages[0]);
-  }, [mounted, resolvedTheme, getCurrentImageSrc]);
+  }, [mounted, getCurrentImageSrc]);
 
   // Show loading state during SSR and initial client render
   if (!mounted) {

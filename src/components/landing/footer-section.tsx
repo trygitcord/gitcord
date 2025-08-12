@@ -2,8 +2,6 @@
 import React from "react";
 import type { ComponentProps, ReactNode } from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { useTheme } from "next-themes";
-import { Moon, Sun, Monitor } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -49,57 +47,6 @@ const footerLinks: FooterSection[] = [
   },
 ];
 
-function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = React.useState(false);
-
-  // Avoid hydration mismatch
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return <div className="w-24 h-8" />; // Placeholder to prevent layout shift
-  }
-
-  return (
-    <div className="flex items-center gap-1.5 p-1 rounded-full bg-muted/30 backdrop-blur-sm border border-border/50">
-      <button
-        onClick={() => setTheme("light")}
-        className={`p-1.5 rounded-full transition-all duration-200 ${
-          theme === "light"
-            ? "bg-background text-foreground shadow-sm"
-            : "text-muted-foreground hover:text-foreground"
-        }`}
-        aria-label="Light mode"
-      >
-        <Sun className="h-3.5 w-3.5" />
-      </button>
-      <button
-        onClick={() => setTheme("dark")}
-        className={`p-1.5 rounded-full transition-all duration-200 ${
-          theme === "dark"
-            ? "bg-background text-foreground shadow-sm"
-            : "text-muted-foreground hover:text-foreground"
-        }`}
-        aria-label="Dark mode"
-      >
-        <Moon className="h-3.5 w-3.5" />
-      </button>
-      <button
-        onClick={() => setTheme("system")}
-        className={`p-1.5 rounded-full transition-all duration-200 ${
-          theme === "system"
-            ? "bg-background text-foreground shadow-sm"
-            : "text-muted-foreground hover:text-foreground"
-        }`}
-        aria-label="System mode"
-      >
-        <Monitor className="h-3.5 w-3.5" />
-      </button>
-    </div>
-  );
-}
 
 export function Footer() {
   return (
@@ -172,7 +119,6 @@ export function Footer() {
             <span>Built by developers, for developers</span>
           </div>
           <div className="flex items-center gap-6">
-            <ThemeToggle />
             <div className="flex items-center gap-4 text-xs text-muted-foreground">
               <Link
                 href="/privacy"
