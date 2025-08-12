@@ -39,14 +39,12 @@ const footerLinks: FooterSection[] = [
   {
     label: "Company",
     links: [
-      { title: "Team", href: "/team" },
       { title: "Privacy Policy", href: "/privacy" },
       { title: "Terms of Service", href: "/terms" },
       { title: "Contact", href: "/contact" },
     ],
   },
 ];
-
 
 export function Footer() {
   return (

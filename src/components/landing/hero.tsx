@@ -129,7 +129,7 @@ export function HeroSection() {
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                     <button
                       onClick={handleGithubLogin}
-                      className="bg-gradient-to-b from-neutral-700 hover:from-neutral-700/90 to-neutral-900 text-white py-1.5 px-4 rounded-lg shadow hover:brightness-105 cursor-pointer transition-all"
+                      className="w-full rounded-lg px-5 py-2 bg-neutral-800 text-white shadow hover:cursor-pointer transition-colors duration-200 sm:w-auto flex items-center justify-center hover:bg-neutral-900"
                     >
                       <span className="text-sm">
                         Get Started Free{" "}
@@ -202,8 +202,8 @@ export function HeroSection() {
 const menuItems = [
   { name: "Features", href: "/#features" },
   { name: "Preview", href: "/#preview" },
+  { name: "Team", href: "/#team" },
   { name: "FAQ", href: "/#faq" },
-  { name: "Team", href: "/team" },
 ];
 
 export const HeroHeader = () => {
@@ -311,7 +311,7 @@ export const HeroHeader = () => {
 
                   <button
                     onClick={handleGetStarted}
-                    className="w-full bg-gradient-to-b from-neutral-700 hover:from-neutral-700/90 to-neutral-900 text-white py-1 px-4 rounded-lg shadow hover:brightness-105 cursor-pointer transition-all"
+                    className="w-full rounded-lg px-4 py-1.5 bg-neutral-800 text-white shadow hover:cursor-pointer transition-colors duration-200 sm:w-auto flex items-center justify-center hover:bg-neutral-900"
                   >
                     <span className="text-sm">Get Started</span>
                   </button>

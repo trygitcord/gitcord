@@ -1,11 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
 import { motion } from "motion/react";
 import Image from "next/image";
-import { ArrowUpRight, Github, Twitter } from "lucide-react";
-import { HeroHeader } from "@/components/landing/hero";
-import { Footer } from "@/components/landing/footer-section";
+import { ArrowUpRight, Github, Twitter, Plus } from "lucide-react";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -49,26 +46,20 @@ const teamMembers = [
   },
 ];
 
-function page() {
-  useEffect(() => {
-    document.title = "Gitcord | Team";
-  }, []);
-
+export function Team() {
   return (
-    <div className="min-h-screen bg-background">
-      <HeroHeader />
-
+    <div id="team" className="py-16">
       <motion.div
         initial="hidden"
         animate="visible"
         variants={containerVariants}
-        className="max-w-4xl mx-auto px-6 pt-40 py-24"
+        className="flex flex-col items-center justify-center max-w-[750px] mx-auto"
       >
-        <motion.div variants={itemVariants} className="mb-16">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-3 bg-gradient-to-r from-foreground via-foreground/80 to-foreground bg-clip-text text-transparent">
+        <motion.div variants={itemVariants} className="mb-16 text-center">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-3 bg-gradient-to-r from-foreground via-foreground/80 to-foreground bg-clip-text text-transparent">
             Meet the Team
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl">
+          </h2>
+          <p className="text-sm sm:text-base text-muted-foreground">
             We&apos;re passionate developers building tools to help track and
             showcase GitHub activity.
           </p>
@@ -76,7 +67,7 @@ function page() {
 
         <motion.div
           variants={itemVariants}
-          className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mb-16"
+          className="flex items-center justify-around w-full max-w-2xl mb-16"
         >
           {teamMembers.map((member) => (
             <motion.div
@@ -84,12 +75,12 @@ function page() {
               variants={itemVariants}
               className="flex items-center space-x-4 group"
             >
-              <div className="relative w-20 h-20 rounded-full overflow-hidden bg-neutral-100 dark:bg-neutral-800 transition-all duration-300 group-hover:scale-110">
+              <div className="relative w-20 h-20 rounded-full overflow-hidden bg-neutral-100 dark:bg-neutral-800 transition-all duration-300">
                 <Image
                   src={member.image}
                   alt={member.name}
                   fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-110"
+                  className="object-cover transition-transform duration-300"
                 />
               </div>
 
@@ -125,22 +116,9 @@ function page() {
             </motion.div>
           ))}
         </motion.div>
-
-        <motion.div variants={itemVariants}>
-          <a
-            href="mailto:works.lumi@gmail.com"
-            className="w-fit bg-gradient-to-b from-neutral-700 hover:from-neutral-700/90 to-neutral-900 text-white py-2 px-4 rounded-lg shadow hover:brightness-105 cursor-pointer transition-all inline-flex items-center"
-          >
-            <span className="text-sm">
-              Get in Touch <ArrowUpRight className="w-4 h-4 inline" />
-            </span>
-          </a>
-        </motion.div>
       </motion.div>
-
-      <Footer />
     </div>
   );
 }
 
-export default page;
+export default Team;

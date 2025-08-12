@@ -16,14 +16,14 @@ export default function PrivacyPolicy() {
       <div className="max-w-4xl mx-auto px-6 py-24">
         {/* Header */}
         <div className="mb-16 pt-16">
-          <h1 className="text-3xl font-bold text-foreground mb-6">
+          <h1 className="text-2xl font-medium text-foreground mb-4">
             Privacy Policy
           </h1>
-          <p className="text-muted-foreground text-base leading-relaxed mb-4">
+          <p className="text-muted-foreground text-sm leading-relaxed mb-3">
             Your privacy is important to us. This policy explains how we
             collect, use, and protect your information when you use Gitcord.
           </p>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-xs">
             Last updated:{" "}
             {new Date().toLocaleDateString("en-US", {
               year: "numeric",
@@ -35,13 +35,13 @@ export default function PrivacyPolicy() {
         <div className="prose prose-gray dark:prose-invert max-w-none">
           {/* Information We Collect */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-foreground mb-8 pt-6">
+            <h2 className="text-lg font-medium text-foreground mb-4">
               Information We Collect
             </h2>
 
             <div className="space-y-8">
               <div>
-                <h3 className="text-lg font-medium text-foreground mb-4">
+                <h3 className="text-base font-normal text-foreground mb-2">
                   GitHub Profile Data
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed mb-3">
@@ -58,7 +58,7 @@ export default function PrivacyPolicy() {
               </div>
 
               <div>
-                <h3 className="text-lg font-medium text-foreground mb-4">
+                <h3 className="text-base font-normal text-foreground mb-2">
                   GitHub Activity Data
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed mb-3">
@@ -73,7 +73,7 @@ export default function PrivacyPolicy() {
               </div>
 
               <div>
-                <h3 className="text-lg font-medium text-foreground mb-4">
+                <h3 className="text-base font-normal text-foreground mb-2">
                   User Statistics and Premium Data
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed mb-3">
@@ -89,7 +89,7 @@ export default function PrivacyPolicy() {
               </div>
 
               <div>
-                <h3 className="text-lg font-medium text-foreground mb-4">
+                <h3 className="text-base font-normal text-foreground mb-2">
                   Activity Logs
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed mb-3">
@@ -107,7 +107,7 @@ export default function PrivacyPolicy() {
 
           {/* How We Use Your Information */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-foreground mb-8 pt-6">
+            <h2 className="text-lg font-medium text-foreground mb-4">
               How We Use Your Information
             </h2>
 
@@ -127,7 +127,7 @@ export default function PrivacyPolicy() {
 
           {/* Data Sharing and Disclosure */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-foreground mb-8 pt-6">
+            <h2 className="text-lg font-medium text-foreground mb-4">
               Data Sharing and Disclosure
             </h2>
 
@@ -158,7 +158,7 @@ export default function PrivacyPolicy() {
 
           {/* Data Security */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-foreground mb-8 pt-6">
+            <h2 className="text-lg font-medium text-foreground mb-4">
               Data Security
             </h2>
 
@@ -176,7 +176,7 @@ export default function PrivacyPolicy() {
 
           {/* Data Retention */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-foreground mb-8 pt-6">
+            <h2 className="text-lg font-medium text-foreground mb-4">
               Data Retention
             </h2>
 
@@ -206,7 +206,7 @@ export default function PrivacyPolicy() {
 
           {/* Your Rights and Choices */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-foreground mb-8 pt-6">
+            <h2 className="text-lg font-medium text-foreground mb-4">
               Your Rights and Choices
             </h2>
 
@@ -237,7 +237,7 @@ export default function PrivacyPolicy() {
 
           {/* GitHub Integration */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-foreground mb-8 pt-6">
+            <h2 className="text-lg font-medium text-foreground mb-4">
               GitHub Integration
             </h2>
 
@@ -263,7 +263,7 @@ export default function PrivacyPolicy() {
 
           {/* Cookies and Tracking */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-foreground mb-8 pt-6">
+            <h2 className="text-lg font-medium text-foreground mb-4">
               Cookies and Tracking
             </h2>
 
@@ -284,7 +284,7 @@ export default function PrivacyPolicy() {
 
           {/* Third-Party Services */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-foreground mb-8 pt-6">
+            <h2 className="text-lg font-medium text-foreground mb-4">
               Third-Party Services
             </h2>
 
@@ -317,7 +317,7 @@ export default function PrivacyPolicy() {
 
           {/* Children&apos;s Privacy */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-foreground mb-8 pt-6">
+            <h2 className="text-lg font-medium text-foreground mb-4">
               Children&apos;s Privacy
             </h2>
 
@@ -331,7 +331,7 @@ export default function PrivacyPolicy() {
 
           {/* International Data Transfers */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-foreground mb-8 pt-6">
+            <h2 className="text-lg font-medium text-foreground mb-4">
               International Data Transfers
             </h2>
 
@@ -345,7 +345,7 @@ export default function PrivacyPolicy() {
 
           {/* Changes to This Policy */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-foreground mb-8 pt-6">
+            <h2 className="text-lg font-medium text-foreground mb-4">
               Changes to This Policy
             </h2>
 
@@ -359,7 +359,7 @@ export default function PrivacyPolicy() {
 
           {/* Contact Information */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-foreground mb-8 pt-6">
+            <h2 className="text-lg font-medium text-foreground mb-4">
               Contact Information
             </h2>
 
