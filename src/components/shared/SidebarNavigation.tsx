@@ -68,7 +68,6 @@ const mainItems = [
     url: "/feed/analytics",
     icon: LineChart,
     live: true,
-    premium: true,
   },
 ];
 
@@ -218,10 +217,10 @@ export function SidebarNavigation() {
                     {item.live ? (
                       <Link
                         href={item.url}
-                        className={`flex items-center gap-2 w-full p-2 rounded-md transition-all ${
+                        className={`flex items-center gap-2 w-full p-2 rounded-md transition-all duration-150 ease-out  border border-transparent ${
                           isActive
-                            ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border border-neutral-100 dark:border-neutral-800"
-                            : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                            ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border-neutral-100 dark:border-neutral-800 shadow-sm"
+                            : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white hover:shadow-sm"
                         } relative`}
                       >
                         <item.icon
@@ -248,7 +247,7 @@ export function SidebarNavigation() {
                       </Link>
                     ) : (
                       <button
-                        className="flex items-center gap-2 w-full p-2 rounded-md transition-all text-neutral-400 cursor-not-allowed"
+                        className="flex items-center gap-2 w-full p-2 rounded-md transition-all duration-200 ease-in-out text-neutral-400 cursor-not-allowed"
                         disabled
                       >
                         <item.icon />
@@ -280,10 +279,10 @@ export function SidebarNavigation() {
                       {item.live ? (
                         <Link
                           href={item.url}
-                          className={`flex items-center gap-2 w-full p-2 rounded-md transition-all ${
+                          className={`flex items-center gap-2 w-full p-2 rounded-md transition-all duration-150 ease-out  border border-transparent ${
                             isActive
-                              ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border border-neutral-100 dark:border-neutral-800"
-                              : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                              ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border-neutral-100 dark:border-neutral-800 shadow-sm"
+                              : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white hover:shadow-sm"
                           }`}
                         >
                           <item.icon
@@ -302,7 +301,7 @@ export function SidebarNavigation() {
                         </Link>
                       ) : (
                         <button
-                          className="flex items-center gap-2 w-full p-2 rounded-md transition-all text-neutral-400 cursor-not-allowed"
+                          className="flex items-center gap-2 w-full p-2 rounded-md transition-all duration-200 ease-in-out text-neutral-400 cursor-not-allowed"
                           disabled
                         >
                           <item.icon />
@@ -324,12 +323,12 @@ export function SidebarNavigation() {
                             onClick={() =>
                               toggleExpanded(repositoryInfo.repositoryId)
                             }
-                            className={`flex items-center gap-2 py-1.5 px-3 rounded-md transition-all text-sm ${
+                            className={`flex items-center gap-2 py-1.5 px-3 rounded-md transition-all duration-150 ease-out  text-sm border border-transparent ${
                               pathname.startsWith(
                                 `/feed/repositories/${repositoryInfo.repositoryId}`
                               )
-                                ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border border-neutral-100 dark:border-neutral-800"
-                                : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-500 dark:hover:bg-neutral-800 dark:hover:text-white"
+                                ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border-neutral-100 dark:border-neutral-800 shadow-sm"
+                                : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-500 dark:hover:bg-neutral-800 dark:hover:text-white hover:shadow-sm"
                             }`}
                           >
                             <Book
@@ -378,10 +377,10 @@ export function SidebarNavigation() {
                                 <SidebarMenuButton asChild>
                                   <Link
                                     href={subItem.url}
-                                    className={`flex items-center gap-2 py-1.5 px-3 rounded-md transition-all text-sm ${
+                                    className={`flex items-center gap-2 py-1.5 px-3 rounded-md transition-all duration-150 ease-out  text-sm border border-transparent ${
                                       isSubActive
-                                        ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border border-neutral-100 dark:border-neutral-800"
-                                        : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-500 dark:hover:bg-neutral-800 dark:hover:text-white"
+                                        ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border-neutral-100 dark:border-neutral-800 shadow-sm"
+                                        : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-500 dark:hover:bg-neutral-800 dark:hover:text-white hover:shadow-sm"
                                     }`}
                                   >
                                     <subItem.icon
@@ -424,10 +423,10 @@ export function SidebarNavigation() {
                       <Link
                         href={url}
                         target={item.title === "Profile" ? "_blank" : undefined}
-                        className={`flex items-center gap-2 w-full p-2 rounded-md transition-all ${
+                        className={`flex items-center gap-2 w-full p-2 rounded-md transition-all duration-150 ease-out  border border-transparent ${
                           isActive
-                            ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border border-neutral-100 dark:border-neutral-800"
-                            : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                            ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border-neutral-100 dark:border-neutral-800 shadow-sm"
+                            : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white hover:shadow-sm"
                         }`}
                       >
                         <item.icon
@@ -444,7 +443,7 @@ export function SidebarNavigation() {
                       </Link>
                     ) : (
                       <button
-                        className="flex items-center gap-2 w-full p-2 rounded-md transition-all text-neutral-400 cursor-not-allowed"
+                        className="flex items-center gap-2 w-full p-2 rounded-md transition-all duration-200 ease-in-out text-neutral-400 cursor-not-allowed"
                         disabled
                       >
                         <item.icon />
@@ -465,10 +464,10 @@ export function SidebarNavigation() {
                 <SidebarMenuButton asChild>
                   <Link
                     href="/feed/moderator"
-                    className={`flex items-center gap-2 w-full p-2 rounded-md transition-all ${
+                    className={`flex items-center gap-2 w-full p-2 rounded-md transition-all duration-150 ease-out  border border-transparent ${
                       pathname === "/feed/moderator"
-                        ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border border-neutral-100 dark:border-neutral-800"
-                        : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                        ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border-neutral-100 dark:border-neutral-800 shadow-sm"
+                        : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white hover:shadow-sm"
                     }`}
                   >
                     <Shield

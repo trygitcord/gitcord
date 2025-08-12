@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import {
   Card,
@@ -10,7 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   TrendingUp,
@@ -20,9 +18,6 @@ import {
   Users,
   Code2,
   Clock,
-  Sparkles,
-  Crown,
-  AlertCircle,
 } from "lucide-react";
 import {
   LineChart,
@@ -47,12 +42,10 @@ import {
 } from "recharts";
 import {
   useUserRepositories,
-  usePrivateRepositories,
   useUserEvents,
   useUserOrganizations,
 } from "@/hooks/useGitHubQueries";
 import { useUserProfile } from "@/hooks/useMyApiQueries";
-import Image from "next/image";
 
 // Type definitions
 interface GitHubEvent {
@@ -161,10 +154,7 @@ const COLORS = [
 ];
 
 export default function AnalyticsPage() {
-  const router = useRouter();
   const { data: session } = useSession();
-  const [isLoading, setIsLoading] = useState(true);
-  const [isPremium, setIsPremium] = useState(false);
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(
     null
   );
@@ -182,27 +172,17 @@ export default function AnalyticsPage() {
   // Load data with new hooks
   const { data: repos, isLoading: reposLoading } =
     useUserRepositories(username);
-  const { data: privateRepos, isLoading: privateReposLoading } =
-    usePrivateRepositories();
   const { data: events, isLoading: eventsLoading } = useUserEvents(username);
   const { data: orgs, isLoading: orgsLoading } = useUserOrganizations(username);
 
   // Check if all data is loading
   const dataLoading =
-    reposLoading || privateReposLoading || eventsLoading || orgsLoading;
+    reposLoading || eventsLoading || orgsLoading;
 
-  // Watch for profile changes to update premium status
-  useEffect(() => {
-    if (profile && !profileLoading) {
-      const userIsPremium = profile.premium?.isPremium || false;
-      setIsPremium(userIsPremium);
-      setIsLoading(false);
-    }
-  }, [profile, profileLoading]);
 
   const processAnalyticsData = useCallback(() => {
-    // Use privateRepos if available (for premium users), otherwise use public repos
-    const reposData = (privateRepos || repos) as GitHubRepository[];
+    // Use public repos data for all users
+    const reposData = repos as GitHubRepository[];
 
     // Activity over time
     const activityData: ActivityData[] =
@@ -344,30 +324,27 @@ export default function AnalyticsPage() {
         ) || 0,
       organizations: (orgs as GitHubOrganization[])?.length || 0,
     });
-  }, [privateRepos, repos, events, orgs]);
+  }, [repos, events, orgs]);
 
   // Process analytics data when store data changes
   useEffect(() => {
     if (
-      isPremium &&
       !dataLoading &&
-      (privateRepos || repos) &&
+      repos &&
       events &&
       orgs
     ) {
       processAnalyticsData();
     }
   }, [
-    privateRepos,
     repos,
     events,
     orgs,
-    isPremium,
     dataLoading,
     processAnalyticsData,
   ]);
 
-  if (isLoading) {
+  if (dataLoading || profileLoading) {
     return (
       <div className="w-full space-y-6">
         <div className="space-y-2">
@@ -388,112 +365,12 @@ export default function AnalyticsPage() {
     );
   }
 
-  if (!isPremium) {
-    return (
-      <div className="w-full h-full flex items-center justify-center relative">
-        {/* Content Container */}
-        <div className="relative z-10 max-w-md mx-auto p-8 space-y-6">
-          {/* Premium Badge */}
-          <div className="absolute -top-4 -right-4 px-4 py-1 bg-gradient-to-r from-[#5BC898] to-[#4BA882] text-white text-xs font-medium rounded-lg">
-            PREMIUM
-          </div>
-          {/* Icon and Title */}
-          <div className="space-y-4">
-            <div className="relative w-24 h-24 mx-auto">
-              {/* Animated Ring */}
-              <div className="absolute inset-0 bg-gradient-to-r from-[#5BC898] to-[#4BA882] rounded-full animate-pulse"></div>
-              <div className="absolute inset-1 bg-white dark:bg-neutral-900 rounded-full"></div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                {profile?.avatar_url ? (
-                  <Image
-                    src={profile.avatar_url}
-                    alt={profile.name || profile.username || "User"}
-                    width={80}
-                    height={80}
-                    className="rounded-full border-2 border-white dark:border-neutral-900"
-                  />
-                ) : (
-                  <LineChart className="w-12 h-12 text-[#5BC898]" />
-                )}
-              </div>
-            </div>
-
-            <div className="text-center space-y-2">
-              <h2 className="text-3xl font-bold bg-gradient-to-r from-[#5BC898] to-[#4BA882] bg-clip-text text-transparent">
-                Premium Analytics
-              </h2>
-              <p className="text-neutral-600 dark:text-neutral-400">
-                Unlock powerful insights and advanced visualizations
-              </p>
-            </div>
-          </div>
-
-          {/* Features Grid */}
-          <div className="grid grid-cols-1 gap-4">
-            <div className="group flex items-start gap-3 p-3 rounded-lg hover:bg-white/50 dark:hover:bg-neutral-800/50 transition-all backdrop-blur-sm">
-              <div className="p-2 bg-[#5BC898]/10 rounded-lg group-hover:scale-110 transition-transform">
-                <Activity className="w-5 h-5 text-[#5BC898]" />
-              </div>
-              <div>
-                <h4 className="font-medium text-sm">
-                  Real-time Activity Tracking
-                </h4>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                  Monitor your GitHub activities as they happen
-                </p>
-              </div>
-            </div>
-
-            <div className="group flex items-start gap-3 p-3 rounded-lg hover:bg-white/50 dark:hover:bg-neutral-800/50 transition-all backdrop-blur-sm">
-              <div className="p-2 bg-[#5BC898]/10 rounded-lg group-hover:scale-110 transition-transform">
-                <TrendingUp className="w-5 h-5 text-[#5BC898]" />
-              </div>
-              <div>
-                <h4 className="font-medium text-sm">Advanced Metrics</h4>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                  Deep dive into your coding patterns and productivity
-                </p>
-              </div>
-            </div>
-
-            <div className="group flex items-start gap-3 p-3 rounded-lg hover:bg-white/50 dark:hover:bg-neutral-800/50 transition-all backdrop-blur-sm">
-              <div className="p-2 bg-[#5BC898]/10 rounded-lg group-hover:scale-110 transition-transform">
-                <Sparkles className="w-5 h-5 text-[#5BC898]" />
-              </div>
-              <div>
-                <h4 className="font-medium text-sm">AI-Powered Insights</h4>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                  Get personalized recommendations to improve
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* CTA Button */}
-          <Button
-            className="w-full h-12 hover:cursor-pointer bg-gradient-to-r from-[#5BC898] to-[#4BA882] hover:from-[#4BA882] hover:to-[#3A9872] text-white font-medium shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all"
-            onClick={() => router.push("/feed/dashboard")}
-          >
-            <Crown className="w-5 h-5 mr-2" />
-            Upgrade to Premium
-          </Button>
-
-          {/* Bottom Text */}
-          <p className="text-center text-xs text-neutral-500 dark:text-neutral-400">
-            Join thousands of developers using Premium Analytics
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="w-full space-y-6 pb-8">
       {/* Header */}
       <div className="space-y-2">
-        <h1 className="text-2xl font-semibold flex items-center gap-2">
+        <h1 className="text-2xl font-semibold">
           Analytics
-          <Crown className="w-5 h-5 text-[#5BC898]" />
         </h1>
         <p className="text-muted-foreground">
           Detailed analysis and insights of your GitHub activities
@@ -641,7 +518,7 @@ export default function AnalyticsPage() {
                       dataKey="value"
                     >
                       {analyticsData.languageData.map(
-                        (entry: LanguageData, index: number) => (
+                        (_: LanguageData, index: number) => (
                           <Cell
                             key={`cell-${index}`}
                             fill={COLORS[index % COLORS.length]}
@@ -780,21 +657,6 @@ export default function AnalyticsPage() {
         </Card>
       </div>
 
-      {/* Info Banner */}
-      <Card className="border-0 bg-gradient-to-r from-[#5BC898]/10 to-[#5BC898]/10">
-        <CardContent className="flex items-start gap-3 p-4">
-          <AlertCircle className="h-5 w-5 text-[#5BC898] mt-0.5" />
-          <div className="text-sm text-[#5BC898] dark:text-neutral-200">
-            <p className="font-medium mb-1">Premium Analytics Features</p>
-            <p className="text-[#5BC898] dark:text-neutral-400">
-              The data on this page is fetched in real-time from the GitHub API,
-              including your private repositories. To avoid exceeding API limits
-              for more detailed analysis and historical data access, some data
-              has been cached.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
