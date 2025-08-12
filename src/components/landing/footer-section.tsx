@@ -63,17 +63,17 @@ export function Footer() {
                 width={24}
                 height={24}
               />
-              <h1 className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
+              <h1 className="text-xl font-medium text-neutral-900 dark:text-neutral-100">
                 Gitcord
               </h1>
             </div>
           </div>
-          <p className="text-muted-foreground mt-4 max-w-sm font-normal">
+          <p className="text-muted-foreground/80 mt-4 max-w-sm text-sm leading-relaxed">
             Track smarter, code better. Monitor and analyze all your GitHub
             repositories with real-time insights and unified analytics.
           </p>
 
-          <p className="text-muted-foreground mt-8 text-sm md:mt-4">
+          <p className="text-muted-foreground/70 mt-8 text-xs md:mt-4">
             © {new Date().getFullYear()} Gitcord. All rights reserved.
           </p>
         </AnimatedContainer>
@@ -82,15 +82,15 @@ export function Footer() {
           {footerLinks.map((section, index) => (
             <AnimatedContainer key={section.label} delay={0.1 + index * 0.1}>
               <div className="mb-12 md:mb-0">
-                <h3 className="text-xs font-semibold text-foreground/90 uppercase tracking-wider">
+                <h3 className="text-sm font-medium text-foreground uppercase tracking-wide mb-4">
                   {section.label}
                 </h3>
-                <ul className="text-muted-foreground mt-6 space-y-4 text-sm">
+                <ul className="text-muted-foreground/80 space-y-3 text-sm">
                   {section.links.map((link) => (
                     <li key={link.title}>
                       <Link
                         href={link.href}
-                        className="hover:text-foreground inline-flex items-center gap-2 transition-all duration-300 hover:translate-x-1"
+                        className="hover:text-foreground inline-flex items-center gap-2 transition-all duration-200 hover:translate-x-0.5 hover:underline"
                         target="_blank"
                         rel={
                           link.href.startsWith("http")
@@ -115,11 +115,11 @@ export function Footer() {
       {/* Bottom section with additional info */}
       <AnimatedContainer delay={0.5} className="w-full">
         <div className="border-t border-foreground/10 mt-16 pt-10 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-6 text-xs text-muted-foreground">
+          <div className="flex items-center gap-6 text-sm text-muted-foreground/80">
             <span>Built by developers, for developers</span>
           </div>
           <div className="flex items-center gap-6">
-            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+            <div className="flex items-center gap-4 text-sm text-muted-foreground/70">
               <Link
                 href="/privacy"
                 className="hover:text-foreground transition-colors"
