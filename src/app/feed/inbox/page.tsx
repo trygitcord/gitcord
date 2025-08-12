@@ -5,10 +5,10 @@ import {
   MessageSquare,
   X,
   Mail,
-  Filter,
   ChevronLeft,
   ChevronRight,
   ShieldCheck,
+  SlidersHorizontal,
 } from "lucide-react";
 import {
   useGetUserMessages,
@@ -123,8 +123,8 @@ function Page() {
             </p>
           </div>
           <Select value={filter} onValueChange={setFilter}>
-            <SelectTrigger className="w-40">
-              <Filter className="w-4 h-4 mr-2" />
+            <SelectTrigger className="w-32">
+              <SlidersHorizontal />
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -140,8 +140,8 @@ function Page() {
         {/* Messages List - 20% */}
         <div className="w-1/5 bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 overflow-hidden">
           <div className="p-4 border-b border-neutral-200 dark:border-neutral-800">
-            <h2 className="font-medium text-sm text-neutral-600 dark:text-neutral-400">
-              MESSAGES ({messagesData?.data.pagination.totalCount || 0})
+            <h2 className="text-sm text-neutral-600 dark:text-neutral-400">
+              Messages ({messagesData?.data.pagination.totalCount || 0})
             </h2>
           </div>
 
