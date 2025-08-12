@@ -92,9 +92,9 @@ function UserRecentActivity() {
           </div>
           <Link
             href="/feed/activity"
-            className="text-xs text-neutral-600 dark:text-neutral-400 hover:text-[#5BC898] dark:hover:text-[#5BC898] hover:cursor-pointer"
+            className="text-xs text-neutral-600 dark:text-neutral-400 hover:text-[#5BC898] dark:hover:text-[#5BC898] transition-colors"
           >
-            More Details
+            View Details
           </Link>
         </div>
         <div className="w-full h-full">

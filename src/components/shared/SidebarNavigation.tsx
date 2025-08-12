@@ -227,13 +227,13 @@ export function SidebarNavigation() {
                           className={`${isActive ? "text-[#5BC898]" : ""}`}
                         />
                         <span
-                          className={`${isActive ? "text-[#5BC898]" : ""} flex-1`}
+                          className={`${
+                            isActive ? "text-[#5BC898]" : ""
+                          } flex-1`}
                         >
                           {item.title}
                         </span>
-                        {item.premium && (
-                          <Crown className="w-4 h-4 text-[#5BC898]" />
-                        )}
+
                         {!item.live && (
                           <span className="text-xs text-neutral-400 dark:text-neutral-500 ml-1">
                             Soon

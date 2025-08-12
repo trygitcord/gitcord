@@ -64,6 +64,7 @@ function UserActivityOverview() {
           }
           count={counts.PushEvent}
           label="Commits"
+          filterType="PushEvent"
         />
 
         {/* Issues */}
@@ -73,6 +74,7 @@ function UserActivityOverview() {
           }
           count={counts.IssuesEvent}
           label="Issues"
+          filterType="IssuesEvent"
         />
 
         {/* Pull Requests */}
@@ -82,6 +84,7 @@ function UserActivityOverview() {
           }
           count={counts.PullRequestEvent}
           label="Pull Requests"
+          filterType="PullRequestEvent"
         />
       </div>
     </div>
@@ -92,10 +95,12 @@ function Card({
   icon,
   count,
   label,
+  filterType,
 }: {
   icon: React.ReactNode;
   count: number;
   label: string;
+  filterType: string;
 }) {
   return (
     <div className="w-full h-full bg-neutral-50 rounded-xl col-span-1 px-4 sm:px-6 py-4 dark:bg-neutral-900">
@@ -103,13 +108,12 @@ function Card({
         <div className="bg-neutral-100 rounded-lg p-2 dark:bg-neutral-800">
           {icon}
         </div>
-        <div className="border-2 border-neutral-100 rounded-lg px-3 sm:px-4 py-1.5 hover:cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all duration-300 dark:border-neutral-800">
-          <Link href={`/feed/activity`} className="w-full h-full">
-            <p className="text-neutral-700 text-xs sm:text-sm dark:text-neutral-300">
-              View Details
-            </p>
-          </Link>
-        </div>
+        <Link
+          href={`/feed/activity?filter=${filterType}`}
+          className="text-xs text-neutral-600 dark:text-neutral-400 hover:text-[#5BC898] dark:hover:text-[#5BC898] transition-colors"
+        >
+          View Details
+        </Link>
       </div>
       <div className="flex flex-col pt-3 sm:pt-4">
         <div>

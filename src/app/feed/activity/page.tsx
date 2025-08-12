@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import { GitCommit, GitPullRequest, AlertCircle, SlidersHorizontal } from "lucide-react";
@@ -213,6 +214,9 @@ function renderActivityCard(event: GitHubEvent, expanded: boolean) {
 }
 
 function ActivityPage() {
+  const searchParams = useSearchParams();
+  const filterParam = searchParams.get('filter');
+  
   useEffect(() => {
     document.title = "Feed | Activity";
   }, []);
@@ -231,7 +235,9 @@ function ActivityPage() {
 
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
   const [activeFilter, setActiveFilter] = useState<RecentActivityType | "all">(
-    "all"
+    filterParam && Object.values(RecentActivityType).includes(filterParam as RecentActivityType) 
+      ? filterParam as RecentActivityType 
+      : "all"
   );
 
   if (
