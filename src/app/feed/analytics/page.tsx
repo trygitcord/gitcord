@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useSession } from "next-auth/react";
 import {
   Card,
   CardContent,
@@ -12,34 +11,23 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   TrendingUp,
-  Activity,
   GitBranch,
   GitCommit,
   Users,
-  Code2,
-  Clock,
 } from "lucide-react";
 import {
-  LineChart,
-  Line,
-  AreaChart,
-  Area,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
   ResponsiveContainer,
   RadarChart,
   PolarGrid,
   PolarAngleAxis,
   PolarRadiusAxis,
   Radar,
+  Tooltip,
 } from "recharts";
+import { AnimatedHatchedPatternAreaChart } from "@/components/charts/AnimatedHatchedPatternAreaChart";
+import { GlowingLineChart } from "@/components/charts/GlowingLineChart";
+import { GradientBarChart } from "@/components/charts/GradientBarChart";
+import { ClippedAreaChart } from "@/components/charts/ClippedAreaChart";
 import {
   useUserRepositories,
   useUserEvents,
@@ -80,9 +68,9 @@ interface ActivityData {
   count: number;
 }
 
-interface LanguageData {
-  name: string;
-  value: number;
+interface MonthlyData {
+  month: string;
+  contributions: number;
 }
 
 interface RepoStats {
@@ -112,7 +100,7 @@ interface CommitTimeData {
 
 interface AnalyticsData {
   activityData: ActivityData[];
-  languageData: LanguageData[];
+  monthlyData: MonthlyData[];
   repoStats: RepoStats;
   contributionData: ContributionData[];
   topReposBySize: TopRepo[];
@@ -121,6 +109,10 @@ interface AnalyticsData {
   totalForks: number;
   totalWatchers: number;
   organizations: number;
+  activityTrend: string;
+  commitTrend: string;
+  repoTrend: string;
+  monthlyTrend: string;
 }
 
 // Time formatting functions
@@ -144,17 +136,7 @@ function formatMonthDay(date: Date): string {
   return `${month} ${day}`;
 }
 
-const COLORS = [
-  "#10B981",
-  "#8B5CF6",
-  "#F59E0B",
-  "#EF4444",
-  "#3B82F6",
-  "#EC4899",
-];
-
 export default function AnalyticsPage() {
-  const { data: session } = useSession();
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(
     null
   );
@@ -167,7 +149,7 @@ export default function AnalyticsPage() {
   const { data: profile, isLoading: profileLoading } = useUserProfile();
 
   // Get username from profile
-  const username = profile?.username || session?.user?.name;
+  const username = profile?.username;
 
   // Load data with new hooks
   const { data: repos, isLoading: reposLoading } =
@@ -202,26 +184,36 @@ export default function AnalyticsPage() {
             .reverse()
         : [];
 
-    // Language distribution
-    const languageData: LanguageData[] =
-      reposData && reposData.length > 0
-        ? reposData
-            .reduce((acc: LanguageData[], repo: GitHubRepository) => {
-              if (repo.language) {
-                const existing = acc.find(
-                  (item) => item.name === repo.language
-                );
-                if (existing) {
-                  existing.value += 1;
-                } else {
-                  acc.push({ name: repo.language, value: 1 });
-                }
-              }
-              return acc;
-            }, [])
-            .sort((a: LanguageData, b: LanguageData) => b.value - a.value)
-            .slice(0, 6)
-        : [];
+    // Monthly contributions (last 12 months)
+    const monthlyData: MonthlyData[] = events && events.length > 0
+      ? (() => {
+          const months = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+          ];
+          const now = new Date();
+          const monthlyContributions: { [key: string]: number } = {};
+          
+          for (let i = 11; i >= 0; i--) {
+            const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const monthKey = months[date.getMonth()];
+            monthlyContributions[monthKey] = 0;
+          }
+          
+          (events as GitHubEvent[]).forEach((event: GitHubEvent) => {
+            const eventDate = new Date(event.created_at);
+            const monthKey = months[eventDate.getMonth()];
+            if (monthlyContributions.hasOwnProperty(monthKey)) {
+              monthlyContributions[monthKey]++;
+            }
+          });
+          
+          return Object.entries(monthlyContributions).map(([month, contributions]) => ({
+            month,
+            contributions
+          }));
+        })()
+      : [];
 
     // Repository stats
     const repoStats: RepoStats = {
@@ -291,18 +283,75 @@ export default function AnalyticsPage() {
             }))
         : [];
 
-    // Commit time distribution (simulated)
-    const commitTimeData: CommitTimeData[] = Array.from(
-      { length: 24 },
-      (_, i) => ({
-        hour: i,
-        commits: Math.floor(Math.random() * 20) + 1,
-      })
-    );
+    // Commit time distribution (from real GitHub events)
+    const commitTimeData: CommitTimeData[] = (() => {
+      const hourlyCommits: { [key: number]: number } = {};
+      
+      // Initialize all hours
+      for (let i = 0; i < 24; i++) {
+        hourlyCommits[i] = 0;
+      }
+      
+      // Count commits by hour from push events
+      if (events && events.length > 0) {
+        (events as GitHubEvent[]).forEach((event: GitHubEvent) => {
+          if (event.type === 'PushEvent') {
+            const eventDate = new Date(event.created_at);
+            const hour = eventDate.getHours();
+            hourlyCommits[hour]++;
+          }
+        });
+      }
+      
+      return Object.entries(hourlyCommits).map(([hour, commits]) => ({
+        hour: parseInt(hour),
+        commits
+      }));
+    })();
+
+    // Calculate trends
+    const activityTrend = activityData.length > 7 
+      ? (() => {
+          const recent = activityData.slice(-7).reduce((sum, item) => sum + item.count, 0);
+          const previous = activityData.slice(-14, -7).reduce((sum, item) => sum + item.count, 0);
+          if (previous === 0) return "+0%";
+          const change = ((recent - previous) / previous) * 100;
+          return change > 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
+        })()
+      : "+0%";
+    
+    const commitTrend = commitTimeData.length > 0
+      ? (() => {
+          const totalCommits = commitTimeData.reduce((sum, item) => sum + item.commits, 0);
+          const peakHourCommits = Math.max(...commitTimeData.map(item => item.commits));
+          const avgCommits = totalCommits / 24;
+          const change = avgCommits > 0 ? ((peakHourCommits - avgCommits) / avgCommits) * 100 : 0;
+          return change > 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
+        })()
+      : "+0%";
+    
+    const repoTrend = topReposBySize.length > 2
+      ? (() => {
+          const avgSize = topReposBySize.reduce((sum, repo) => sum + repo.size, 0) / topReposBySize.length;
+          const recentAvg = topReposBySize.slice(0, 2).reduce((sum, repo) => sum + repo.size, 0) / 2;
+          const change = avgSize > 0 ? ((recentAvg - avgSize) / avgSize) * 100 : 0;
+          return change > 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
+        })()
+      : "+0%";
+
+    const monthlyTrend = monthlyData.length > 6
+      ? (() => {
+          const recent = monthlyData.slice(-3).reduce((sum, item) => sum + item.contributions, 0);
+          const previous = monthlyData.slice(-6, -3).reduce((sum, item) => sum + item.contributions, 0);
+          if (previous === 0) return "+0%";
+          const change = ((recent - previous) / previous) * 100;
+          return change > 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
+        })()
+      : "+0%";
 
     setAnalyticsData({
       activityData,
-      languageData,
+      monthlyData,
       repoStats,
       contributionData,
       topReposBySize,
@@ -323,6 +372,10 @@ export default function AnalyticsPage() {
           0
         ) || 0,
       organizations: (orgs as GitHubOrganization[])?.length || 0,
+      activityTrend,
+      commitTrend,
+      repoTrend,
+      monthlyTrend,
     });
   }, [repos, events, orgs]);
 
@@ -438,105 +491,41 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Activity Timeline */}
-        <Card className="col-span-1 md:col-span-2 border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="h-5 w-5" />
-              Last 30 Days Activity
-            </CardTitle>
-            <CardDescription>
-              Your daily activity distribution on GitHub
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={analyticsData?.activityData || []}>
-                  <defs>
-                    <linearGradient
-                      id="colorActivity"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop offset="5%" stopColor="#10B981" stopOpacity={0.8} />
-                      <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "rgba(255, 255, 255, 0.95)",
-                      border: "none",
-                      borderRadius: "8px",
-                      boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                    }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="count"
-                    stroke="#10B981"
-                    fillOpacity={1}
-                    fill="url(#colorActivity)"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="lg:col-span-2">
+          <AnimatedHatchedPatternAreaChart 
+            data={analyticsData?.activityData || []}
+            title="Last 30 Days Activity"
+            description="Your daily activity distribution on GitHub"
+            trend={analyticsData?.activityTrend || "+0%"}
+          />
+        </div>
 
-        {/* Language Distribution */}
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Code2 className="h-5 w-5" />
-              Language Distribution
-            </CardTitle>
-            <CardDescription>Most used programming languages</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-64">
-              {analyticsData?.languageData &&
-              analyticsData.languageData.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={analyticsData.languageData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) =>
-                        `${name} ${(percent * 100).toFixed(0)}%`
-                      }
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {analyticsData.languageData.map(
-                        (_: LanguageData, index: number) => (
-                          <Cell
-                            key={`cell-${index}`}
-                            fill={COLORS[index % COLORS.length]}
-                          />
-                        )
-                      )}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="flex items-center justify-center h-full text-muted-foreground">
-                  <p className="text-sm">No language data available</p>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        {/* Monthly Contributions */}
+        <GradientBarChart 
+          data={analyticsData?.monthlyData || []}
+          title="Monthly Contributions"
+          description="Your GitHub activity over the last 12 months"
+          trend={analyticsData?.monthlyTrend || "+0%"}
+        />
+
+        {/* Commit Time Distribution */}
+        <GlowingLineChart 
+          data={analyticsData?.commitTimeData || []}
+          title="Commit Time Distribution"
+          description="Your most active hours"
+          trend={analyticsData?.commitTrend || "+0%"}
+        />
+
+        {/* Repository Size Analysis */}
+        <ClippedAreaChart 
+          data={analyticsData?.topReposBySize || []}
+          title="Repository Analysis"
+          description="Repository size distribution"
+          trend={analyticsData?.repoTrend || "-2.4%"}
+          isPositive={false}
+        />
 
         {/* Contribution Radar */}
         <Card className="border-0 shadow-sm">
@@ -565,92 +554,6 @@ export default function AnalyticsPage() {
                   />
                   <Tooltip />
                 </RadarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Top Repositories */}
-        <Card className="col-span-1 md:col-span-2 border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
-              Top Repositories
-            </CardTitle>
-            <CardDescription>By size, stars and forks count</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-80">
-              {analyticsData?.topReposBySize &&
-              analyticsData.topReposBySize.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={analyticsData.topReposBySize}>
-                    <CartesianGrid
-                      strokeDasharray="3 3"
-                      className="opacity-30"
-                    />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: "rgba(8, 19, 5, 0.95)",
-                        border: "none",
-                        borderRadius: "8px",
-                      }}
-                    />
-                    <Bar dataKey="size" fill="#5BC898" name="Size (KB)" />
-                    <Bar dataKey="stars" fill="#5BC898" name="Stars" />
-                    <Bar dataKey="forks" fill="#5BC898" name="Forks" />
-                  </BarChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="flex items-center justify-center h-full text-muted-foreground">
-                  <p className="text-sm">No repository data available</p>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Commit Time Heatmap */}
-        <Card className="col-span-1 md:col-span-2 border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
-              Commit Time Distribution
-            </CardTitle>
-            <CardDescription>
-              Your most active hours (simulated data)
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={analyticsData?.commitTimeData || []}>
-                  <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                  <XAxis
-                    dataKey="hour"
-                    tickFormatter={(hour) => `${hour}:00`}
-                  />
-                  <YAxis />
-                  <Tooltip
-                    labelFormatter={(hour) => `${hour}:00`}
-                    contentStyle={{
-                      backgroundColor: "rgba(255, 255, 255, 0.95)",
-                      border: "none",
-                      borderRadius: "8px",
-                      boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                    }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="commits"
-                    stroke="#5BC898"
-                    strokeWidth={2}
-                    dot={{ fill: "#5BC898", r: 4 }}
-                    activeDot={{ r: 6 }}
-                  />
-                </LineChart>
               </ResponsiveContainer>
             </div>
           </CardContent>
