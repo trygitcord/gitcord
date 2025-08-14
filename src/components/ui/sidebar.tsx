@@ -22,6 +22,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Button } from "./button";
+import { PanelLeftClose, PanelLeftOpen, PanelRightClose } from "lucide-react";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -251,24 +253,38 @@ function Sidebar({
   );
 }
 
-function SidebarTrigger() {
+function SidebarTrigger({
+  className,
+  onClick,
+  ...props
+}: {
+  className?: string;
+  onClick?: (event: React.MouseEvent) => void;
+}) {
+  const { toggleSidebar, open, isMobile } = useSidebar();
+
   return (
-    <div></div>
-    // <Button
-    //   data-sidebar="trigger"
-    //   data-slot="sidebar-trigger"
-    //   variant="ghost"
-    //   size="icon"
-    //   className={cn("size-7", className)}
-    //   onClick={(event) => {
-    //     onClick?.(event);
-    //     toggleSidebar();
-    //   }}
-    //   {...props}
-    // >
-    //   <PanelLeftIcon />
-    //   <span className="sr-only">Toggle Sidebar</span>
-    // </Button>
+    <Button
+      data-sidebar="trigger"
+      data-slot="sidebar-trigger"
+      variant="ghost"
+      size="icon"
+      className={cn("size-7 text-muted-foreground", className)}
+      onClick={(event) => {
+        onClick?.(event);
+        toggleSidebar();
+      }}
+      {...props}
+    >
+      {!isMobile && open ? (
+        <PanelLeftClose />
+      ) : isMobile ? (
+        <PanelRightClose />
+      ) : (
+        <PanelLeftOpen />
+      )}
+      <span className="sr-only">Toggle Sidebar</span>
+    </Button>
   );
 }
 
