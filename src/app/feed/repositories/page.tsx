@@ -130,9 +130,9 @@ function Repositories() {
             Explore all repositories and their activities.
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Skeleton key={i} className="w-full h-48" />
+            <Skeleton key={i} className="w-full h-52 sm:h-56" />
           ))}
         </div>
       </div>
@@ -214,62 +214,66 @@ function Repositories() {
           )}
         </p>
       </div>
-      <div className="flex-1 overflow-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-rows-4 gap-4 h-full">
+      <div className="flex-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {currentRepos.map((repo: Repository) => (
             <Link
               key={repo.id}
               href={`/feed/repositories/${repo.name}`}
-              className="group h-full"
+              className="group block"
             >
-              {" "}
-              {/* Silinebilir bug olursa -Harun */}
-              <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-4 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors h-full relative">
-                <span className="absolute top-12 right-4 z-10 ">
+              <div className="bg-white dark:bg-neutral-900 rounded-xl p-5 sm:p-6 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-all duration-200 min-h-[200px] sm:min-h-[220px] relative flex flex-col border border-neutral-200 dark:border-neutral-800 hover:border-[#5BC898]/30 hover:shadow-lg hover:shadow-[#5BC898]/10">
+                <span className="absolute top-4 sm:top-5 right-4 sm:right-5 z-10">
                   <ProjectHealthChart
                     score={calculateHealthScore(repo)}
                     size={40}
                   />
                 </span>
-                <div className="flex flex-col h-full">
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="text-neutral-800 dark:text-neutral-200 font-medium group-hover:text-[#5BC898] transition-colors">
+
+                <div className="flex flex-col flex-1 pr-12 sm:pr-14">
+                  <div className="flex items-start justify-between mb-3 flex-wrap gap-2">
+                    <h3 className="text-neutral-800 dark:text-neutral-200 font-semibold group-hover:text-[#5BC898] transition-colors text-base line-clamp-1 flex-1 min-w-0">
                       {repo.name}
                     </h3>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-2 flex-shrink-0">
                       {repo.visibility === "private" && isPremium && (
-                        <Crown className="w-4 h-4 text-[#5BC898]" />
+                        <Crown className="w-4 h-4 sm:w-5 sm:h-5 text-[#5BC898]" />
                       )}
-                      <span className="text-xs px-2 py-1 rounded-full bg-neutral-200 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400">
+                      <span className="text-xs px-2.5 py-1 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 font-medium">
                         {repo.visibility}
                       </span>
                     </div>
                   </div>
-                  <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4 line-clamp-2 mr-16">
+
+                  <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 mb-4 sm:mb-5 line-clamp-3 flex-1 leading-relaxed">
                     {repo.description || "No description provided."}
                   </p>
-                  <div className="mt-auto">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4 text-sm text-neutral-500 dark:text-neutral-400">
-                        <div className="flex items-center gap-1">
-                          <Star className="w-4 h-4" />
-                          <span>{repo.stargazers_count}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <GitFork className="w-4 h-4" />
-                          <span>{repo.forks_count}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Eye className="w-4 h-4" />
-                          <span>{repo.watchers_count}</span>
-                        </div>
-                      </div>
 
-                      <div className="flex items-center gap-1 text-xs text-neutral-400 dark:text-neutral-500">
-                        <Clock className="w-3 h-3" />
-
-                        <span>Updated {timeAgo(repo.updated_at)}</span>
+                  <div className="mt-auto space-y-3">
+                    <div className="flex items-center gap-4 sm:gap-6 text-sm sm:text-base text-neutral-500 dark:text-neutral-400 flex-wrap">
+                      <div className="flex items-center gap-1.5">
+                        <Star className="w-4 h-4 text-yellow-500" />
+                        <span className="font-medium">
+                          {repo.stargazers_count}
+                        </span>
                       </div>
+                      <div className="flex items-center gap-1.5">
+                        <GitFork className="w-4 h-4 text-blue-500" />
+                        <span className="font-medium">{repo.forks_count}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Eye className="w-4 h-4 text-green-500" />
+                        <span className="font-medium">
+                          {repo.watchers_count}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 text-xs sm:text-sm text-neutral-400 dark:text-neutral-500 bg-neutral-50 dark:bg-neutral-800 px-3 py-1.5 rounded-lg">
+                      <Clock className="w-3.5 h-3.5" />
+                      <span className="truncate font-medium">
+                        Updated {timeAgo(repo.updated_at)}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -281,23 +285,23 @@ function Repositories() {
 
       {/* Pagination Controls */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 py-4 mt-4">
+        <div className="flex items-center justify-center gap-3 py-4 sm:py-6 mt-4 sm:mt-6">
           <button
             onClick={handlePrevPage}
             disabled={currentPage === 1}
-            className="p-2 rounded-lg bg-neutral-50 dark:bg-neutral-900 hover:bg-neutral-100 dark:hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:cursor-pointer"
+            className="p-2 rounded-xl bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 border border-neutral-200 dark:border-neutral-800 hover:border-[#5BC898]/30 hover:shadow-md"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
-          <span className="text-sm text-neutral-600 dark:text-neutral-400">
+          <span className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 px-4 py-2 bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 font-medium">
             Page {currentPage} of {totalPages}
           </span>
           <button
             onClick={handleNextPage}
             disabled={currentPage === totalPages}
-            className="p-2 rounded-lg bg-neutral-50 dark:bg-neutral-900 hover:bg-neutral-100 dark:hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:cursor-pointer"
+            className="p-2 rounded-xl bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 border border-neutral-200 dark:border-neutral-800 hover:border-[#5BC898]/30 hover:shadow-md"
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         </div>
       )}

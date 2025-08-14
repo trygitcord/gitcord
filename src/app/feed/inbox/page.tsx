@@ -138,7 +138,11 @@ function Page() {
 
       <div className="flex-1 flex flex-col lg:flex-row gap-4">
         {/* Messages List */}
-        <div className={`${selectedMessage && 'hidden lg:block'} lg:w-1/3 xl:w-1/4 bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 overflow-hidden`}>
+        <div
+          className={`${
+            selectedMessage && "hidden lg:block"
+          } lg:w-1/3 xl:w-1/4 bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 overflow-hidden`}
+        >
           <div className="p-4 border-b border-neutral-200 dark:border-neutral-800">
             <div className="flex items-center justify-between">
               <h2 className="font-medium text-sm text-neutral-600 dark:text-neutral-400">
@@ -288,7 +292,11 @@ function Page() {
         </div>
 
         {/* Message Detail */}
-        <div className={`${!selectedMessage && 'hidden lg:block'} flex-1 lg:w-2/3 xl:w-3/4 bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800`}>
+        <div
+          className={`${
+            !selectedMessage && "hidden lg:block"
+          } flex-1 lg:w-2/3 xl:w-3/4 bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800`}
+        >
           {selectedMessage ? (
             <div className="h-full flex flex-col">
               {/* Message Header */}
@@ -303,7 +311,7 @@ function Page() {
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </Button>
-                  
+
                   <Avatar className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0">
                     <AvatarImage src="/logo.svg" />
                     <AvatarFallback className="bg-[#5BC898] text-white font-bold text-sm sm:text-lg">
@@ -312,7 +320,9 @@ function Page() {
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                      <h2 className="font-medium text-base sm:text-lg">Gitcord</h2>
+                      <h2 className="font-medium text-base sm:text-lg">
+                        Gitcord
+                      </h2>
                       {/* Glowing Official Message Badge */}
                       <span
                         className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-bold bg-[#5BC898] text-white shadow-md w-fit"
