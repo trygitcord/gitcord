@@ -60,7 +60,7 @@ export const RepositoryBasicInformation = ({
 
   return (
     <div className="w-full bg-neutral-50 dark:bg-neutral-900 mt-4 rounded-xl p-4.5">
-      <div className="flex items-center justify-between w-full">
+      <div className="flex flex-col md:flex-row items-center justify-between w-full gap-4 md:gap-0">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-medium dark:text-neutral-200 text-neutral-800">
@@ -87,7 +87,7 @@ export const RepositoryBasicInformation = ({
             </div>
           </div>
         </div>
-        <div className="flex flex-col items-end gap-1">
+        <div className="flex flex-col-reverse md:flex-col items-center md:items-end gap-3 md:gap-1">
           <div className="flex items-center gap-2">
             <span className="text-xs text-neutral-500 dark:text-neutral-400">
               Commit Activity

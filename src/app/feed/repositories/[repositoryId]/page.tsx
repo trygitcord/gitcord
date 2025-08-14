@@ -185,7 +185,7 @@ function Page() {
   }
 
   return (
-    <div>
+    <div className="pb-6">
       <div className="pt-1">
         <Link
           href="/feed/repositories"

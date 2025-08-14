@@ -18,7 +18,7 @@ interface PieChartProps {
 
 export function PieChart({ data }: PieChartProps) {
   return (
-    <div className="flex flex-col sm:flex-row items-center gap-4">
+    <div className="flex items-center gap-4">
       <div className="w-[160px] h-[160px]">
         <ResponsiveContainer width="100%" height="100%">
           <RechartsPieChart>

@@ -9,8 +9,8 @@ interface StatCardProps {
 
 export function StatCard({ icon, count, label, link }: StatCardProps) {
   return (
-    <div className="w-full h-full bg-neutral-50 rounded-xl col-span-1 px-4 sm:px-6 py-4 dark:bg-neutral-900">
-      <div className="flex items-center justify-between w-full">
+    <div className="w-full h-full bg-neutral-50 rounded-xl col-span-1 px-4 sm:px-6 py-4 dark:bg-neutral-900 flex flex-row md:flex-col justify-start gap-4 md:gap-0">
+      <div className="flex items-center justify-between md:w-full">
         <div className="bg-neutral-100 rounded-lg p-2 dark:bg-neutral-800">
           {icon}
         </div>
@@ -24,7 +24,7 @@ export function StatCard({ icon, count, label, link }: StatCardProps) {
           </div>
         )}
       </div>
-      <div className="flex flex-col pt-3 sm:pt-4">
+      <div className="flex flex-col md:pt-3 sm:pt-4">
         <div>
           <p className="text-neutral-800 text-lg sm:text-xl font-medium dark:text-neutral-200">
             {count}
