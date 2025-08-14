@@ -55,35 +55,33 @@ function UserActivityOverview() {
     );
 
   return (
-    <div className="w-full h-full">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full h-full">
-        {/* Push Events */}
-        <Card
-          icon={
-            <Clock className="text-neutral-800 w-5 h-5 sm:w-6 sm:h-6 dark:text-neutral-300" />
-          }
-          count={counts.PushEvent}
-          label="Commits"
-        />
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      {/* Push Events */}
+      <Card
+        icon={
+          <Clock className="text-neutral-800 w-5 h-5 sm:w-6 sm:h-6 dark:text-neutral-300" />
+        }
+        count={counts.PushEvent}
+        label="Commits"
+      />
 
-        {/* Issues */}
-        <Card
-          icon={
-            <MessageCircle className="text-neutral-800 w-5 h-5 sm:w-6 sm:h-6 dark:text-neutral-300" />
-          }
-          count={counts.IssuesEvent}
-          label="Issues"
-        />
+      {/* Issues */}
+      <Card
+        icon={
+          <MessageCircle className="text-neutral-800 w-5 h-5 sm:w-6 sm:h-6 dark:text-neutral-300" />
+        }
+        count={counts.IssuesEvent}
+        label="Issues"
+      />
 
-        {/* Pull Requests */}
-        <Card
-          icon={
-            <HardDriveUpload className="text-neutral-800 w-5 h-5 sm:w-6 sm:h-6 dark:text-neutral-300" />
-          }
-          count={counts.PullRequestEvent}
-          label="Pull Requests"
-        />
-      </div>
+      {/* Pull Requests */}
+      <Card
+        icon={
+          <HardDriveUpload className="text-neutral-800 w-5 h-5 sm:w-6 sm:h-6 dark:text-neutral-300" />
+        }
+        count={counts.PullRequestEvent}
+        label="Pull Requests"
+      />
     </div>
   );
 }
@@ -98,7 +96,7 @@ function Card({
   label: string;
 }) {
   return (
-    <div className="w-full h-full bg-neutral-50 rounded-xl col-span-1 px-4 sm:px-6 py-4 dark:bg-neutral-900">
+    <div className="w-full h-full bg-neutral-50 rounded-xl px-4 sm:px-6 py-4 dark:bg-neutral-900">
       <div className="flex items-center justify-between w-full">
         <div className="bg-neutral-100 rounded-lg p-2 dark:bg-neutral-800">
           {icon}

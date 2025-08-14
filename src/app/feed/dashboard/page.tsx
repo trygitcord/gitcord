@@ -40,17 +40,17 @@ function page() {
           Overview of your key data and insights.
         </p>
       </div>
-      <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 pt-6 overflow-hidden">
-        <div className="col-span-1 md:col-span-2 lg:col-span-6 min-h-0 overflow-hidden">
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 pt-6 overflow-auto">
+        <div className="col-span-1 md:col-span-2 lg:col-span-6 md:overflow-hidden">
           <UserProfileOverview />
         </div>
-        <div className="col-span-1 md:col-span-2 lg:col-span-6 min-h-0 overflow-hidden">
+        <div className="md:col-span-2 lg:col-span-6">
           <UserActivityOverview />
         </div>
-        <div className="col-span-1 md:col-span-1 lg:col-span-2 min-h-0 overflow-hidden">
+        <div className="md:col-span-1 lg:col-span-2">
           <UserActivityChart />
         </div>
-        <div className="col-span-1 md:col-span-1 lg:col-span-4 min-h-0 overflow-hidden">
+        <div className="md:col-span-1 lg:col-span-4">
           <UserRecentActivity />
         </div>
       </div>
