@@ -237,7 +237,7 @@ function ActivityPage() {
   )
     return (
       <div className="w-full h-full">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-4">
           <div>
             <h1 className="text-lg font-medium flex items-center gap-2">
               Activity
@@ -295,7 +295,7 @@ function ActivityPage() {
 
   return (
     <div className="w-full h-full">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-col md:flex-row gap-y-4 justify-between items-center mb-4">
         <div>
           <h1 className="text-lg font-medium flex items-center gap-2">
             Activity
@@ -304,7 +304,7 @@ function ActivityPage() {
             Track all recent actions and updates in one place.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="grid grid-cols-2 md:flex gap-4 md:gap-2">
           <button
             onClick={() => setActiveFilter("all")}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
