@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   MessageSquare,
   X,
@@ -46,6 +46,10 @@ function Page() {
   const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState<string>("all");
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+
+  useEffect(() => {
+    document.title = "Feed | Inbox";
+  }, []);
 
   const {
     data: messagesData,
