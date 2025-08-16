@@ -12,16 +12,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   TrendingUp,
   GitBranch,
-  GitCommit,
   Users,
 } from "lucide-react";
 import {
   ResponsiveContainer,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar,
   Tooltip,
 } from "recharts";
 import { AnimatedHatchedPatternAreaChart } from "@/components/charts/AnimatedHatchedPatternAreaChart";
@@ -55,6 +49,7 @@ interface GitHubRepository {
   stargazers_count: number;
   forks_count: number;
   watchers_count: number;
+  updated_at: string;
 }
 
 interface GitHubOrganization {
@@ -80,11 +75,7 @@ interface RepoStats {
   forked: number;
 }
 
-interface ContributionData {
-  subject: string;
-  A: number;
-  fullMark: number;
-}
+
 
 interface TopRepo {
   name: string;
@@ -102,7 +93,6 @@ interface AnalyticsData {
   activityData: ActivityData[];
   monthlyData: MonthlyData[];
   repoStats: RepoStats;
-  contributionData: ContributionData[];
   topReposBySize: TopRepo[];
   commitTimeData: CommitTimeData[];
   totalStars: number;
@@ -184,7 +174,7 @@ export default function AnalyticsPage() {
             .reverse()
         : [];
 
-    // Monthly contributions (last 12 months)
+    // Monthly contributions (last 6 months)
     const monthlyData: MonthlyData[] = events && events.length > 0
       ? (() => {
           const months = [
@@ -194,20 +184,26 @@ export default function AnalyticsPage() {
           const now = new Date();
           const monthlyContributions: { [key: string]: number } = {};
           
-          for (let i = 11; i >= 0; i--) {
+          // Initialize last 6 months including current month
+          for (let i = 5; i >= 0; i--) {
             const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
             const monthKey = months[date.getMonth()];
             monthlyContributions[monthKey] = 0;
           }
           
+          // Count events by month (only for the last 6 months)
           (events as GitHubEvent[]).forEach((event: GitHubEvent) => {
             const eventDate = new Date(event.created_at);
-            const monthKey = months[eventDate.getMonth()];
-            if (monthlyContributions.hasOwnProperty(monthKey)) {
+            // Check if event is within the last 6 months
+            const monthDiff = (now.getFullYear() - eventDate.getFullYear()) * 12 + 
+                             (now.getMonth() - eventDate.getMonth());
+            if (monthDiff >= 0 && monthDiff < 6) {
+              const monthKey = months[eventDate.getMonth()];
               monthlyContributions[monthKey]++;
             }
           });
           
+          // Convert to array and sort by month order
           return Object.entries(monthlyContributions).map(([month, contributions]) => ({
             month,
             contributions
@@ -225,55 +221,20 @@ export default function AnalyticsPage() {
       forked: reposData?.filter((r: GitHubRepository) => r.fork).length || 0,
     };
 
-    // Contribution stats
-    const contributionData: ContributionData[] = [
-      {
-        subject: "Push Events",
-        A:
-          (events as GitHubEvent[])?.filter(
-            (e: GitHubEvent) => e.type === "PushEvent"
-          ).length || 0,
-        fullMark: 100,
-      },
-      {
-        subject: "Pull Requests",
-        A:
-          (events as GitHubEvent[])?.filter(
-            (e: GitHubEvent) => e.type === "PullRequestEvent"
-          ).length || 0,
-        fullMark: 100,
-      },
-      {
-        subject: "Issues",
-        A:
-          (events as GitHubEvent[])?.filter(
-            (e: GitHubEvent) => e.type === "IssuesEvent"
-          ).length || 0,
-        fullMark: 100,
-      },
-      {
-        subject: "Reviews",
-        A:
-          (events as GitHubEvent[])?.filter(
-            (e: GitHubEvent) => e.type === "PullRequestReviewEvent"
-          ).length || 0,
-        fullMark: 100,
-      },
-      {
-        subject: "Comments",
-        A:
-          (events as GitHubEvent[])?.filter((e: GitHubEvent) =>
-            e.type.includes("CommentEvent")
-          ).length || 0,
-        fullMark: 100,
-      },
-    ];
+    
 
-    // Top repositories by size
+    // Top repositories by stars, then by last update for repos with 0 stars
     const topReposBySize: TopRepo[] =
       reposData && reposData.length > 0
         ? reposData
-            .sort((a: GitHubRepository, b: GitHubRepository) => b.size - a.size)
+            .sort((a: GitHubRepository, b: GitHubRepository) => {
+              // First sort by stars
+              if (b.stargazers_count !== a.stargazers_count) {
+                return b.stargazers_count - a.stargazers_count;
+              }
+              // For repos with same stars (including 0), sort by last update
+              return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+            })
             .slice(0, 5)
             .map((repo: GitHubRepository) => ({
               name: repo.name,
@@ -309,12 +270,37 @@ export default function AnalyticsPage() {
       }));
     })();
 
-    // Calculate trends
-    const activityTrend = activityData.length > 7 
+    // Calculate trends - compare recent vs earlier activity
+    const activityTrend = activityData.length > 0 
       ? (() => {
+          const totalActivity = activityData.reduce((sum, item) => sum + item.count, 0);
+          
+          if (totalActivity === 0) {
+            return "+0%";
+          }
+          
+          // If we have less than 2 weeks of data, compare first half vs second half
+          if (activityData.length < 14) {
+            const midPoint = Math.floor(activityData.length / 2);
+            const firstHalf = activityData.slice(0, midPoint).reduce((sum, item) => sum + item.count, 0);
+            const secondHalf = activityData.slice(midPoint).reduce((sum, item) => sum + item.count, 0);
+            
+            if (firstHalf === 0) {
+              return secondHalf > 0 ? "+100%" : "+0%";
+            }
+            
+            const change = ((secondHalf - firstHalf) / firstHalf) * 100;
+            return change > 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
+          }
+          
+          // For 2+ weeks of data, compare last 7 days vs previous 7 days
           const recent = activityData.slice(-7).reduce((sum, item) => sum + item.count, 0);
           const previous = activityData.slice(-14, -7).reduce((sum, item) => sum + item.count, 0);
-          if (previous === 0) return "+0%";
+          
+          if (previous === 0) {
+            return recent > 0 ? "+100%" : "+0%";
+          }
+          
           const change = ((recent - previous) / previous) * 100;
           return change > 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
         })()
@@ -339,12 +325,27 @@ export default function AnalyticsPage() {
         })()
       : "+0%";
 
-    const monthlyTrend = monthlyData.length > 6
+    const monthlyTrend = monthlyData.length >= 6
       ? (() => {
-          const recent = monthlyData.slice(-3).reduce((sum, item) => sum + item.contributions, 0);
-          const previous = monthlyData.slice(-6, -3).reduce((sum, item) => sum + item.contributions, 0);
-          if (previous === 0) return "+0%";
-          const change = ((recent - previous) / previous) * 100;
+          // Calculate average of last 3 months vs previous 3 months
+          const recentMonths = monthlyData.slice(-3);
+          const previousMonths = monthlyData.slice(-6, -3);
+          
+          const recentAvg = recentMonths.reduce((sum, item) => sum + item.contributions, 0) / 3;
+          const previousAvg = previousMonths.reduce((sum, item) => sum + item.contributions, 0) / 3;
+          
+          // Handle case where previous average is 0
+          if (previousAvg === 0) {
+            if (recentAvg === 0) {
+              return "+0%";
+            } else {
+              // If previous was 0 and now we have activity, show a large positive increase
+              // but cap it at a reasonable percentage
+              return "+100%";
+            }
+          }
+          
+          const change = ((recentAvg - previousAvg) / previousAvg) * 100;
           return change > 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
         })()
       : "+0%";
@@ -353,7 +354,6 @@ export default function AnalyticsPage() {
       activityData,
       monthlyData,
       repoStats,
-      contributionData,
       topReposBySize,
       commitTimeData,
       totalStars:
@@ -409,19 +409,19 @@ export default function AnalyticsPage() {
             <Skeleton key={i} className="h-32" />
           ))}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {[1, 2, 3, 4].map((i) => (
-            <Skeleton key={i} className="h-80" />
-          ))}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Skeleton className="h-80 lg:col-span-3" />
+          <Skeleton className="h-80" />
+          <Skeleton className="h-80" />
+          <Skeleton className="h-80" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full space-y-6 pb-8">
-      {/* Header */}
-      <div className="space-y-2">
+    <div className="w-full h-full flex flex-col overflow-hidden">
+      <div className="flex-shrink-0 space-y-2 pb-4">
         <h1 className="text-2xl font-semibold">
           Analytics
         </h1>
@@ -430,70 +430,74 @@ export default function AnalyticsPage() {
         </p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Repos</CardTitle>
-            <GitBranch className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {analyticsData?.repoStats.total}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {analyticsData?.repoStats.public} public,{" "}
-              {analyticsData?.repoStats.private} private
-            </p>
-          </CardContent>
-        </Card>
+      <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-4 overflow-hidden">
+        {/* Stats Cards - First Row */}
+        <div className="col-span-1 md:col-span-3 lg:col-span-3 min-h-0 overflow-hidden" style={{ minHeight: '100px' }}>
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow h-full">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Public Repos</CardTitle>
+              <GitBranch className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-xl font-bold">
+                {analyticsData?.repoStats.public}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Total repositories
+              </p>
+            </CardContent>
+          </Card>
+        </div>
 
-        <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Stars</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {analyticsData?.totalStars}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              From all repositories
-            </p>
-          </CardContent>
-        </Card>
+        <div className="col-span-1 md:col-span-3 lg:col-span-3 min-h-0 overflow-hidden" style={{ minHeight: '100px' }}>
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow h-full">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Stars</CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-xl font-bold">
+                {analyticsData?.totalStars}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                From all repositories
+              </p>
+            </CardContent>
+          </Card>
+        </div>
 
-        <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Forks</CardTitle>
-            <GitCommit className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {analyticsData?.totalForks}
-            </div>
-            <p className="text-xs text-muted-foreground">Contributors</p>
-          </CardContent>
-        </Card>
+        <div className="col-span-1 md:col-span-3 lg:col-span-3 min-h-0 overflow-hidden" style={{ minHeight: '100px' }}>
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow h-full">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Forks</CardTitle>
+              <GitBranch className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-xl font-bold">
+                {analyticsData?.totalForks}
+              </div>
+              <p className="text-xs text-muted-foreground">Contributors</p>
+            </CardContent>
+          </Card>
+        </div>
 
-        <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Organizations</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {analyticsData?.organizations}
-            </div>
-            <p className="text-xs text-muted-foreground">Member of</p>
-          </CardContent>
-        </Card>
-      </div>
+        <div className="col-span-1 md:col-span-3 lg:col-span-3 min-h-0 overflow-hidden" style={{ minHeight: '100px' }}>
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow h-full">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Organizations</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-xl font-bold">
+                {analyticsData?.organizations}
+              </div>
+              <p className="text-xs text-muted-foreground">Member of</p>
+            </CardContent>
+          </Card>
+        </div>
 
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Activity Timeline */}
-        <div className="lg:col-span-2">
+        {/* Charts */}
+        <div className="col-span-1 md:col-span-12 lg:col-span-12 min-h-0 overflow-hidden" style={{ minHeight: '250px' }}>
           <AnimatedHatchedPatternAreaChart 
             data={analyticsData?.activityData || []}
             title="Last 30 Days Activity"
@@ -502,64 +506,34 @@ export default function AnalyticsPage() {
           />
         </div>
 
-        {/* Monthly Contributions */}
-        <GradientBarChart 
-          data={analyticsData?.monthlyData || []}
-          title="Monthly Contributions"
-          description="Your GitHub activity over the last 12 months"
-          trend={analyticsData?.monthlyTrend || "+0%"}
-        />
+        <div className="col-span-1 md:col-span-4 lg:col-span-4 min-h-0 overflow-hidden" style={{ minHeight: '320px' }}>
+          <GlowingLineChart 
+            data={analyticsData?.commitTimeData || []}
+            title="Commit Time Distribution"
+            description="Your most active hours"
+            trend={analyticsData?.commitTrend || "+0%"}
+          />
+        </div>
 
-        {/* Commit Time Distribution */}
-        <GlowingLineChart 
-          data={analyticsData?.commitTimeData || []}
-          title="Commit Time Distribution"
-          description="Your most active hours"
-          trend={analyticsData?.commitTrend || "+0%"}
-        />
+        <div className="col-span-1 md:col-span-4 lg:col-span-4 min-h-0 overflow-hidden" style={{ minHeight: '320px' }}>
+          <GradientBarChart 
+            data={analyticsData?.monthlyData || []}
+            title="Recent Activity"
+            description="Last 6 months of GitHub activity"
+            trend={analyticsData?.monthlyTrend || "+0%"}
+          />
+        </div>
 
-        {/* Repository Size Analysis */}
-        <ClippedAreaChart 
-          data={analyticsData?.topReposBySize || []}
-          title="Repository Analysis"
-          description="Repository size distribution"
-          trend={analyticsData?.repoTrend || "-2.4%"}
-          isPositive={false}
-        />
-
-        {/* Contribution Radar */}
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <GitCommit className="h-5 w-5" />
-              Contribution Analysis
-            </CardTitle>
-            <CardDescription>
-              Your contributions in different activity types
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <RadarChart data={analyticsData?.contributionData || []}>
-                  <PolarGrid strokeDasharray="3 3" />
-                  <PolarAngleAxis dataKey="subject" />
-                  <PolarRadiusAxis angle={90} domain={[0, 100]} />
-                  <Radar
-                    name="Activity"
-                    dataKey="A"
-                    stroke="#5BC898"
-                    fill="#5BC898"
-                    fillOpacity={0.6}
-                  />
-                  <Tooltip />
-                </RadarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="col-span-1 md:col-span-4 lg:col-span-4 min-h-0 overflow-hidden" style={{ minHeight: '320px' }}>
+          <ClippedAreaChart 
+            data={analyticsData?.topReposBySize || []}
+            title="Top Repositories"
+            description="Sorted by stars and recent activity"
+            trend={analyticsData?.repoTrend?.startsWith("+") || analyticsData?.repoTrend?.startsWith("-") ? `${analyticsData?.repoTrend}` : "+0%"}
+            isPositive={analyticsData?.repoTrend?.startsWith("+") || false}
+          />
+        </div>
       </div>
-
     </div>
   );
 }

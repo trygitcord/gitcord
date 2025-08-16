@@ -28,12 +28,16 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function GradientBarChart({ 
-  data, 
-  title = "Monthly Contributions", 
-  description = "Your GitHub activity over the last 12 months",
-  trend = "+0%"
+export function GradientBarChart({
+  data,
+  title = "Recent Activity",
+  description = "Last 6 months of GitHub activity",
+  trend = "+0%",
 }: Props) {
+  // Check if we have data to display
+  const hasData =
+    data && data.length > 0 && data.some((item) => item.contributions > 0);
+
   return (
     <div className="w-full h-full bg-neutral-50 rounded-xl px-4 sm:px-6 py-4 dark:bg-neutral-900">
       <div className="flex items-center justify-between w-full mb-4">
@@ -50,45 +54,61 @@ export function GradientBarChart({
             </p>
           </div>
         </div>
-        <div className="text-green-500 bg-green-500/10 px-2 py-1 rounded-md flex items-center gap-1">
-          <TrendingUp className="h-4 w-4" />
-          <span className="text-sm">{trend}</span>
-        </div>
+        {hasData && trend !== "+0%" && (
+          <div
+            className={`px-2 py-1 rounded-md flex items-center gap-1 ${
+              trend.startsWith("+") && trend !== "+0%"
+                ? "text-green-500 bg-green-500/10"
+                : "text-red-500 bg-red-500/10"
+            }`}
+          >
+            <TrendingUp className="h-4 w-4" />
+            <span className="text-sm">{trend}</span>
+          </div>
+        )}
       </div>
       <div className="h-64">
-        <ChartContainer config={chartConfig} className="w-full h-full">
-          <BarChart accessibilityLayer data={data}>
-            <XAxis
-              dataKey="month"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Bar
-              shape={<CustomGradientBar />}
-              dataKey="contributions"
-              fill="#10B981"
-              radius={[4, 4, 0, 0]}
-            />
-            <defs>
-              <linearGradient
-                id="gradient-bar-pattern-contributions"
-                x1="0"
-                y1="0"
-                x2="0"
-                y2="1"
-              >
-                <stop offset="0%" stopColor="#10B981" stopOpacity={0.8} />
-                <stop offset="100%" stopColor="#10B981" stopOpacity={0.1} />
-              </linearGradient>
-            </defs>
-          </BarChart>
-        </ChartContainer>
+        {hasData ? (
+          <ChartContainer config={chartConfig} className="w-full h-full">
+            <BarChart accessibilityLayer data={data} barSize={60}>
+              <XAxis
+                dataKey="month"
+                tickLine={false}
+                tickMargin={10}
+                axisLine={false}
+                tickFormatter={(value) => value.slice(0, 3)}
+              />
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent hideLabel />}
+              />
+              <Bar
+                shape={<CustomGradientBar />}
+                dataKey="contributions"
+                fill="#10B981"
+                radius={[4, 4, 0, 0]}
+              />
+              <defs>
+                <linearGradient
+                  id="gradient-bar-pattern-contributions"
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop offset="0%" stopColor="#10B981" stopOpacity={0.8} />
+                  <stop offset="100%" stopColor="#10B981" stopOpacity={0.1} />
+                </linearGradient>
+              </defs>
+            </BarChart>
+          </ChartContainer>
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <p className="text-neutral-500 dark:text-neutral-400">
+              No contribution data available
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -111,13 +131,13 @@ const CustomGradientBar = (
         rx={4}
         ry={4}
       />
-      <rect 
-        x={x} 
-        y={y} 
-        width={width} 
-        height={3} 
-        stroke="none" 
-        fill="#10B981" 
+      <rect
+        x={x}
+        y={y}
+        width={width}
+        height={3}
+        stroke="none"
+        fill="#10B981"
         rx={4}
         ry={4}
       />

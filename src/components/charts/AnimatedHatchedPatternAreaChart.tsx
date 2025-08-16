@@ -63,7 +63,7 @@ export function AnimatedHatchedPatternAreaChart({ data, title = "GitHub Activity
           <span className="text-sm">{trend}</span>
         </div>
       </div>
-      <div className="h-72">
+      <div className="h-48">
         <ChartContainer config={chartConfig} className="w-full h-full">
           <AreaChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} strokeDasharray="3 3" />
@@ -72,7 +72,7 @@ export function AnimatedHatchedPatternAreaChart({ data, title = "GitHub Activity
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
+              hide={true}
             />
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
             <defs>
