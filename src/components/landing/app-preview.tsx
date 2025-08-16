@@ -10,19 +10,19 @@ const previewImages = [
     title: "feed/dashboard",
   },
   {
-    src: "/preview2.png",
-    lightSrc: "/light-preview-2.png",
-    title: "feed/activity",
-  },
-  {
     src: "/preview3.png",
     lightSrc: "/light-preview-3.png",
-    title: "feed/repositories",
+    title: "feed/analytics",
   },
   {
-    src: "/preview4.png",
-    lightSrc: "/light-preview-4.png",
-    title: "feed/organization",
+    src: "/preview6.png",
+    lightSrc: "/light-preview-6.png",
+    title: "feed/repository",
+  },
+  {
+    src: "/preview8.png",
+    lightSrc: "/light-preview-8.png",
+    title: "feed/leaderboard",
   },
 ];
 
@@ -128,23 +128,12 @@ export default function AppPreview() {
         <div className="relative max-w-5xl mx-auto">
           {/* Main Preview Container */}
           <div className="relative rounded-3xl">
-            {/* Device Frame */}
-            <div className="relative bg-gray-50 dark:bg-background rounded-2xl p-4 border border-gray-200 dark:border-neutral-900">
-              {/* Browser Bar */}
-              <div className="flex items-center gap-2 mb-4 bg-gray-100 dark:bg-neutral-950 rounded-lg p-3">
-                <div className="flex gap-2">
-                  <div className="w-3 h-3 bg-red-500 rounded-full opacity-80 hover:opacity-100 transition-opacity cursor-pointer"></div>
-                  <div className="w-3 h-3 bg-yellow-500 rounded-full opacity-80 hover:opacity-100 transition-opacity cursor-pointer"></div>
-                  <div className="w-3 h-3 bg-green-500 rounded-full opacity-80 hover:opacity-100 transition-opacity cursor-pointer"></div>
-                </div>
-                <div className="flex-1 bg-white dark:bg-neutral-900 dark:text-neutral-300 rounded-md px-4 py-1.5 text-sm text-gray-600 dark:text-neutral-200 border border-gray-300 dark:border-neutral-950 mx-4">
-                  https://gitcord.dev/
-                  {previewImages[currentIndex].title
-                    .toLowerCase()
-                    .replace(/\s+/g, "-")}
-                </div>
-              </div>
-
+            <div className="relative">
+              <div
+                aria-hidden
+                className="bg-gradient-to-b to-background absolute inset-0 z-10 from-transparent from-35% pointer-events-none"
+              />
+              <div className="inset-shadow-2xs ring-background dark:inset-shadow-white/20 bg-background relative mx-auto overflow-hidden rounded-2xl border p-4 shadow-lg shadow-zinc-950/15 ring-1">
               {/* Image Container */}
               <div
                 className="relative rounded-lg overflow-hidden bg-white dark:bg-[#0a0a0a]"
@@ -160,19 +149,26 @@ export default function AppPreview() {
                           : "opacity-0 scale-95 z-0"
                       }`}
                     >
-                      <Image
-                        ref={index === 0 ? imgRef : null}
-                        src={getCurrentImageSrc(image)}
-                        alt={image.title}
-                        className="w-full h-full object-contain"
-                        width={2000}
-                        height={2000}
-                        loading={index === 0 ? "eager" : "lazy"}
-                      />
+                      <div className="relative w-full h-full">
+                        <Image
+                          ref={index === 0 ? imgRef : null}
+                          src={getCurrentImageSrc(image)}
+                          alt={image.title}
+                          className="w-full h-full object-contain"
+                          width={2000}
+                          height={2000}
+                          loading={index === 0 ? "eager" : "lazy"}
+                        />
+                        <div
+                          aria-hidden
+                          className="bg-gradient-to-b to-background absolute inset-0 from-transparent from-35%"
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
+            </div>
             </div>
 
             {/* Page Tabs */}

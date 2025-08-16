@@ -4,7 +4,6 @@ import { Features } from "@/components/landing/features";
 import AppPreview from "@/components/landing/app-preview";
 import { Faq } from "@/components/landing/faq";
 import { MarqueeColumns } from "@/components/landing/marquee-columns";
-import { Team } from "@/components/landing/team";
 
 export default function Home() {
   return (
@@ -15,7 +14,6 @@ export default function Home() {
           <Features />
           <AppPreview />
           <MarqueeColumns />
-          <Team />
         </div>
         <div className="flex items-center justify-center pt-10">
           <Faq />

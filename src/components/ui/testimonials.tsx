@@ -1,9 +1,6 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Icons } from "@/components/ui/icons";
 
@@ -20,7 +17,6 @@ interface TestimonialsProps {
   className?: string;
   title?: string;
   description?: string;
-  maxDisplayed?: number;
 }
 
 export function Testimonials({
@@ -28,13 +24,20 @@ export function Testimonials({
   className,
   title = "What developers say about Gitcord",
   description = "Discover how Gitcord is transforming the way developers track and showcase their Github activity.",
-  maxDisplayed = 6,
 }: TestimonialsProps) {
-  const [showAll, setShowAll] = useState(false);
-
   const openInNewTab = (url: string) => {
     window.open(url, "_blank")?.focus();
   };
+
+  const feedbackCard = {
+    image: "/logo.svg",
+    name: "Have feedback?",
+    username: "gitcord",
+    text: "Want to help us improve? Try Gitcord now and share your thoughts!",
+    social: "/feed",
+  };
+
+  const allTestimonials = [...testimonials, feedbackCard];
 
   return (
     <div className={className}>
@@ -54,85 +57,71 @@ export function Testimonials({
         </div>
       </div>
 
-      <div className="relative pt-4">
+      <div className="relative pt-4 overflow-hidden">
         <div
-          className={cn(
-            "flex justify-center items-center gap-5 flex-wrap",
-            !showAll &&
-              testimonials.length > maxDisplayed &&
-              "max-h-[720px] overflow-hidden"
-          )}
+          className="flex gap-6"
+          style={{
+            animation: "scroll 60s linear infinite",
+          }}
         >
-          {testimonials
-            .slice(0, showAll ? undefined : maxDisplayed)
-            .map((testimonial, index) => (
-              <Card
-                key={index}
-                className="w-80 h-auto p-5 relative bg-background rounded-2xl border border-neutral-900 max-w-xs w-full"
-              >
-                <div className="flex items-center">
-                  <Image
-                    src={testimonial.image}
-                    alt={"User Avatar"}
-                    width={45}
-                    height={45}
-                    className="rounded-full"
-                  />
-                  <div className="flex flex-col pl-3">
-                    <span className="font-medium text-neutral-100">
-                      {testimonial.name}
-                    </span>
-                    <span className="text-sm text-muted-foreground">
-                      @{testimonial.username}
-                    </span>
-                  </div>
-                </div>
-                <div className="py-4 px-1.5">
-                  <p className="text-neutral-100 text-sm">
-                    "{testimonial.text}"
-                  </p>
-                </div>
-                <button
-                  onClick={() => openInNewTab(testimonial.social)}
-                  className="absolute top-4 right-4 hover:opacity-80 transition-opacity cursor-pointer"
+          {[...allTestimonials, ...allTestimonials, ...allTestimonials].map(
+            (testimonial, index) => {
+              const isFeedbackCard =
+                testimonial.username === "gitcord" &&
+                testimonial.name === "Have feedback?";
+
+              return (
+                <Card
+                  key={index}
+                  className="w-80 h-auto p-5 relative bg-background rounded-2xl border border-neutral-900 flex-shrink-0"
                 >
-                  <Icons.twitter className="h-4 w-4" aria-hidden="true" />
-                </button>
-              </Card>
-            ))}
-
-          {/* Special invitation card */}
-          <Card className="w-80 h-auto p-6 relative bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl border border-primary/30 shadow-lg shadow-primary/20 max-w-xs w-full">
-            <div className="flex items-center">
-              <div className="w-[45px] h-[45px] rounded-full bg-primary/20 border-2 border-primary/50 flex items-center justify-center">
-                <Icons.twitter className="h-6 w-6 text-primary" />
-              </div>
-              <div className="flex flex-col pl-3">
-                <span className="font-medium text-primary">
-                  Want to be featured?
-                </span>
-                <span className="text-sm text-primary/80">@gitcord</span>
-              </div>
-            </div>
-            <div className="py-5 px-1.5">
-              <p className="text-neutral-100 text-sm">
-                "Share your Gitcord experience on X to get featured here!"
-              </p>
-            </div>
-          </Card>
+                  <div className="flex items-center">
+                    <Image
+                      src={testimonial.image}
+                      alt={"User Avatar"}
+                      width={isFeedbackCard ? 25 : 35}
+                      height={isFeedbackCard ? 25 : 35}
+                      className={isFeedbackCard ? "rounded-none" : "rounded-full"}
+                    />
+                    <div className="flex flex-col pl-3">
+                      <span className="font-medium text-neutral-100">
+                        {testimonial.name}
+                      </span>
+                      <span className="text-sm text-muted-foreground text-xs">
+                        @{testimonial.username}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="py-4 px-1.5">
+                    <p className="text-neutral-100 text-sm leading-relaxed break-words">
+                      "{testimonial.text}"
+                    </p>
+                  </div>
+                  {!isFeedbackCard && (
+                    <button
+                      onClick={() => openInNewTab(testimonial.social)}
+                      className="absolute top-4 right-4 hover:opacity-80 transition-opacity cursor-pointer"
+                    >
+                      <Icons.twitter className="h-4 w-4" aria-hidden="true" />
+                    </button>
+                  )}
+                </Card>
+              );
+            }
+          )}
         </div>
-
-        {testimonials.length > maxDisplayed && !showAll && (
-          <>
-            <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-background to-transparent" />
-            <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-20">
-              <Button variant="secondary" onClick={() => setShowAll(true)}>
-                Load More
-              </Button>
-            </div>
-          </>
-        )}
       </div>
+
+      <style jsx global>{`
+        @keyframes scroll {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-33.33%);
+          }
+        }
+      `}</style>
     </div>
   );
 }
