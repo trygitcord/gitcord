@@ -10,8 +10,10 @@ import {
   Shield,
   Gift,
   ChevronDown,
+  Eye,
+  EyeOff,
 } from "lucide-react";
-import { useUserProfile } from "@/hooks/useMyApiQueries";
+import { useUserProfile, useUpdatePrivacy } from "@/hooks/useMyApiQueries";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import { useTheme } from "next-themes";
@@ -40,10 +42,25 @@ function SettingsPage() {
   const { setTheme, theme } = useTheme();
   const router = useRouter();
   const [language, setLanguage] = React.useState("English");
+  const [isPrivate, setIsPrivate] = React.useState(false);
+  const updatePrivacyMutation = useUpdatePrivacy();
+
+  React.useEffect(() => {
+    if (userData?.isPrivate !== undefined) {
+      setIsPrivate(userData.isPrivate);
+    }
+  }, [userData]);
 
   async function handleLogout() {
     await signOut({ redirect: false });
     router.push("/");
+  }
+
+  function handlePrivacyToggle() {
+    if (updatePrivacyMutation.isPending) return;
+    
+    const newPrivateValue = !isPrivate;
+    updatePrivacyMutation.mutate(newPrivateValue);
   }
 
   if (userLoading || !userData || userError) {
@@ -165,6 +182,38 @@ function SettingsPage() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+        </div>
+      </div>
+
+      {/* Privacy Settings */}
+      <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            {isPrivate ? (
+              <EyeOff className="w-5 h-5 text-neutral-500" />
+            ) : (
+              <Eye className="w-5 h-5 text-neutral-500" />
+            )}
+            <div>
+              <span className="text-sm">Leaderboard Visibility</span>
+              <p className="text-xs text-neutral-600 dark:text-neutral-400">
+                {isPrivate ? "Hidden from leaderboard" : "Visible on leaderboard"}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={handlePrivacyToggle}
+            disabled={updatePrivacyMutation.isPending}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#5BC898] focus:ring-offset-2 ${
+              isPrivate ? "bg-[#5BC898]" : "bg-gray-200 dark:bg-gray-700"
+            } ${updatePrivacyMutation.isPending ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+          >
+            <span
+              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                isPrivate ? "translate-x-6" : "translate-x-1"
+              }`}
+            />
+          </button>
         </div>
       </div>
 

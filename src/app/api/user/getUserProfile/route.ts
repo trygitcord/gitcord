@@ -95,6 +95,7 @@ export const GET = withDb(
         avatar_url: user.avatar_url,
         role: user.role,
         isModerator: user.isModerator,
+        isPrivate: user.isPrivate ?? false,
         stats: {
           _id: statsData._id,
           credit: statsData.credit || 0,

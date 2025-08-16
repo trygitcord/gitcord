@@ -35,3 +35,29 @@ export const useRedeemCode = () => {
     },
   });
 };
+
+export const useUpdatePrivacy = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (isPrivate: boolean) => {
+      const response = await axios.post(`${API_URL}/api/user/updatePrivacy`, { isPrivate });
+      return response.data;
+    },
+    onSuccess: (data) => {
+      // Update user profile cache
+      queryClient.setQueryData(["user-profile"], (oldData: any) => {
+        if (oldData) {
+          return { ...oldData, isPrivate: data.isPrivate };
+        }
+        return oldData;
+      });
+      
+      // Invalidate leaderboard to reflect privacy changes
+      queryClient.invalidateQueries({ queryKey: ["activity-leaderboard"] });
+    },
+    onError: (error) => {
+      console.error("Privacy update failed:", error);
+    }
+  });
+};
