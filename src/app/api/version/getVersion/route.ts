@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
-import axios from "axios";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+import { createGithubRequest } from "@/lib/axios-server";
 
 export const GET = async () => {
     try {
+        const session = await getServerSession(authOptions);
+        
         // Try to get commit count from a public repository (using a fallback approach)
         // Since we might not have access to the actual Gitcord repo, we'll use a different approach
 
@@ -10,9 +14,14 @@ export const GET = async () => {
         let totalCommits = 0;
 
         try {
+            // Use user's token if available to avoid rate limits
+            const githubApi = createGithubRequest(
+                session ? (session as { accessToken?: string }).accessToken : undefined
+            );
+
             // Try to get from a sample repository to test the API
-            const response = await axios.get(
-                "https://api.github.com/repos/lumi-work/gitcord/commits?per_page=1"
+            const response = await githubApi.get(
+                "/repos/lumi-work/gitcord/commits?per_page=1"
             );
 
             // Get total count from headers
