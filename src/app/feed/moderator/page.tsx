@@ -20,6 +20,11 @@ import {
   AlertCircle,
   Mail,
   KeyRound,
+  Search,
+  Filter,
+  Eye,
+  UserCheck,
+  Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -101,6 +106,9 @@ export default function ModeratorPage() {
   const { data: codesData, isLoading: codesLoading } = useGetCodes();
   const deleteCode = useDeleteCode();
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [isUserDetailModalOpen, setIsUserDetailModalOpen] = useState(false);
 
   useEffect(() => {
     // If not authenticated, redirect to home
@@ -174,33 +182,43 @@ export default function ModeratorPage() {
     setIsCreateCodeModalOpen(false);
   };
 
+  // Email masking is now handled server-side for security
+  // No need for client-side masking
+
+
+  const filteredUsers = usersData?.data.users.filter(user => 
+    user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email?.toLowerCase().includes(searchTerm.toLowerCase())
+  ) || [];
+
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-6">
+    <div className="max-w-6xl mx-auto p-4 space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-3">
-          <Shield className="w-8 h-8 text-[#5BC898]" />
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Shield className="w-5 h-5 text-neutral-600" />
           <div>
-            <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">
+            <h1 className="text-xl font-medium text-neutral-900 dark:text-white">
               Moderator Panel
             </h1>
-            <p className="text-neutral-600 dark:text-neutral-400">
-              Manage messages and user communications
+            <p className="text-sm text-neutral-600 dark:text-neutral-400">
+              User management and messaging system
             </p>
           </div>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-normal text-neutral-700 dark:text-neutral-300">
               Total Users
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
+          <CardContent className="pt-0">
+            <div className="text-2xl font-medium text-neutral-900 dark:text-neutral-100">
               {messageStats?.data?.totalUsers ||
                 usersData?.data.pagination.totalCount ||
                 0}
@@ -209,88 +227,71 @@ export default function ModeratorPage() {
         </Card>
 
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
-              Total User Messages
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-normal text-neutral-700 dark:text-neutral-300">
+              Total Messages
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
+          <CardContent className="pt-0">
+            <div className="text-2xl font-medium text-neutral-900 dark:text-neutral-100">
               {messageStats?.data?.totalMessages || 0}
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
-              Total Unread Messages
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-normal text-neutral-700 dark:text-neutral-300">
+              Unread Messages
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
+          <CardContent className="pt-0">
+            <div className="text-2xl font-medium text-neutral-900 dark:text-neutral-100">
               {messageStats?.data?.totalUnreadMessages || 0}
             </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-lg transition-all duration-200 cursor-pointer group">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 group-hover:text-[#5BC898] transition-colors">
-              <KeyRound className="w-5 h-5" />
-              Create Code
-            </CardTitle>
-            <CardDescription>Create a new code for users</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button
-              className="w-full bg-[#5BC898] hover:bg-[#4BA87B] text-white"
-              onClick={() => setIsCreateCodeModalOpen(true)}
-            >
-              <KeyRound className="w-4 h-4 mr-2" />
-              Create Code
-            </Button>
           </CardContent>
         </Card>
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="hover:shadow-lg transition-all duration-200 cursor-pointer group">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 group-hover:text-[#5BC898] transition-colors">
-              <Send className="w-5 h-5" />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className="hover:shadow-sm transition-shadow duration-150">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-sm font-normal text-neutral-700 dark:text-neutral-300">
+              <Send className="w-4 h-4" />
               Send Message
             </CardTitle>
-            <CardDescription>Send a message to a specific user</CardDescription>
+            <CardDescription className="text-xs">Send a message to a specific user</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <Button
-              className="w-full bg-[#5BC898] hover:bg-[#4BA87B] text-white"
+              size="sm"
+              className="w-full bg-neutral-700 hover:bg-neutral-800 text-white text-xs"
               onClick={() => setIsSendModalOpen(true)}
             >
-              <MessageSquare className="w-4 h-4 mr-2" />
+              <MessageSquare className="w-3 h-3 mr-1" />
               Compose Message
             </Button>
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-lg transition-all duration-200 cursor-pointer group">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 group-hover:text-[#5BC898] transition-colors">
-              <Users className="w-5 h-5" />
+        <Card className="hover:shadow-sm transition-shadow duration-150">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-sm font-normal text-neutral-700 dark:text-neutral-300">
+              <Users className="w-4 h-4" />
               Broadcast Message
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-xs">
               Send a message to all users at once
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <Button
-              className="w-full bg-[#5BC898] hover:bg-[#4BA87B] text-white"
+              size="sm"
+              className="w-full bg-neutral-700 hover:bg-neutral-800 text-white text-xs"
               onClick={() => setIsBroadcastModalOpen(true)}
             >
-              <Mail className="w-4 h-4 mr-2" />
+              <Mail className="w-3 h-3 mr-1" />
               Broadcast to All
             </Button>
           </CardContent>
@@ -299,21 +300,21 @@ export default function ModeratorPage() {
 
       {/* Send Message Modal */}
       <Dialog open={isSendModalOpen} onOpenChange={setIsSendModalOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-xl">
           <DialogHeader>
-            <DialogTitle className="text-2xl flex items-center gap-2">
-              <Send className="w-6 h-6 text-[#5BC898]" />
+            <DialogTitle className="text-lg flex items-center gap-2">
+              <Send className="w-4 h-4 text-neutral-600" />
               Send Message
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-sm">
               Send a message to a specific user or all users
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-6 py-4">
+          <div className="space-y-4 py-3">
             {/* User Selection */}
             <div className="space-y-2">
-              <Label htmlFor="user-select">Select Recipient</Label>
+              <Label htmlFor="user-select" className="text-sm">Select Recipient</Label>
               <Select value={selectedUserId} onValueChange={setSelectedUserId}>
                 <SelectTrigger id="user-select" className="w-full">
                   <SelectValue placeholder="Choose a user or select all users" />
@@ -328,7 +329,7 @@ export default function ModeratorPage() {
                           value="all"
                           onSelect={() => setSelectedUserId("all")}
                         >
-                          <Users className="mr-2 h-4 w-4 text-[#5BC898]" />
+                          <Users className="mr-2 h-4 w-4 text-neutral-600" />
                           <span className="font-semibold">All Users</span>
                           <span className="ml-auto text-sm text-neutral-500">
                             {usersData.data.allUsersOption.userCount} users
@@ -361,7 +362,7 @@ export default function ModeratorPage() {
                               </span>
                             </div>
                             {user.isModerator && (
-                              <Shield className="ml-auto h-4 w-4 text-[#5BC898]" />
+                              <Shield className="ml-auto h-4 w-4 text-neutral-600" />
                             )}
                           </CommandItem>
                         ))
@@ -375,42 +376,42 @@ export default function ModeratorPage() {
             {/* User Details Preview */}
             {userDetails && selectedUserId !== "all" && (
               <Card className="bg-neutral-50 dark:bg-neutral-900">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-12 w-12">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center gap-2">
+                    <Avatar className="h-8 w-8">
                       <AvatarImage src={userDetails.data.user.avatar_url} />
-                      <AvatarFallback>
+                      <AvatarFallback className="text-xs">
                         {userDetails.data.user.name?.[0] ||
                           userDetails.data.user.username[0]}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <h4 className="font-semibold">
+                      <h4 className="font-medium text-sm">
                         {userDetails.data.user.name}
                       </h4>
-                      <p className="text-sm text-neutral-500">
+                      <p className="text-xs text-neutral-500">
                         @{userDetails.data.user.username}
                       </p>
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-3 gap-4 text-sm">
+                <CardContent className="pt-0">
+                  <div className="grid grid-cols-3 gap-3 text-xs">
                     <div>
                       <span className="text-neutral-500">Total Messages</span>
-                      <p className="font-semibold">
+                      <p className="font-medium">
                         {userDetails.data.messageStats.totalMessagesReceived}
                       </p>
                     </div>
                     <div>
                       <span className="text-neutral-500">Unread</span>
-                      <p className="font-semibold">
+                      <p className="font-medium">
                         {userDetails.data.messageStats.unreadMessages}
                       </p>
                     </div>
                     <div>
                       <span className="text-neutral-500">Status</span>
-                      <p className="font-semibold">
+                      <p className="font-medium">
                         {userDetails.data.user.isModerator
                           ? "Moderator"
                           : "User"}
@@ -424,9 +425,9 @@ export default function ModeratorPage() {
             <Separator />
 
             {/* Message Form */}
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="subject">Subject</Label>
+            <div className="space-y-3">
+              <div className="space-y-1">
+                <Label htmlFor="subject" className="text-sm">Subject</Label>
                 <Input
                   id="subject"
                   placeholder="Enter message subject"
@@ -434,30 +435,33 @@ export default function ModeratorPage() {
                   onChange={(e) =>
                     setMessageData({ ...messageData, subject: e.target.value })
                   }
+                  className="text-sm"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="content">Message Content</Label>
+              <div className="space-y-1">
+                <Label htmlFor="content" className="text-sm">Message Content</Label>
                 <Textarea
                   id="content"
                   placeholder="Type your message here..."
-                  rows={6}
+                  rows={4}
                   value={messageData.content}
                   onChange={(e) =>
                     setMessageData({ ...messageData, content: e.target.value })
                   }
+                  className="text-sm"
                 />
               </div>
             </div>
           </div>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsSendModalOpen(false)}>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" size="sm" onClick={() => setIsSendModalOpen(false)}>
               Cancel
             </Button>
             <Button
-              className="bg-[#5BC898] hover:bg-[#4BA87B] text-white"
+              size="sm"
+              className="bg-neutral-700 hover:bg-neutral-800 text-white"
               onClick={handleSendMessage}
               disabled={
                 !selectedUserId ||
@@ -491,7 +495,7 @@ export default function ModeratorPage() {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle className="text-2xl flex items-center gap-2">
-              <Users className="w-6 h-6 text-[#5BC898]" />
+              <Users className="w-6 h-6 text-neutral-600" />
               Broadcast Message
             </DialogTitle>
             <DialogDescription>
@@ -550,7 +554,7 @@ export default function ModeratorPage() {
               Cancel
             </Button>
             <Button
-              className="bg-[#5BC898] hover:bg-[#4BA87B] text-white"
+              className="bg-neutral-700 hover:bg-neutral-800 text-white"
               onClick={handleBroadcast}
               disabled={
                 !messageData.subject ||
@@ -582,7 +586,7 @@ export default function ModeratorPage() {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle className="text-2xl flex items-center gap-2">
-              <KeyRound className="w-6 h-6 text-[#5BC898]" />
+              <KeyRound className="w-6 h-6 text-neutral-600" />
               Create Code
             </DialogTitle>
             <DialogDescription>
@@ -676,7 +680,7 @@ export default function ModeratorPage() {
               Cancel
             </Button>
             <Button
-              className="bg-[#5BC898] hover:bg-[#4BA87B] text-white"
+              className="bg-neutral-700 hover:bg-neutral-800 text-white"
               onClick={handleCreateCode}
               disabled={
                 !codeData.code || codeData.credit < 0 || createCode.isPending
@@ -698,47 +702,298 @@ export default function ModeratorPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Codes Table */}
-      <div className="bg-white dark:bg-neutral-900 rounded-lg shadow p-6 mt-6">
-        <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-          <KeyRound className="w-5 h-5 text-[#5BC898]" />
-          Created Codes
-        </h2>
+      {/* Users Management Section */}
+      <Card className="mt-6">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-base font-medium">
+            <Users className="w-4 h-4 text-neutral-600" />
+            User Management
+          </CardTitle>
+          <CardDescription className="text-xs">
+            View and manage all users
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="pt-0">
+          {/* Search Bar */}
+          <div className="mb-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-4 h-4" />
+              <Input
+                placeholder="Search users (name, username, email)..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+          </div>
+
+          {/* Users Grid */}
+          {usersLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+              {[...Array(8)].map((_, i) => (
+                <Card key={i} className="p-3">
+                  <div className="flex items-center space-x-2">
+                    <Skeleton className="h-8 w-8 rounded-full" />
+                    <div className="space-y-1 flex-1">
+                      <Skeleton className="h-3 w-20" />
+                      <Skeleton className="h-2 w-24" />
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+              {filteredUsers.map((user) => (
+                <Card key={user.id} className="hover:shadow-sm transition-shadow duration-150 hover:border-neutral-300">
+                  <CardContent className="p-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center space-x-2 flex-1">
+                        <div className="relative">
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage 
+                              src={user.avatar_url} 
+                              className="blur-[1px] hover:blur-none transition-all duration-200"
+                            />
+                            <AvatarFallback className="text-xs">
+                              {user.name?.[0] || user.username[0]}
+                            </AvatarFallback>
+                          </Avatar>
+                          {user.isModerator && (
+                            <div className="absolute -top-0.5 -right-0.5 bg-neutral-600 rounded-full p-0.5">
+                              <Shield className="w-2 h-2 text-white" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-medium text-xs truncate">
+                            {user.name || "No name"}
+                          </h3>
+                          <p className="text-xs text-neutral-500 truncate">
+                            @{user.username}
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-6 w-6 p-0"
+                        onClick={() => {
+                          setSelectedUser(user);
+                          setIsUserDetailModalOpen(true);
+                        }}
+                      >
+                        <Eye className="w-3 h-3" />
+                      </Button>
+                    </div>
+                    
+                    <div className="mt-2 flex items-center justify-between">
+                      <span className="text-xs text-neutral-400 truncate">
+                        {user.email || "No email"}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        {user.isModerator && (
+                          <span className="bg-neutral-600 text-white px-1.5 py-0.5 rounded text-xs">
+                            MOD
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {!usersLoading && filteredUsers.length === 0 && (
+            <div className="text-center text-neutral-500 py-8">
+              {searchTerm ? "No users found matching search criteria." : "No users found."}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Create Code Section */}
+      <Card className="hover:shadow-sm transition-shadow duration-150 cursor-pointer mt-6">
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2 text-sm font-normal text-neutral-700 dark:text-neutral-300">
+            <KeyRound className="w-4 h-4" />
+            Create Code
+          </CardTitle>
+          <CardDescription className="text-xs">Create a new code for users</CardDescription>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <Button
+            size="sm"
+            className="w-full bg-neutral-700 hover:bg-neutral-800 text-white text-xs"
+            onClick={() => setIsCreateCodeModalOpen(true)}
+          >
+            <KeyRound className="w-3 h-3 mr-1" />
+            Create Code
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* User Detail Modal */}
+      <Dialog open={isUserDetailModalOpen} onOpenChange={setIsUserDetailModalOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <UserCheck className="w-5 h-5 text-neutral-600" />
+              User Details
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedUser && (
+            <div className="space-y-6 py-4">
+              <div className="flex items-start gap-4">
+                <Avatar className="h-16 w-16">
+                  <AvatarImage src={selectedUser.avatar_url} />
+                  <AvatarFallback className="text-lg">
+                    {selectedUser.name?.[0] || selectedUser.username[0]}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold flex items-center gap-2">
+                    {selectedUser.name || "Name not specified"}
+                    {selectedUser.isModerator && (
+                      <Shield className="w-5 h-5 text-neutral-600" />
+                    )}
+                  </h3>
+                  <p className="text-neutral-600 dark:text-neutral-400">
+                    @{selectedUser.username}
+                  </p>
+                  <p className="text-sm text-neutral-500">
+                    {selectedUser.email || "Email not specified"}
+                  </p>
+                </div>
+              </div>
+
+              <Separator />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-neutral-700 dark:text-neutral-300">
+                    {selectedUser.id}
+                  </div>
+                  <div className="text-sm text-neutral-500">User ID</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-neutral-700 dark:text-neutral-300">
+                    {selectedUser.isModerator ? "Yes" : "No"}
+                  </div>
+                  <div className="text-sm text-neutral-500">Moderator</div>
+                </div>
+              </div>
+
+              {selectedUser.bio && (
+                <div>
+                  <h4 className="font-semibold mb-2">Bio</h4>
+                  <p className="text-sm text-neutral-600 dark:text-neutral-400 bg-neutral-50 dark:bg-neutral-800 p-3 rounded">
+                    {selectedUser.bio}
+                  </p>
+                </div>
+              )}
+
+              <div className="space-y-3">
+                <h4 className="font-semibold">Account Information</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-neutral-500">Username:</span>
+                    <p>@{selectedUser.username}</p>
+                  </div>
+                  <div>
+                    <span className="text-neutral-500">Email:</span>
+                    <p>{selectedUser.email || "Email not specified"}</p>
+                  </div>
+                  <div>
+                    <span className="text-neutral-500">Moderator:</span>
+                    <span className={`ml-2 px-2 py-1 rounded text-xs ${
+                      selectedUser.isModerator 
+                        ? 'bg-neutral-600 text-white' 
+                        : 'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300'
+                    }`}>
+                      {selectedUser.isModerator ? "Yes" : "No"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-neutral-500">Status:</span>
+                    <span className="ml-2 px-2 py-1 rounded text-xs bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+                      Active
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsUserDetailModalOpen(false)}>
+              Close
+            </Button>
+            {selectedUser && (
+              <Button
+                className="bg-neutral-700 hover:bg-neutral-800 text-white"
+                onClick={() => {
+                  setSelectedUserId(selectedUser.id);
+                  setIsUserDetailModalOpen(false);
+                  setIsSendModalOpen(true);
+                }}
+              >
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Send Message
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Created Codes Table */}
+      <Card className="mt-6">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base font-medium flex items-center gap-2">
+            <KeyRound className="w-4 h-4 text-neutral-600" />
+            Created Codes
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-0">
         {codesLoading ? (
-          <div className="flex justify-center py-8">
-            <Loader2 className="w-6 h-6 animate-spin text-neutral-500" />
+          <div className="flex justify-center py-6">
+            <Loader2 className="w-5 h-5 animate-spin text-neutral-500" />
           </div>
         ) : codesData?.data?.length === 0 ? (
-          <div className="text-center text-neutral-500 py-8">
+          <div className="text-center text-neutral-500 py-6 text-sm">
             No codes found.
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full text-sm border">
+            <table className="min-w-full text-xs border">
               <thead>
-                <tr className="bg-neutral-100 dark:bg-neutral-800">
-                  <th className="px-4 py-2 text-left">Code</th>
-                  <th className="px-4 py-2 text-left">Credit</th>
-                  <th className="px-4 py-2 text-left">Premium</th>
-                  <th className="px-4 py-2 text-left">Premium Days</th>
-                  <th className="px-4 py-2 text-left">Usage Limit</th>
-                  <th className="px-4 py-2 text-left">Used</th>
-                  <th className="px-4 py-2 text-left">Actions</th>
+                <tr className="bg-neutral-50 dark:bg-neutral-800">
+                  <th className="px-3 py-2 text-left font-medium">Code</th>
+                  <th className="px-3 py-2 text-left font-medium">Credit</th>
+                  <th className="px-3 py-2 text-left font-medium">Premium</th>
+                  <th className="px-3 py-2 text-left font-medium">Premium Days</th>
+                  <th className="px-3 py-2 text-left font-medium">Usage Limit</th>
+                  <th className="px-3 py-2 text-left font-medium">Used</th>
+                  <th className="px-3 py-2 text-left font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {codesData?.data?.map((code: CodeType) => (
-                  <tr key={code._id} className="border-b">
-                    <td className="px-4 py-2 font-mono">{code.code}</td>
-                    <td className="px-4 py-2">{code.credit}</td>
-                    <td className="px-4 py-2">{code.premium ? "Yes" : "No"}</td>
-                    <td className="px-4 py-2">{code.premiumDays}</td>
-                    <td className="px-4 py-2">{code.usageLimit}</td>
-                    <td className="px-4 py-2">{code.usedCount}</td>
-                    <td className="px-4 py-2">
+                  <tr key={code._id} className="border-b hover:bg-neutral-50/50 dark:hover:bg-neutral-800/50">
+                    <td className="px-3 py-2 font-mono text-xs">{code.code}</td>
+                    <td className="px-3 py-2">{code.credit}</td>
+                    <td className="px-3 py-2">{code.premium ? "Yes" : "No"}</td>
+                    <td className="px-3 py-2">{code.premiumDays}</td>
+                    <td className="px-3 py-2">{code.usageLimit}</td>
+                    <td className="px-3 py-2">{code.usedCount}</td>
+                    <td className="px-3 py-2">
                       <Button
                         variant="destructive"
                         size="sm"
+                        className="h-7 px-2 text-xs"
                         disabled={
                           !code._id ||
                           (deleteCode.isPending && deletingId === code._id)
@@ -758,7 +1013,7 @@ export default function ModeratorPage() {
                         }}
                       >
                         {deleteCode.isPending && deletingId === code._id ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <Loader2 className="w-3 h-3 animate-spin" />
                         ) : (
                           "Delete"
                         )}
@@ -770,7 +1025,8 @@ export default function ModeratorPage() {
             </table>
           </div>
         )}
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
