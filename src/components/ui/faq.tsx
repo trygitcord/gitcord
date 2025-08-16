@@ -21,7 +21,7 @@ const FaqSection = React.forwardRef<HTMLElement, FaqSectionProps>(
       <section
         ref={ref}
         className={cn(
-          "py-8 md:py-12 lg:py-16 w-full px-4 sm:px-6 lg:px-8",
+          "py-8 md:py-12 lg:py-16 w-full px-4 sm:px-6 lg:px-8 scroll-mt-20",
           className
         )}
         {...props}

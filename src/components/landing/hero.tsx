@@ -69,7 +69,7 @@ export function HeroSection() {
           <div className="h-[80rem] absolute left-0 top-0 w-56 -rotate-45 rounded-full bg-[radial-gradient(50%_50%_at_50%_50%,hsla(0,0%,85%,.06)_0,hsla(0,0%,45%,.02)_80%,transparent_100%)] [translate:5%_-50%]" />
           <div className="h-[80rem] -translate-y-[350px] absolute left-0 top-0 w-56 -rotate-45 bg-[radial-gradient(50%_50%_at_50%_50%,hsla(0,0%,85%,.04)_0,hsla(0,0%,45%,.02)_80%,transparent_100%)]" />
         </div>
-        <section>
+        <section id="home" className="scroll-mt-20">
           <div className="relative pt-20 md:pt-28">
             <div
               aria-hidden
@@ -129,7 +129,7 @@ export function HeroSection() {
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                     <button
                       onClick={handleGithubLogin}
-                      className="w-full rounded-lg px-5 py-2 bg-neutral-800 text-white shadow hover:cursor-pointer transition-colors duration-200 sm:w-auto flex items-center justify-center hover:bg-neutral-900"
+                      className="w-full rounded-lg px-5 py-2 bg-gradient-to-b from-neutral-800 to-neutral-900 text-white shadow hover:cursor-pointer transition-colors duration-200 sm:w-auto flex items-center justify-center hover:from-neutral-700 hover:to-neutral-800"
                     >
                       <span className="text-sm">
                         Get Started Free{" "}
@@ -202,7 +202,7 @@ export function HeroSection() {
 const menuItems = [
   { name: "Features", href: "/#features" },
   { name: "Preview", href: "/#preview" },
-  { name: "Team", href: "/#team" },
+  { name: "Reviews", href: "/#reviews" },
   { name: "FAQ", href: "/#faq" },
 ];
 
@@ -311,7 +311,7 @@ export const HeroHeader = () => {
 
                   <button
                     onClick={handleGetStarted}
-                    className="w-full rounded-lg px-4 py-1.5 bg-neutral-800 text-white shadow hover:cursor-pointer transition-colors duration-200 sm:w-auto flex items-center justify-center hover:bg-neutral-900"
+                    className="w-full rounded-lg px-4 py-1.5 bg-gradient-to-b from-neutral-800 to-neutral-900 text-white shadow hover:cursor-pointer transition-colors duration-200 sm:w-auto flex items-center justify-center hover:from-neutral-700 hover:to-neutral-800"
                   >
                     <span className="text-sm">Get Started</span>
                   </button>

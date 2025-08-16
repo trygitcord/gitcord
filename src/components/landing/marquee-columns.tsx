@@ -19,7 +19,7 @@ const testimonials = [
 
 export function MarqueeColumns() {
   return (
-    <div className="container py-10">
+    <div id="reviews" className="container py-10 scroll-mt-20">
       <Testimonials testimonials={testimonials} />
     </div>
   );

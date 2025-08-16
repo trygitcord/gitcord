@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 export function Features() {
   return (
-    <div id="features">
+    <div id="features" className="scroll-mt-20">
       <div className="flex flex-col items-center justify-center max-w-[750px] mx-auto py-16">
         <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-3 bg-gradient-to-r from-foreground via-foreground/80 to-foreground bg-clip-text text-transparent text-center">
           Powerful Features for Developers
