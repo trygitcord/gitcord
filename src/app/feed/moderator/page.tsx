@@ -25,6 +25,7 @@ import {
   Eye,
   UserCheck,
   Star,
+  Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -68,6 +69,8 @@ import {
   useDeleteCode,
 } from "@/hooks/useCodeQueries";
 import { CodeType } from "@/models/code";
+import { useGetFeedbacks, useDeleteFeedback } from "@/hooks/useFeedbackQueries";
+import { getRelativeTime } from "@/lib/time-utils";
 
 export default function ModeratorPage() {
   const router = useRouter();
@@ -109,6 +112,13 @@ export default function ModeratorPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [isUserDetailModalOpen, setIsUserDetailModalOpen] = useState(false);
+  const [feedbackPage, setFeedbackPage] = useState(1);
+  const { data: feedbacksData, isLoading: feedbacksLoading } = useGetFeedbacks(
+    feedbackPage,
+    10
+  );
+  const deleteFeedback = useDeleteFeedback();
+  const [deletingFeedbackId, setDeletingFeedbackId] = useState<string | null>(null);
 
   useEffect(() => {
     // If not authenticated, redirect to home
@@ -808,6 +818,128 @@ export default function ModeratorPage() {
           {!usersLoading && filteredUsers.length === 0 && (
             <div className="text-center text-neutral-500 py-8">
               {searchTerm ? "No users found matching search criteria." : "No users found."}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Feedbacks Section */}
+      <Card className="mt-6">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base font-medium flex items-center gap-2">
+            <MessageSquare className="w-4 h-4 text-neutral-600" />
+            User Feedbacks
+          </CardTitle>
+          <CardDescription className="text-sm">
+            User feedback submissions
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="pt-0">
+
+          {/* Feedbacks List */}
+          {feedbacksLoading ? (
+            <div className="space-y-3">
+              {[...Array(5)].map((_, i) => (
+                <Card key={i} className="p-4">
+                  <div className="flex items-start gap-3">
+                    <Skeleton className="h-8 w-8 rounded-full" />
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-4 w-20" />
+                      <Skeleton className="h-3 w-full" />
+                      <Skeleton className="h-3 w-3/4" />
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ) : feedbacksData?.data?.feedbacks?.length === 0 ? (
+            <div className="text-center text-neutral-500 py-8">
+              No feedbacks found.
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {feedbacksData?.data?.feedbacks?.map((feedback) => (
+                <Card key={feedback._id} className="hover:shadow-sm transition-shadow duration-150">
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-3">
+                      <Avatar className="h-10 w-10 flex-shrink-0">
+                        <AvatarImage src={feedback.user?.avatar_url} />
+                        <AvatarFallback className="text-sm">
+                          {(feedback.user?.username || feedback.username)[0]?.toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0 max-w-full overflow-hidden">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex flex-col">
+                            <span className="font-medium text-sm text-neutral-900 dark:text-neutral-100">
+                              {feedback.user?.name || "Unknown User"}
+                            </span>
+                            <span className="text-xs text-neutral-500">
+                              @{feedback.user?.username || feedback.username}
+                            </span>
+                          </div>
+                          <span className="text-xs text-neutral-400">
+                            {getRelativeTime(feedback.createdAt)}
+                          </span>
+                        </div>
+                        <p className="text-sm text-neutral-700 dark:text-neutral-300 break-words whitespace-pre-wrap overflow-wrap-anywhere">
+                          {feedback.message}
+                        </p>
+                      </div>
+                      <div className="flex-shrink-0 ml-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 w-8 p-0 bg-neutral-100 hover:bg-neutral-200 border-neutral-200 hover:border-neutral-300 text-neutral-600 hover:text-neutral-700 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:border-neutral-700 dark:hover:border-neutral-600 dark:text-neutral-400 dark:hover:text-neutral-300 cursor-pointer"
+                          disabled={deleteFeedback.isPending && deletingFeedbackId === feedback._id}
+                          onClick={() => {
+                            if (window.confirm(`Are you sure you want to delete this feedback from @${feedback.user?.username || feedback.username}?`)) {
+                              setDeletingFeedbackId(feedback._id);
+                              deleteFeedback.mutate(feedback._id, {
+                                onSettled: () => setDeletingFeedbackId(null),
+                              });
+                            }
+                          }}
+                        >
+                          {deleteFeedback.isPending && deletingFeedbackId === feedback._id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="w-4 h-4" />
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {/* Pagination */}
+          {feedbacksData?.data?.pagination && feedbacksData.data.pagination.totalPages > 1 && (
+            <div className="flex items-center justify-between mt-4 pt-4 border-t">
+              <div className="text-sm text-neutral-500">
+                Page {feedbacksData.data.pagination.page} of {feedbacksData.data.pagination.totalPages}
+                ({feedbacksData.data.pagination.total} total)
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={feedbackPage === 1}
+                  onClick={() => setFeedbackPage(feedbackPage - 1)}
+                >
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={feedbackPage === feedbacksData.data.pagination.totalPages}
+                  onClick={() => setFeedbackPage(feedbackPage + 1)}
+                >
+                  Next
+                </Button>
+              </div>
             </div>
           )}
         </CardContent>

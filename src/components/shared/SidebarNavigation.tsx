@@ -15,6 +15,7 @@ import {
   FileText,
   Activity,
   Shield,
+  MessageSquare,
 } from "lucide-react";
 
 import { usePathname } from "next/navigation";
@@ -35,6 +36,7 @@ import {
 
 import Image from "next/image";
 import SidebarUserFooter from "@/components/shared/SidebarUserFooter";
+import FeedbackModal from "@/components/modals/FeedbackModal";
 import React, { useState, useEffect, useCallback } from "react";
 import { useUserProfile } from "@/hooks/useMyApiQueries";
 import { useVersion } from "@/hooks/useVersion";
@@ -108,6 +110,7 @@ const profileItems = [
 export function SidebarNavigation() {
   const pathname = usePathname();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
 
   const { data: profile } = useUserProfile();
   const { data: versionData } = useVersion();
@@ -521,8 +524,21 @@ export function SidebarNavigation() {
         </SidebarGroupContent>
       </SidebarContent>
       <SidebarFooter>
-        <SidebarUserFooter />
+        <div className="space-y-2">
+          <button
+            onClick={() => setFeedbackModalOpen(true)}
+            className="flex items-center gap-2 w-full p-2 rounded-md transition-all duration-150 ease-out text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white hover:shadow-sm border border-transparent"
+          >
+            <MessageSquare className="w-4 h-4" />
+            <span className="text-sm">Give us feedback</span>
+          </button>
+          <SidebarUserFooter />
+        </div>
       </SidebarFooter>
+      <FeedbackModal
+        isOpen={feedbackModalOpen}
+        onClose={() => setFeedbackModalOpen(false)}
+      />
     </Sidebar>
   );
 }
