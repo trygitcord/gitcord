@@ -9,6 +9,7 @@ import {
   CreditCard,
   Shield,
   Gift,
+  ChevronDown,
 } from "lucide-react";
 import { useUserProfile } from "@/hooks/useMyApiQueries";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -18,6 +19,12 @@ import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { ShareProfileButton } from "@/components/shared/ShareProfileButton";
 import ReedemCode from "@/components/shared/ReedemCode";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 function SettingsPage() {
   useEffect(() => {
@@ -32,6 +39,7 @@ function SettingsPage() {
 
   const { setTheme, theme } = useTheme();
   const router = useRouter();
+  const [language, setLanguage] = React.useState("English");
 
   async function handleLogout() {
     await signOut({ redirect: false });
@@ -119,15 +127,23 @@ function SettingsPage() {
             <Moon className="w-5 h-5 text-neutral-500" />
             <span className="text-sm">Theme</span>
           </div>
-          <select
-            className="w-32 p-1.5 text-sm bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-md"
-            value={theme}
-            onChange={(e) => setTheme(e.target.value)}
-          >
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-            <option value="system">System</option>
-          </select>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center justify-between w-32 px-3 py-1.5 text-sm bg-white dark:bg-neutral-800 rounded-md hover:bg-neutral-50 dark:hover:bg-neutral-750">
+              <span className="capitalize">{theme || "system"}</span>
+              <ChevronDown className="w-4 h-4 text-neutral-500" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-32">
+              <DropdownMenuItem onClick={() => setTheme("light")}>
+                Light
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("dark")}>
+                Dark
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("system")}>
+                System
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
@@ -138,9 +154,17 @@ function SettingsPage() {
             <Globe className="w-5 h-5 text-neutral-500" />
             <span className="text-sm">Language</span>
           </div>
-          <select className="w-32 p-1.5 text-sm bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-md">
-            <option>English</option>
-          </select>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center justify-between w-32 px-3 py-1.5 text-sm bg-white dark:bg-neutral-800 rounded-md hover:bg-neutral-50 dark:hover:bg-neutral-750">
+              <span>{language}</span>
+              <ChevronDown className="w-4 h-4 text-neutral-500" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-32">
+              <DropdownMenuItem onClick={() => setLanguage("English")}>
+                English
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
