@@ -32,6 +32,7 @@ export interface LeaderboardUser {
   name: string;
   avatar_url: string;
   github_profile_url: string;
+  isModerator: boolean;
   weeklyScore: number;
   pushEvents: number;
   pullRequests: number;

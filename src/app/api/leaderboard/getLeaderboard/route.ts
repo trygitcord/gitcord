@@ -35,6 +35,7 @@ interface UserDocument {
   name: string;
   avatar_url: string;
   github_profile_url: string;
+  isModerator: boolean;
 }
 
 // GitHub Events API'den son 7 günlük aktiviteleri al
@@ -129,7 +130,7 @@ export const GET = withDb(
 
       // Tüm kullanıcıları al
       const users = (await models.User.find({}).select(
-        "_id username name avatar_url github_profile_url"
+        "_id username name avatar_url github_profile_url isModerator"
       )) as UserDocument[];
 
       // Her kullanıcı için haftalık aktiviteleri al ve puan hesapla
@@ -146,6 +147,7 @@ export const GET = withDb(
             name: user.name,
             avatar_url: user.avatar_url,
             github_profile_url: user.github_profile_url,
+            isModerator: user.isModerator,
             ...activity,
           };
         })

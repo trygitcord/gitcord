@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Trophy,
   AlertCircle,
@@ -12,6 +13,7 @@ import {
   ChevronRight,
   Activity,
   Clock,
+  Shield,
 } from "lucide-react";
 import Link from "next/link";
 import { useActivityLeaderboard } from "@/hooks/useMyApiQueries";
@@ -153,13 +155,25 @@ export default function LeaderboardPage() {
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <Link
-                          target="_blank"
-                          href={`/user/${user.username}`}
-                          className="font-medium text-foreground hover:text-[#5BC898] transition-colors hover:underline underline-offset-4"
-                        >
-                          {user.name}
-                        </Link>
+                        <div className="flex items-center gap-2">
+                          <Link
+                            target="_blank"
+                            href={`/user/${user.username}`}
+                            className="font-medium text-foreground hover:text-[#5BC898] transition-colors"
+                          >
+                            {user.name}
+                          </Link>
+                          {user.isModerator && (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Shield className="h-4 w-4 text-[#5BC898]" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Moderator</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          )}
+                        </div>
                         <p className="text-sm text-muted-foreground">
                           @{user.username}
                         </p>
