@@ -6,14 +6,14 @@ const testimonials = [
     image: "https://avatars.githubusercontent.com/u/21373355?v=4",
     name: "BlanchDev",
     username: "blanchDev",
-    social: "https://twitter.com/BlanchDev",
+    social: "https://github.com/BlanchDev",
   },
   {
     text: "I was new to software development and github felt overwhelming but after discovering @gitcord, I realized there was nothing to stress about.",
     image: "https://avatars.githubusercontent.com/u/70480951?v=4",
     name: "Pingu",
     username: "pingu",
-    social: "https://twitter.com/Pingu",
+    social: "https://github.com/berkcanakdeniz",
   },
 ];
 

@@ -73,7 +73,7 @@ export function Testimonials({
               return (
                 <Card
                   key={index}
-                  className="w-80 h-auto p-5 relative bg-background rounded-2xl border border-neutral-900 flex-shrink-0"
+                  className="w-80 h-auto p-4 relative bg-background/70 backdrop-blur-sm rounded-lg flex-shrink-0 shadow-sm border border-border/40"
                 >
                   <div className="flex items-center">
                     <Image
@@ -92,7 +92,7 @@ export function Testimonials({
                       </span>
                     </div>
                   </div>
-                  <div className="py-4 px-1.5">
+                  <div className="py-3 px-0">
                     <p className="text-neutral-100 text-sm leading-relaxed break-words">
                       "{testimonial.text}"
                     </p>
@@ -102,7 +102,7 @@ export function Testimonials({
                       onClick={() => openInNewTab(testimonial.social)}
                       className="absolute top-4 right-4 hover:opacity-80 transition-opacity cursor-pointer"
                     >
-                      <Icons.twitter className="h-4 w-4" aria-hidden="true" />
+                      <Icons.gitHub className="h-4 w-4" aria-hidden="true" />
                     </button>
                   )}
                 </Card>
