@@ -10,7 +10,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRepositoryCommits } from "@/hooks/useGitHubQueries";
-import { useUserProfile } from "@/hooks/useMyApiQueries";
 import { ArrowLeft, AlertCircle, RefreshCw, SlidersHorizontal } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -19,42 +18,15 @@ import React, { useMemo, useState } from "react";
 
 function Page() {
   const params = useParams();
-  const repositoryId = params.repositoryId as string;
+  const repoName = params.repoName as string;
+  const orgName = params.organizationId as string;
   const [selectedUser, setSelectedUser] = useState<string>("all");
-
-  // Since repositoryId might be URL encoded, decode it first
-  const decodedRepositoryId = repositoryId
-    ? decodeURIComponent(repositoryId)
-    : "";
-
-  const { data: userProfile, isLoading: profileLoading } = useUserProfile();
-
-  const { owner, repo } = useMemo(() => {
-    let parsedOwner: string | null = null;
-    let parsedRepo: string | null = null;
-
-    if (decodedRepositoryId) {
-      if (decodedRepositoryId.includes("/")) {
-        // Format: "owner/repo"
-        [parsedOwner, parsedRepo] = decodedRepositoryId.split("/");
-      } else {
-        // Format: just "repo" - we need to get owner from user profile
-        parsedRepo = decodedRepositoryId;
-        // If owner is not in the URL, use the current user's username
-        if (userProfile?.username) {
-          parsedOwner = userProfile.username;
-        }
-      }
-    }
-
-    return { owner: parsedOwner, repo: parsedRepo };
-  }, [decodedRepositoryId, userProfile?.username]);
 
   const {
     data: commitsData,
     isLoading: commitsLoading,
     error: commitsError,
-  } = useRepositoryCommits(owner, repo);
+  } = useRepositoryCommits(orgName, repoName);
 
   // Extract unique users from commits
   const uniqueUsers = useMemo(() => {
@@ -89,7 +61,7 @@ function Page() {
     );
   }, [commitsData, selectedUser]);
 
-  const isLoading = profileLoading || commitsLoading;
+  const isLoading = commitsLoading;
 
   // Error state
   if (commitsError) {
@@ -98,7 +70,7 @@ function Page() {
         <div className="flex-shrink-0">
           <div className="pt-1">
             <Link
-              href={`/feed/repositories`}
+              href={`/feed/organization/${orgName}`}
               className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -143,7 +115,7 @@ function Page() {
         <div className="flex-shrink-0">
           <div className="pt-1">
             <Link
-              href={`/feed/repositories`}
+              href={`/feed/organization/${orgName}`}
               className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -205,7 +177,7 @@ function Page() {
       <div className="flex-shrink-0">
         <div className="pt-1">
           <Link
-            href={`/feed/repositories`}
+            href={`/feed/organization/${orgName}`}
             className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -249,8 +221,8 @@ function Page() {
       <div className="flex-1 mt-4 overflow-hidden mb-8">
         <LastCommits
           commits={filteredCommits}
-          owner={owner || ""}
-          repo={repo || ""}
+          owner={orgName}
+          repo={repoName}
           slice={1000}
         />
       </div>
