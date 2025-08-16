@@ -441,15 +441,6 @@ export const useOrganizationLanguages = (org: string | null) => {
   });
 };
 
-// Private Repositories Query
-export const usePrivateRepositories = () => {
-  return useQuery({
-    queryKey: ["private-repos"],
-    queryFn: async () =>
-      githubFetcher(`/user/repos?visibility=all&per_page=100`),
-    staleTime: 10 * 60 * 1000, // 10 minutes
-  });
-};
 
 // GitHub User Query
 export const useGitHubUser = (username: string | null) => {

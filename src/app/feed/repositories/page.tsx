@@ -9,11 +9,10 @@ import {
   Clock,
   ChevronLeft,
   ChevronRight,
-  Crown,
 } from "lucide-react";
 import Link from "next/link";
-import { usePrivateRepositories } from "@/hooks/useGitHubQueries";
-import { useUserProfile } from "@/hooks/useMyApiQueries";
+import { useUserRepositories } from "@/hooks/useGitHubQueries";
+import { useSession } from "next-auth/react";
 import ProjectHealthChart from "@/components/shared/ProjectHealthChart";
 
 // Repository interface based on the usage in the component
@@ -101,17 +100,12 @@ function Repositories() {
   const [currentPage, setCurrentPage] = useState(1);
 
   // Custom hooks (slice hooks) second
+  const { data: session } = useSession();
   const {
     data: reposData,
     isLoading: reposLoading,
     error: reposError,
-  } = usePrivateRepositories();
-
-  const {
-    data: userData,
-    isLoading: userLoading,
-    error: userError,
-  } = useUserProfile();
+  } = useUserRepositories(session?.user?.name || null);
 
   useEffect(() => {
     document.title = "Feed | Repositories";
@@ -119,7 +113,7 @@ function Repositories() {
 
   const reposPerPage = 12; // 3x3 grid için
 
-  if (reposLoading || userLoading || !reposData || !userData) {
+  if (reposLoading || !reposData) {
     return (
       <div className="w-full h-full">
         <div className="mb-4">
@@ -139,7 +133,7 @@ function Repositories() {
     );
   }
 
-  if (reposError || userError) {
+  if (reposError) {
     return (
       <div className="w-full h-full">
         <div className="mb-4">
@@ -153,26 +147,16 @@ function Repositories() {
         <div className="flex items-center justify-center h-64">
           <p className="text-red-500">
             Error loading repositories:{" "}
-            {reposError?.message || userError?.message || "Unknown error"}
+            {reposError?.message || "Unknown error"}
           </p>
         </div>
       </div>
     );
   }
 
-  // Filter repositories based on user premium status
-  const isPremium = userData.premium?.isPremium || false;
-
+  // Only show public repositories
   const filteredRepos = reposData.filter((repo: Repository) => {
-    // Public repositories are always visible
-    if (repo.visibility === "public") {
-      return true;
-    }
-    // Private repositories are only visible to premium users
-    if (repo.visibility === "private") {
-      return isPremium;
-    }
-    return false;
+    return repo.visibility === "public";
   });
 
   // Sort repositories by updated_at time
@@ -206,12 +190,7 @@ function Repositories() {
           Repositories
         </h1>
         <p className="text-neutral-500 text-sm dark:text-neutral-400">
-          Explore all repositories and their activities.
-          {!isPremium && (
-            <span className="block mt-1 text-xs text-[#5BC898] dark:text-[#5BC898]">
-              Upgrade to Premium to view private repositories
-            </span>
-          )}
+          Explore your public repositories and their activities.
         </p>
       </div>
       <div className="flex-1 overflow-auto">
@@ -237,9 +216,6 @@ function Repositories() {
                       {repo.name}
                     </h3>
                     <div className="flex items-center gap-1">
-                      {repo.visibility === "private" && isPremium && (
-                        <Crown className="w-4 h-4 text-[#5BC898]" />
-                      )}
                       <span className="text-xs px-2 py-1 rounded-full bg-neutral-200 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400">
                         {repo.visibility}
                       </span>

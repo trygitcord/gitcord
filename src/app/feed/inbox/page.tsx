@@ -110,13 +110,7 @@ function Page() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-lg font-medium flex items-center gap-2">
-              <MessageSquare className="w-5 h-5" />
               Inbox
-              {messagesData?.data.unreadCount > 0 && (
-                <span className="ml-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                  {messagesData.data.unreadCount}
-                </span>
-              )}
             </h1>
             <p className="text-neutral-500 text-sm dark:text-neutral-400">
               Manage your messages and notifications in one place.
