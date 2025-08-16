@@ -14,7 +14,6 @@ import {
   Trophy,
   FileText,
   Activity,
-  ShoppingCart,
   Shield,
 } from "lucide-react";
 
@@ -94,12 +93,6 @@ const dataItems = [
 
 const profileItems = [
   {
-    title: "Shop",
-    url: "/feed/shop",
-    icon: ShoppingCart,
-    live: false,
-  },
-  {
     title: "Profile",
     url: "/user",
     icon: User,
@@ -124,7 +117,7 @@ export function SidebarNavigation() {
   // Extract repository info from URL
   const getRepositoryFromPath = () => {
     const pathParts = pathname.split("/");
-    
+
     // Match /feed/repositories/owner/repo or /feed/repositories/repo (ignoring sub-paths)
     if (
       pathParts.length >= 4 &&
@@ -155,7 +148,7 @@ export function SidebarNavigation() {
 
       return { owner, repo, repositoryId };
     }
-    
+
     // Match /feed/organization/[organizationId]/repository/[repoName] (ignoring sub-paths)
     if (
       pathParts.length >= 6 &&
@@ -166,10 +159,10 @@ export function SidebarNavigation() {
       const owner = decodeURIComponent(pathParts[3]);
       const repo = decodeURIComponent(pathParts[5]);
       const repositoryId = `${owner}/${repo}`;
-      
+
       return { owner, repo, repositoryId };
     }
-    
+
     return null;
   };
 
@@ -286,10 +279,12 @@ export function SidebarNavigation() {
         <SidebarGroupContent>
           <SidebarMenu>
             {dataItems.map((item) => {
-              const isActive = item.live && (
-                pathname === item.url || 
-                (item.title === "Organization" && pathname.includes('/organization/') && !pathname.includes('/repository/'))
-              );
+              const isActive =
+                item.live &&
+                (pathname === item.url ||
+                  (item.title === "Organization" &&
+                    pathname.includes("/organization/") &&
+                    !pathname.includes("/repository/")));
 
               return (
                 <React.Fragment key={item.title}>
@@ -345,7 +340,8 @@ export function SidebarNavigation() {
                             className={`flex items-center gap-2 py-1.5 px-3 rounded-md transition-all duration-150 ease-out  text-sm border border-transparent ${
                               pathname.startsWith(
                                 `/feed/repositories/${repositoryInfo.repositoryId}`
-                              ) || pathname.startsWith(
+                              ) ||
+                              pathname.startsWith(
                                 `/feed/organization/${repositoryInfo.owner}/repository/${repositoryInfo.repo}`
                               )
                                 ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border-neutral-100 dark:border-neutral-800 shadow-sm"
@@ -356,7 +352,8 @@ export function SidebarNavigation() {
                               className={`w-4 h-4 ${
                                 pathname.startsWith(
                                   `/feed/repositories/${repositoryInfo.repositoryId}`
-                                ) || pathname.startsWith(
+                                ) ||
+                                pathname.startsWith(
                                   `/feed/organization/${repositoryInfo.owner}/repository/${repositoryInfo.repo}`
                                 )
                                   ? "text-[#5BC898]"
@@ -367,7 +364,8 @@ export function SidebarNavigation() {
                               className={`${
                                 pathname.startsWith(
                                   `/feed/repositories/${repositoryInfo.repositoryId}`
-                                ) || pathname.startsWith(
+                                ) ||
+                                pathname.startsWith(
                                   `/feed/organization/${repositoryInfo.owner}/repository/${repositoryInfo.repo}`
                                 )
                                   ? "text-[#5BC898]"
@@ -385,11 +383,12 @@ export function SidebarNavigation() {
                         <div className="ml-4 border-l border-neutral-200 dark:border-neutral-700 space-y-1 py-1 pl-2">
                           {(() => {
                             // Determine if this is an organization repository
-                            const isOrgRepo = pathname.includes('/organization/');
-                            const baseUrl = isOrgRepo 
+                            const isOrgRepo =
+                              pathname.includes("/organization/");
+                            const baseUrl = isOrgRepo
                               ? `/feed/organization/${repositoryInfo.owner}/repository/${repositoryInfo.repo}`
                               : `/feed/repositories/${repositoryInfo.repositoryId}`;
-                            
+
                             return [
                               {
                                 title: "Overview",
