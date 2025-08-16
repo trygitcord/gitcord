@@ -31,7 +31,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuBadge,
 } from "@/components/ui/sidebar";
 
 import Image from "next/image";
@@ -238,20 +237,20 @@ export function SidebarNavigation() {
                         <span
                           className={`${
                             isActive ? "text-[#5BC898]" : ""
-                          } flex-1`}
+                          } flex-1 flex items-center gap-2`}
                         >
                           {item.title}
+                          {showInboxBadge && (
+                            <span className="bg-gray-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">
+                              {unreadCount > 9 ? "9+" : unreadCount}
+                            </span>
+                          )}
                         </span>
 
                         {!item.live && (
                           <span className="text-xs text-neutral-400 dark:text-neutral-500 ml-1">
                             Soon
                           </span>
-                        )}
-                        {showInboxBadge && (
-                          <SidebarMenuBadge className="bg-red-500 text-white ml-2">
-                            {unreadCount > 9 ? "9+" : unreadCount}
-                          </SidebarMenuBadge>
                         )}
                       </Link>
                     ) : (
