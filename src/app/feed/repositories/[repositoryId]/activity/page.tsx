@@ -3,14 +3,15 @@
 import { LastCommits } from "@/components/shared/LastCommits";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useRepositoryCommits } from "@/hooks/useGitHubQueries";
 import { useUserProfile } from "@/hooks/useMyApiQueries";
-import { ArrowLeft, AlertCircle, RefreshCw, Filter, Users } from "lucide-react";
+import { ArrowLeft, AlertCircle, RefreshCw, SlidersHorizontal } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -219,56 +220,29 @@ function Page() {
             </p>
           </div>
 
-          {/* User Filter Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="inline-flex items-center gap-2 px-3 py-2 text-sm bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-md transition-colors">
-                <Filter className="w-4 h-4" />
-                <span>
-                  {selectedUser === "all"
-                    ? "All Users"
-                    : uniqueUsers.find((u) => u.login === selectedUser)
-                        ?.login || "All Users"}
-                </span>
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem
-                onClick={() => setSelectedUser("all")}
-                className="flex items-center gap-2"
-              >
-                <Users className="w-4 h-4" />
-                <span>All Users</span>
-                {selectedUser === "all" && (
-                  <span className="ml-auto text-xs text-neutral-500">
-                    ({commitsData?.length || 0})
-                  </span>
-                )}
-              </DropdownMenuItem>
-
+          <Select value={selectedUser} onValueChange={setSelectedUser}>
+            <SelectTrigger className="w-40">
+              <SlidersHorizontal />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Users</SelectItem>
               {uniqueUsers.map((user) => (
-                <DropdownMenuItem
-                  key={user.login}
-                  onClick={() => setSelectedUser(user.login)}
-                  className="flex items-center gap-2"
-                >
-                  <Image
-                    src={user.avatar_url}
-                    alt={user.login}
-                    width={16}
-                    height={16}
-                    className="w-4 h-4 rounded-full"
-                  />
-                  <span className="truncate">{user.login}</span>
-                  {selectedUser === user.login && (
-                    <span className="ml-auto text-xs text-neutral-500">
-                      ({filteredCommits.length})
-                    </span>
-                  )}
-                </DropdownMenuItem>
+                <SelectItem key={user.login} value={user.login}>
+                  <div className="flex items-center gap-2">
+                    <Image
+                      src={user.avatar_url}
+                      alt={user.login}
+                      width={16}
+                      height={16}
+                      className="w-4 h-4 rounded-full"
+                    />
+                    <span>{user.login}</span>
+                  </div>
+                </SelectItem>
               ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 

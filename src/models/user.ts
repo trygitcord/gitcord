@@ -45,6 +45,10 @@ const userSchema = new Schema<UserType>(
         type: Boolean,
         default: false,
       },
+      isPrivate: {
+        type: Boolean,
+        default: false,
+      },
     },
     {
       timestamps: true,

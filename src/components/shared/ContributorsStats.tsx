@@ -46,20 +46,20 @@ export function ContributorsStats({ owner, repo }: ContributorsStatsProps) {
 
   if (isLoading || (isFetching && !data)) {
     return (
-      <div className="bg-gradient-to-br from-neutral-500/10 to-neutral-500/10 rounded-xl p-6 h-[230px]">
+      <div className="bg-neutral-100 dark:bg-neutral-800 rounded-xl p-4 h-[230px] border border-neutral-200 dark:border-neutral-700">
         <div className="flex items-center gap-2 mb-4">
           <RefreshCw className="w-4 h-4 text-neutral-400 animate-spin" />
-          <h3 className="text-sm font-medium text-neutral-400">
+          <h3 className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
             Loading Contributors
           </h3>
         </div>
         <div className="space-y-3">
           {[1, 2, 3].map((i: number) => (
             <div key={i} className="flex items-center gap-3">
-              <Skeleton className="w-10 h-10 rounded-full bg-neutral-500/20" />
+              <Skeleton className="w-10 h-10 rounded-full" />
               <div className="space-y-2 flex-1">
-                <Skeleton className="w-32 h-4 bg-neutral-500/20" />
-                <Skeleton className="w-20 h-3 bg-neutral-500/20" />
+                <Skeleton className="w-32 h-4" />
+                <Skeleton className="w-20 h-3" />
               </div>
             </div>
           ))}

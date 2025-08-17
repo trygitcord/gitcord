@@ -10,12 +10,11 @@ import {
   Inbox,
   User,
   LineChart,
-  Crown,
   Trophy,
   FileText,
   Activity,
-  ShoppingCart,
   Shield,
+  MessageSquare,
 } from "lucide-react";
 
 import { usePathname } from "next/navigation";
@@ -32,11 +31,11 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuBadge,
 } from "@/components/ui/sidebar";
 
 import Image from "next/image";
 import SidebarUserFooter from "@/components/shared/SidebarUserFooter";
+import FeedbackModal from "@/components/modals/FeedbackModal";
 import React, { useState, useEffect, useCallback } from "react";
 import { useUserProfile } from "@/hooks/useMyApiQueries";
 import { useVersion } from "@/hooks/useVersion";
@@ -68,7 +67,6 @@ const mainItems = [
     url: "/feed/analytics",
     icon: LineChart,
     live: true,
-    premium: true,
   },
 ];
 
@@ -95,12 +93,6 @@ const dataItems = [
 
 const profileItems = [
   {
-    title: "Shop",
-    url: "/feed/shop",
-    icon: ShoppingCart,
-    live: false,
-  },
-  {
     title: "Profile",
     url: "/user",
     icon: User,
@@ -117,6 +109,7 @@ const profileItems = [
 export function SidebarNavigation() {
   const pathname = usePathname();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
 
   const { data: profile } = useUserProfile();
   const { data: versionData } = useVersion();
@@ -124,8 +117,9 @@ export function SidebarNavigation() {
 
   // Extract repository info from URL
   const getRepositoryFromPath = () => {
-    // Match /feed/repositories/owner/repo or /feed/repositories/repo (ignoring sub-paths)
     const pathParts = pathname.split("/");
+
+    // Match /feed/repositories/owner/repo or /feed/repositories/repo (ignoring sub-paths)
     if (
       pathParts.length >= 4 &&
       pathParts[1] === "feed" &&
@@ -155,6 +149,21 @@ export function SidebarNavigation() {
 
       return { owner, repo, repositoryId };
     }
+
+    // Match /feed/organization/[organizationId]/repository/[repoName] (ignoring sub-paths)
+    if (
+      pathParts.length >= 6 &&
+      pathParts[1] === "feed" &&
+      pathParts[2] === "organization" &&
+      pathParts[4] === "repository"
+    ) {
+      const owner = decodeURIComponent(pathParts[3]);
+      const repo = decodeURIComponent(pathParts[5]);
+      const repositoryId = `${owner}/${repo}`;
+
+      return { owner, repo, repositoryId };
+    }
+
     return null;
   };
 
@@ -218,37 +227,37 @@ export function SidebarNavigation() {
                     {item.live ? (
                       <Link
                         href={item.url}
-                        className={`flex items-center gap-2 w-full p-2 rounded-md transition-all ${
+                        className={`flex items-center gap-2 w-full p-2 rounded-md transition-all duration-150 ease-out  border border-transparent ${
                           isActive
-                            ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border border-neutral-100 dark:border-neutral-800"
-                            : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                            ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border-neutral-100 dark:border-neutral-800 shadow-sm"
+                            : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white hover:shadow-sm"
                         } relative`}
                       >
                         <item.icon
                           className={`${isActive ? "text-[#5BC898]" : ""}`}
                         />
                         <span
-                          className={`${isActive ? "text-[#5BC898]" : ""} flex-1`}
+                          className={`${
+                            isActive ? "text-[#5BC898]" : ""
+                          } flex-1 flex items-center gap-2`}
                         >
                           {item.title}
+                          {showInboxBadge && (
+                            <span className="bg-gray-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">
+                              {unreadCount > 9 ? "9+" : unreadCount}
+                            </span>
+                          )}
                         </span>
-                        {item.premium && (
-                          <Crown className="w-4 h-4 text-[#5BC898]" />
-                        )}
+
                         {!item.live && (
                           <span className="text-xs text-neutral-400 dark:text-neutral-500 ml-1">
                             Soon
                           </span>
                         )}
-                        {showInboxBadge && (
-                          <SidebarMenuBadge className="bg-red-500 text-white ml-2">
-                            {unreadCount > 9 ? "9+" : unreadCount}
-                          </SidebarMenuBadge>
-                        )}
                       </Link>
                     ) : (
                       <button
-                        className="flex items-center gap-2 w-full p-2 rounded-md transition-all text-neutral-400 cursor-not-allowed"
+                        className="flex items-center gap-2 w-full p-2 rounded-md transition-all duration-200 ease-in-out text-neutral-400 cursor-not-allowed"
                         disabled
                       >
                         <item.icon />
@@ -271,7 +280,12 @@ export function SidebarNavigation() {
         <SidebarGroupContent>
           <SidebarMenu>
             {dataItems.map((item) => {
-              const isActive = item.live && pathname === item.url;
+              const isActive =
+                item.live &&
+                (pathname === item.url ||
+                  (item.title === "Organization" &&
+                    pathname.includes("/organization/") &&
+                    !pathname.includes("/repository/")));
 
               return (
                 <React.Fragment key={item.title}>
@@ -280,10 +294,10 @@ export function SidebarNavigation() {
                       {item.live ? (
                         <Link
                           href={item.url}
-                          className={`flex items-center gap-2 w-full p-2 rounded-md transition-all ${
+                          className={`flex items-center gap-2 w-full p-2 rounded-md transition-all duration-150 ease-out  border border-transparent ${
                             isActive
-                              ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border border-neutral-100 dark:border-neutral-800"
-                              : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                              ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border-neutral-100 dark:border-neutral-800 shadow-sm"
+                              : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white hover:shadow-sm"
                           }`}
                         >
                           <item.icon
@@ -302,7 +316,7 @@ export function SidebarNavigation() {
                         </Link>
                       ) : (
                         <button
-                          className="flex items-center gap-2 w-full p-2 rounded-md transition-all text-neutral-400 cursor-not-allowed"
+                          className="flex items-center gap-2 w-full p-2 rounded-md transition-all duration-200 ease-in-out text-neutral-400 cursor-not-allowed"
                           disabled
                         >
                           <item.icon />
@@ -324,18 +338,24 @@ export function SidebarNavigation() {
                             onClick={() =>
                               toggleExpanded(repositoryInfo.repositoryId)
                             }
-                            className={`flex items-center gap-2 py-1.5 px-3 rounded-md transition-all text-sm ${
+                            className={`flex items-center gap-2 py-1.5 px-3 rounded-md transition-all duration-150 ease-out  text-sm border border-transparent ${
                               pathname.startsWith(
                                 `/feed/repositories/${repositoryInfo.repositoryId}`
+                              ) ||
+                              pathname.startsWith(
+                                `/feed/organization/${repositoryInfo.owner}/repository/${repositoryInfo.repo}`
                               )
-                                ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border border-neutral-100 dark:border-neutral-800"
-                                : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-500 dark:hover:bg-neutral-800 dark:hover:text-white"
+                                ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border-neutral-100 dark:border-neutral-800 shadow-sm"
+                                : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-500 dark:hover:bg-neutral-800 dark:hover:text-white hover:shadow-sm"
                             }`}
                           >
                             <Book
                               className={`w-4 h-4 ${
                                 pathname.startsWith(
                                   `/feed/repositories/${repositoryInfo.repositoryId}`
+                                ) ||
+                                pathname.startsWith(
+                                  `/feed/organization/${repositoryInfo.owner}/repository/${repositoryInfo.repo}`
                                 )
                                   ? "text-[#5BC898]"
                                   : ""
@@ -345,6 +365,9 @@ export function SidebarNavigation() {
                               className={`${
                                 pathname.startsWith(
                                   `/feed/repositories/${repositoryInfo.repositoryId}`
+                                ) ||
+                                pathname.startsWith(
+                                  `/feed/organization/${repositoryInfo.owner}/repository/${repositoryInfo.repo}`
                                 )
                                   ? "text-[#5BC898]"
                                   : ""
@@ -359,18 +382,27 @@ export function SidebarNavigation() {
                       {/* Repository Sub Items */}
                       {isExpanded(repositoryInfo.repositoryId) && (
                         <div className="ml-4 border-l border-neutral-200 dark:border-neutral-700 space-y-1 py-1 pl-2">
-                          {[
-                            {
-                              title: "Overview",
-                              icon: FileText,
-                              url: `/feed/repositories/${repositoryInfo.repositoryId}`,
-                            },
-                            {
-                              title: "Activity",
-                              icon: Activity,
-                              url: `/feed/repositories/${repositoryInfo.repositoryId}/activity`,
-                            },
-                          ].map((subItem) => {
+                          {(() => {
+                            // Determine if this is an organization repository
+                            const isOrgRepo =
+                              pathname.includes("/organization/");
+                            const baseUrl = isOrgRepo
+                              ? `/feed/organization/${repositoryInfo.owner}/repository/${repositoryInfo.repo}`
+                              : `/feed/repositories/${repositoryInfo.repositoryId}`;
+
+                            return [
+                              {
+                                title: "Overview",
+                                icon: FileText,
+                                url: baseUrl,
+                              },
+                              {
+                                title: "Activity",
+                                icon: Activity,
+                                url: `${baseUrl}/activity`,
+                              },
+                            ];
+                          })().map((subItem) => {
                             const isSubActive = pathname === subItem.url;
 
                             return (
@@ -378,10 +410,10 @@ export function SidebarNavigation() {
                                 <SidebarMenuButton asChild>
                                   <Link
                                     href={subItem.url}
-                                    className={`flex items-center gap-2 py-1.5 px-3 rounded-md transition-all text-sm ${
+                                    className={`flex items-center gap-2 py-1.5 px-3 rounded-md transition-all duration-150 ease-out  text-sm border border-transparent ${
                                       isSubActive
-                                        ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border border-neutral-100 dark:border-neutral-800"
-                                        : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-500 dark:hover:bg-neutral-800 dark:hover:text-white"
+                                        ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border-neutral-100 dark:border-neutral-800 shadow-sm"
+                                        : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-500 dark:hover:bg-neutral-800 dark:hover:text-white hover:shadow-sm"
                                     }`}
                                   >
                                     <subItem.icon
@@ -424,10 +456,10 @@ export function SidebarNavigation() {
                       <Link
                         href={url}
                         target={item.title === "Profile" ? "_blank" : undefined}
-                        className={`flex items-center gap-2 w-full p-2 rounded-md transition-all ${
+                        className={`flex items-center gap-2 w-full p-2 rounded-md transition-all duration-150 ease-out  border border-transparent ${
                           isActive
-                            ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border border-neutral-100 dark:border-neutral-800"
-                            : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                            ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border-neutral-100 dark:border-neutral-800 shadow-sm"
+                            : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white hover:shadow-sm"
                         }`}
                       >
                         <item.icon
@@ -444,7 +476,7 @@ export function SidebarNavigation() {
                       </Link>
                     ) : (
                       <button
-                        className="flex items-center gap-2 w-full p-2 rounded-md transition-all text-neutral-400 cursor-not-allowed"
+                        className="flex items-center gap-2 w-full p-2 rounded-md transition-all duration-200 ease-in-out text-neutral-400 cursor-not-allowed"
                         disabled
                       >
                         <item.icon />
@@ -465,10 +497,10 @@ export function SidebarNavigation() {
                 <SidebarMenuButton asChild>
                   <Link
                     href="/feed/moderator"
-                    className={`flex items-center gap-2 w-full p-2 rounded-md transition-all ${
+                    className={`flex items-center gap-2 w-full p-2 rounded-md transition-all duration-150 ease-out  border border-transparent ${
                       pathname === "/feed/moderator"
-                        ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border border-neutral-100 dark:border-neutral-800"
-                        : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                        ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border-neutral-100 dark:border-neutral-800 shadow-sm"
+                        : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white hover:shadow-sm"
                     }`}
                   >
                     <Shield
@@ -491,8 +523,21 @@ export function SidebarNavigation() {
         </SidebarGroupContent>
       </SidebarContent>
       <SidebarFooter>
-        <SidebarUserFooter />
+        <div className="space-y-2">
+          <button
+            onClick={() => setFeedbackModalOpen(true)}
+            className="flex items-center gap-2 w-full p-2 rounded-md transition-all duration-150 ease-out text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white hover:shadow-sm border border-transparent cursor-pointer"
+          >
+            <MessageSquare className="w-4 h-4" />
+            <span className="text-sm">Give us feedback</span>
+          </button>
+          <SidebarUserFooter />
+        </div>
       </SidebarFooter>
+      <FeedbackModal
+        isOpen={feedbackModalOpen}
+        onClose={() => setFeedbackModalOpen(false)}
+      />
     </Sidebar>
   );
 }

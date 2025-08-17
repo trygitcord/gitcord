@@ -1,14 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  MessageSquare,
   X,
   Mail,
-  Filter,
   ChevronLeft,
   ChevronRight,
   ShieldCheck,
+  SlidersHorizontal,
 } from "lucide-react";
 import {
   useGetUserMessages,
@@ -46,6 +45,10 @@ function Page() {
   const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState<string>("all");
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+
+  useEffect(() => {
+    document.title = "Feed | Inbox";
+  }, []);
 
   const {
     data: messagesData,
@@ -110,21 +113,15 @@ function Page() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-lg font-medium flex items-center gap-2">
-              <MessageSquare className="w-5 h-5" />
               Inbox
-              {messagesData?.data.unreadCount > 0 && (
-                <span className="ml-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                  {messagesData.data.unreadCount}
-                </span>
-              )}
             </h1>
             <p className="text-neutral-500 text-sm dark:text-neutral-400">
               Manage your messages and notifications in one place.
             </p>
           </div>
           <Select value={filter} onValueChange={setFilter}>
-            <SelectTrigger className="w-40">
-              <Filter className="w-4 h-4 mr-2" />
+            <SelectTrigger className="w-32">
+              <SlidersHorizontal />
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -140,8 +137,8 @@ function Page() {
         {/* Messages List - 20% */}
         <div className="w-1/5 bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 overflow-hidden">
           <div className="p-4 border-b border-neutral-200 dark:border-neutral-800">
-            <h2 className="font-medium text-sm text-neutral-600 dark:text-neutral-400">
-              MESSAGES ({messagesData?.data.pagination.totalCount || 0})
+            <h2 className="text-sm text-neutral-600 dark:text-neutral-400">
+              Messages ({messagesData?.data.pagination.totalCount || 0})
             </h2>
           </div>
 
@@ -291,11 +288,8 @@ function Page() {
                   <div>
                     <div className="flex items-center gap-2">
                       <h2 className="font-medium text-lg">Gitcord</h2>
-                      {/* Glowing Official Message Badge */}
-                      <span
-                        className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-[#5BC898] text-white shadow-md"
-                        style={{ boxShadow: "0 0 3px 1.5px #5BC89844" }}
-                      >
+                      {/* Official Message Badge */}
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
                         Official Message
                       </span>
                     </div>

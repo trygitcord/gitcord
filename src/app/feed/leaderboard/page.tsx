@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Trophy,
   AlertCircle,
@@ -12,6 +13,7 @@ import {
   ChevronRight,
   Activity,
   Clock,
+  Shield,
 } from "lucide-react";
 import Link from "next/link";
 import { useActivityLeaderboard } from "@/hooks/useMyApiQueries";
@@ -59,7 +61,7 @@ export default function LeaderboardPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div className="mb-4">
@@ -87,7 +89,7 @@ export default function LeaderboardPage() {
       </div>
 
       {/* Scoring Info - More minimal */}
-      <div className="grid grid-cols-3 gap-4 md:flex md:gap-8">
+      <div className="grid grid-cols-3 gap-4 md:flex md:gap-8 pb-2">
         <div className="flex items-center gap-2 text-sm">
           <div className="w-2 h-2 bg-blue-500 rounded-full" />
           <span className="text-muted-foreground">Push</span>
@@ -115,44 +117,63 @@ export default function LeaderboardPage() {
             return (
               <div
                 key={user._id}
-                className={`group relative bg-card rounded-lg p-4 transition-all duration-200 hover:shadow-md ${
-                  isTopThree ? "ring-1 ring-border/50" : ""
+                className={`group relative bg-card rounded-lg p-4 transition-all duration-200 hover:bg-muted/20 hover:border-border/60 border ${
+                  isTopThree ? "border-border/50" : "border-border/30"
                 }`}
               >
                 <div className="flex items-center justify-between">
                   {/* Left side - Rank and User */}
                   <div className="flex items-center gap-4">
-                    {/* Rank */}
-                    <div
-                      className={`flex items-center justify-center w-10 h-10 rounded-full font-semibold ${
-                        rank === 1
-                          ? "bg-[#5BC898] dark:bg-[#5BC898]/10 text-white dark:text-white"
-                          : rank === 2
-                          ? "bg-gray-500/10 text-gray-600 dark:text-gray-400"
-                          : rank === 3
-                          ? "bg-orange-500/10 text-orange-600 dark:text-orange-400"
-                          : "bg-muted text-muted-foreground"
-                      }`}
-                    >
-                      {rank}
+                    {/* Rank with Trophy for top 3 */}
+                    <div className="relative">
+                      <div
+                        className={`flex items-center justify-center w-10 h-10 rounded-full font-semibold text-sm ${
+                          rank === 1
+                            ? "bg-[#5BC898] text-white"
+                            : rank === 2
+                            ? "bg-yellow-600 text-white"
+                            : rank === 3
+                            ? "bg-gray-600 text-white"
+                            : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {isTopThree ? <Trophy className="h-4 w-4" /> : rank}
+                      </div>
+                      {isTopThree && (
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-card border border-border rounded-full flex items-center justify-center">
+                          <span className="text-xs font-medium">{rank}</span>
+                        </div>
+                      )}
                     </div>
 
                     {/* User Info */}
                     <div className="flex items-center gap-3">
                       <Avatar className="h-10 w-10 rounded-full">
                         <AvatarImage src={user.avatar_url} alt={user.name} />
-                        <AvatarFallback className="bg-muted">
+                        <AvatarFallback className="bg-muted text-foreground">
                           {user.name.slice(0, 2).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <Link
-                          target="_blank"
-                          href={`/user/${user.username}`}
-                          className="font-medium hover:underline underline-offset-4"
-                        >
-                          {user.name}
-                        </Link>
+                        <div className="flex items-center gap-2">
+                          <Link
+                            target="_blank"
+                            href={`/user/${user.username}`}
+                            className="font-medium text-foreground hover:text-[#5BC898] transition-colors"
+                          >
+                            {user.name}
+                          </Link>
+                          {user.isModerator && (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Shield className="h-4 w-4 text-[#5BC898]" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Moderator</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          )}
+                        </div>
                         <p className="text-sm text-muted-foreground">
                           @{user.username}
                         </p>
@@ -164,46 +185,63 @@ export default function LeaderboardPage() {
                   <div className="flex items-center gap-4">
                     {/* Activity Stats - Desktop only */}
                     <div className="hidden md:flex items-center gap-3">
-                      <div className="flex flex-col items-center justify-center w-16 h-16 bg-muted/50 rounded-lg border">
-                        <p className="text-lg font-semibold">
+                      <div className="flex flex-col items-center justify-center w-14 h-14 bg-muted/30 rounded-lg">
+                        <p className="text-base font-semibold text-foreground">
                           {user.pushEvents}
                         </p>
                         <p className="text-xs text-muted-foreground">pushes</p>
                       </div>
-                      <div className="flex flex-col items-center justify-center w-16 h-16 bg-muted/50 rounded-lg border">
-                        <p className="text-lg font-semibold">
+                      <div className="flex flex-col items-center justify-center w-14 h-14 bg-muted/30 rounded-lg">
+                        <p className="text-base font-semibold text-foreground">
                           {user.pullRequests}
                         </p>
                         <p className="text-xs text-muted-foreground">PRs</p>
                       </div>
-                      <div className="flex flex-col items-center justify-center w-16 h-16 bg-muted/50 rounded-lg border">
-                        <p className="text-lg font-semibold">{user.issues}</p>
+                      <div className="flex flex-col items-center justify-center w-14 h-14 bg-muted/30 rounded-lg">
+                        <p className="text-base font-semibold text-foreground">
+                          {user.issues}
+                        </p>
                         <p className="text-xs text-muted-foreground">issues</p>
                       </div>
                     </div>
 
                     {/* Total Score */}
-                    <div className="flex flex-col items-center justify-center w-20 h-16 bg-gradient-to-br from-[#5BC898]/10 to-[#5BC898]/5 rounded-lg border border-[#5BC898]/20">
+                    <div className="flex flex-col items-center justify-center w-18 h-14 bg-[#5BC898]/10 rounded-lg border border-[#5BC898]/20">
                       <div className="flex items-center gap-1">
                         <Activity className="h-3 w-3 text-[#5BC898]" />
                         <span className="text-lg font-bold text-[#5BC898]">
                           {user.weeklyScore}
                         </span>
                       </div>
-                      <span className="text-xs text-muted-foreground">
-                        points
-                      </span>
+                      <span className="text-xs text-[#5BC898]/70">points</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Mobile Stats - Show on small screens */}
-                <div className="flex md:hidden items-center gap-4 mt-3 pt-3 border-t text-sm text-muted-foreground">
-                  <span>{user.pushEvents} pushes</span>
-                  <span>•</span>
-                  <span>{user.pullRequests} PRs</span>
-                  <span>•</span>
-                  <span>{user.issues} issues</span>
+                <div className="flex md:hidden items-center justify-between mt-4 pt-4 border-t border-border/50">
+                  <div className="flex items-center gap-4 text-sm">
+                    <div className="flex items-center gap-1">
+                      <span className="font-medium text-foreground">
+                        {user.pushEvents}
+                      </span>
+                      <span className="text-muted-foreground">pushes</span>
+                    </div>
+                    <span className="text-muted-foreground">•</span>
+                    <div className="flex items-center gap-1">
+                      <span className="font-medium text-foreground">
+                        {user.pullRequests}
+                      </span>
+                      <span className="text-muted-foreground">PRs</span>
+                    </div>
+                    <span className="text-muted-foreground">•</span>
+                    <div className="flex items-center gap-1">
+                      <span className="font-medium text-foreground">
+                        {user.issues}
+                      </span>
+                      <span className="text-muted-foreground">issues</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             );
@@ -223,24 +261,24 @@ export default function LeaderboardPage() {
         </Card>
       )}
 
-      {/* Pagination - More minimal */}
+      {/* Pagination - More compact */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between pt-4">
-          <p className="text-sm text-muted-foreground">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 pb-6">
+          <p className="text-sm text-muted-foreground order-2 sm:order-1">
             {leaderboardData.length} participants
           </p>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 order-1 sm:order-2">
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8"
+              className="h-8 w-8 flex-shrink-0"
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
 
-            <div className="flex items-center">
+            <div className="flex items-center overflow-hidden">
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(
                 (page) => {
                   if (
@@ -253,7 +291,7 @@ export default function LeaderboardPage() {
                         key={page}
                         variant={currentPage === page ? "secondary" : "ghost"}
                         size="sm"
-                        className="h-8 w-8 p-0"
+                        className="h-8 w-8 p-0 flex-shrink-0"
                         onClick={() => handlePageChange(page)}
                       >
                         {page}
@@ -264,7 +302,10 @@ export default function LeaderboardPage() {
                     page === currentPage + 2
                   ) {
                     return (
-                      <span key={page} className="px-1 text-muted-foreground">
+                      <span
+                        key={page}
+                        className="px-1 text-muted-foreground flex-shrink-0"
+                      >
                         ·
                       </span>
                     );
@@ -277,7 +318,7 @@ export default function LeaderboardPage() {
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8"
+              className="h-8 w-8 flex-shrink-0"
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
             >

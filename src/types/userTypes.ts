@@ -11,6 +11,7 @@ export interface UserType extends mongoose.Document {
   avatar_url: string;
   role: string;
   isModerator: boolean;
+  isPrivate: boolean;
 }
 
 export interface UserPremiumType extends mongoose.Document {
@@ -32,6 +33,7 @@ export interface LeaderboardUser {
   name: string;
   avatar_url: string;
   github_profile_url: string;
+  isModerator: boolean;
   weeklyScore: number;
   pushEvents: number;
   pullRequests: number;
@@ -52,6 +54,7 @@ export interface UserProfile {
   avatar_url: string;
   role: string;
   isModerator: boolean;
+  isPrivate: boolean;
   stats: {
     _id: string;
     credit: number;

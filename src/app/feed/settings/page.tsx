@@ -9,8 +9,11 @@ import {
   CreditCard,
   Shield,
   Gift,
+  ChevronDown,
+  Eye,
+  EyeOff,
 } from "lucide-react";
-import { useUserProfile } from "@/hooks/useMyApiQueries";
+import { useUserProfile, useUpdatePrivacy } from "@/hooks/useMyApiQueries";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import { useTheme } from "next-themes";
@@ -18,6 +21,12 @@ import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { ShareProfileButton } from "@/components/shared/ShareProfileButton";
 import ReedemCode from "@/components/shared/ReedemCode";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 function SettingsPage() {
   useEffect(() => {
@@ -32,10 +41,26 @@ function SettingsPage() {
 
   const { setTheme, theme } = useTheme();
   const router = useRouter();
+  const [language, setLanguage] = React.useState("English");
+  const [isPrivate, setIsPrivate] = React.useState(false);
+  const updatePrivacyMutation = useUpdatePrivacy();
+
+  React.useEffect(() => {
+    if (userData?.isPrivate !== undefined) {
+      setIsPrivate(userData.isPrivate);
+    }
+  }, [userData]);
 
   async function handleLogout() {
     await signOut({ redirect: false });
     router.push("/");
+  }
+
+  function handlePrivacyToggle() {
+    if (updatePrivacyMutation.isPending) return;
+    
+    const newPrivateValue = !isPrivate;
+    updatePrivacyMutation.mutate(newPrivateValue);
   }
 
   if (userLoading || !userData || userError) {
@@ -81,7 +106,7 @@ function SettingsPage() {
             </p>
             <div className="flex items-center gap-2">
               <p className="text-sm">{userData.name}</p>
-              <ShareProfileButton username={userData.username} />
+              <ShareProfileButton username={userData.username || undefined} />
             </div>
             <p className="text-sm text-neutral-600 dark:text-neutral-400">
               {userData.email}
@@ -119,15 +144,23 @@ function SettingsPage() {
             <Moon className="w-5 h-5 text-neutral-500" />
             <span className="text-sm">Theme</span>
           </div>
-          <select
-            className="w-32 p-1.5 text-sm bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-md"
-            value={theme}
-            onChange={(e) => setTheme(e.target.value)}
-          >
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-            <option value="system">System</option>
-          </select>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center justify-between w-32 px-3 py-1.5 text-sm bg-white dark:bg-neutral-800 rounded-md hover:bg-neutral-50 dark:hover:bg-neutral-750">
+              <span className="capitalize">{theme || "system"}</span>
+              <ChevronDown className="w-4 h-4 text-neutral-500" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-32">
+              <DropdownMenuItem onClick={() => setTheme("light")}>
+                Light
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("dark")}>
+                Dark
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("system")}>
+                System
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
@@ -138,9 +171,49 @@ function SettingsPage() {
             <Globe className="w-5 h-5 text-neutral-500" />
             <span className="text-sm">Language</span>
           </div>
-          <select className="w-32 p-1.5 text-sm bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-md">
-            <option>English</option>
-          </select>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center justify-between w-32 px-3 py-1.5 text-sm bg-white dark:bg-neutral-800 rounded-md hover:bg-neutral-50 dark:hover:bg-neutral-750">
+              <span>{language}</span>
+              <ChevronDown className="w-4 h-4 text-neutral-500" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-32">
+              <DropdownMenuItem onClick={() => setLanguage("English")}>
+                English
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+
+      {/* Privacy Settings */}
+      <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            {isPrivate ? (
+              <EyeOff className="w-5 h-5 text-neutral-500" />
+            ) : (
+              <Eye className="w-5 h-5 text-neutral-500" />
+            )}
+            <div>
+              <span className="text-sm">Leaderboard Visibility</span>
+              <p className="text-xs text-neutral-600 dark:text-neutral-400">
+                {isPrivate ? "Hidden from leaderboard" : "Visible on leaderboard"}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={handlePrivacyToggle}
+            disabled={updatePrivacyMutation.isPending}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#5BC898] focus:ring-offset-2 ${
+              isPrivate ? "bg-[#5BC898]" : "bg-gray-200 dark:bg-gray-700"
+            } ${updatePrivacyMutation.isPending ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+          >
+            <span
+              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                isPrivate ? "translate-x-6" : "translate-x-1"
+              }`}
+            />
+          </button>
         </div>
       </div>
 

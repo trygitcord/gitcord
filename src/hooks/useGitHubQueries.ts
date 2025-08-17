@@ -151,7 +151,6 @@ export const useRepositoryCommitActivity = (
 
       // GitHub stats API returns 202 when computing, empty array when no data
       if (Array.isArray(response) && response.length === 0) {
-        console.log("Commit Activity: Empty array received - likely computing");
         throw new Error("Commit activity data is still being computed");
       }
 
@@ -162,9 +161,6 @@ export const useRepositoryCommitActivity = (
           !Array.isArray(response) &&
           Object.keys(response).length === 0)
       ) {
-        console.log(
-          "Commit Activity: Empty object received - likely computing"
-        );
         throw new Error("Commit activity data is still being computed");
       }
 
@@ -216,7 +212,6 @@ export const useRepositoryContributors = (
           !Array.isArray(response) &&
           Object.keys(response).length === 0)
       ) {
-        console.log("Contributors: Empty object received - likely computing");
         throw new Error("Contributors data is still being computed");
       }
 
@@ -224,7 +219,6 @@ export const useRepositoryContributors = (
       if (Array.isArray(response) && response.length === 0) {
         // This might be legitimate "no contributors" rather than "still computing"
         // Let's return the empty array and let the component handle it
-        console.log("Contributors: Empty array received");
         return response;
       }
 
@@ -441,15 +435,6 @@ export const useOrganizationLanguages = (org: string | null) => {
   });
 };
 
-// Private Repositories Query
-export const usePrivateRepositories = () => {
-  return useQuery({
-    queryKey: ["private-repos"],
-    queryFn: async () =>
-      githubFetcher(`/user/repos?visibility=all&per_page=100`),
-    staleTime: 10 * 60 * 1000, // 10 minutes
-  });
-};
 
 // GitHub User Query
 export const useGitHubUser = (username: string | null) => {
@@ -462,7 +447,6 @@ export const useGitHubUser = (username: string | null) => {
         // Check if it's a 404 error (user not found on GitHub)
         const gitHubError = error as GitHubError;
         if (gitHubError.response?.status === 404) {
-          console.log(`GitHub user ${username} not found`);
           return null;
         }
         // Log other errors

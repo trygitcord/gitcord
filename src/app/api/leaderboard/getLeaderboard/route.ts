@@ -35,6 +35,8 @@ interface UserDocument {
   name: string;
   avatar_url: string;
   github_profile_url: string;
+  isModerator: boolean;
+  isPrivate: boolean;
 }
 
 // GitHub Events API'den son 7 günlük aktiviteleri al
@@ -127,9 +129,14 @@ export const GET = withDb(
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
 
-      // Tüm kullanıcıları al
-      const users = (await models.User.find({}).select(
-        "_id username name avatar_url github_profile_url"
+      // Tüm kullanıcıları al (private olanları hariç)
+      const users = (await models.User.find({ 
+        $or: [
+          { isPrivate: false },
+          { isPrivate: { $exists: false } }
+        ]
+      }).select(
+        "_id username name avatar_url github_profile_url isModerator isPrivate"
       )) as UserDocument[];
 
       // Her kullanıcı için haftalık aktiviteleri al ve puan hesapla
@@ -146,6 +153,7 @@ export const GET = withDb(
             name: user.name,
             avatar_url: user.avatar_url,
             github_profile_url: user.github_profile_url,
+            isModerator: user.isModerator,
             ...activity,
           };
         })

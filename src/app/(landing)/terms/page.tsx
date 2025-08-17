@@ -17,14 +17,14 @@ export default function TermsOfService() {
       <div className="max-w-4xl mx-auto px-6 py-24">
         {/* Header */}
         <div className="mb-16 pt-16">
-          <h1 className="text-3xl font-bold text-foreground mb-6">
+          <h1 className="text-2xl font-medium text-foreground mb-4">
             Terms of Service
           </h1>
-          <p className="text-muted-foreground text-base leading-relaxed mb-4">
+          <p className="text-muted-foreground text-sm leading-relaxed mb-3">
             These terms govern your use of Gitcord and describe the rights and
             responsibilities that apply to both you and us.
           </p>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-xs">
             Last updated:{" "}
             {new Date().toLocaleDateString("en-US", {
               year: "numeric",
@@ -36,7 +36,7 @@ export default function TermsOfService() {
         <div className="prose prose-gray dark:prose-invert max-w-none">
           {/* Acceptance of Terms */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-foreground mb-8 pt-6">
+            <h2 className="text-lg font-medium text-foreground mb-4">
               Acceptance of Terms
             </h2>
 
@@ -56,7 +56,7 @@ export default function TermsOfService() {
 
           {/* Description of Service */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-foreground mb-8 pt-6">
+            <h2 className="text-lg font-medium text-foreground mb-4">
               Description of Service
             </h2>
 
@@ -76,13 +76,13 @@ export default function TermsOfService() {
 
           {/* User Accounts */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-foreground mb-8 pt-6">
+            <h2 className="text-lg font-medium text-foreground mb-4">
               User Accounts
             </h2>
 
             <div className="space-y-8">
               <div>
-                <h3 className="text-lg font-medium text-foreground mb-4">
+                <h3 className="text-base font-normal text-foreground mb-2">
                   Account Creation
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed mb-3">
@@ -98,7 +98,7 @@ export default function TermsOfService() {
               </div>
 
               <div>
-                <h3 className="text-lg font-medium text-foreground mb-4">
+                <h3 className="text-base font-normal text-foreground mb-2">
                   Premium Accounts
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed mb-3">
@@ -117,7 +117,7 @@ export default function TermsOfService() {
 
           {/* Acceptable Use */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-foreground mb-8 pt-6">
+            <h2 className="text-lg font-medium text-foreground mb-4">
               Acceptable Use Policy
             </h2>
 
@@ -142,7 +142,7 @@ export default function TermsOfService() {
 
           {/* GitHub Integration */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-foreground mb-8 pt-6">
+            <h2 className="text-lg font-medium text-foreground mb-4">
               GitHub Integration
             </h2>
 
@@ -175,7 +175,7 @@ export default function TermsOfService() {
 
           {/* Data and Analytics */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-foreground mb-8 pt-6">
+            <h2 className="text-lg font-medium text-foreground mb-4">
               Data and Analytics
             </h2>
 
@@ -194,13 +194,13 @@ export default function TermsOfService() {
 
           {/* Premium Services */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-foreground mb-8 pt-6">
+            <h2 className="text-lg font-medium text-foreground mb-4">
               Premium Services
             </h2>
 
             <div className="space-y-8">
               <div>
-                <h3 className="text-lg font-medium text-foreground mb-4">
+                <h3 className="text-base font-normal text-foreground mb-2">
                   Billing and Payment
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed mb-3">
@@ -217,7 +217,7 @@ export default function TermsOfService() {
               </div>
 
               <div>
-                <h3 className="text-lg font-medium text-foreground mb-4">
+                <h3 className="text-base font-normal text-foreground mb-2">
                   Service Availability
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
@@ -231,13 +231,13 @@ export default function TermsOfService() {
 
           {/* Intellectual Property */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-foreground mb-8 pt-6">
+            <h2 className="text-lg font-medium text-foreground mb-4">
               Intellectual Property Rights
             </h2>
 
             <div className="space-y-8">
               <div>
-                <h3 className="text-lg font-medium text-foreground mb-4">
+                <h3 className="text-base font-normal text-foreground mb-2">
                   Our Rights
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
@@ -249,7 +249,7 @@ export default function TermsOfService() {
               </div>
 
               <div>
-                <h3 className="text-lg font-medium text-foreground mb-4">
+                <h3 className="text-base font-normal text-foreground mb-2">
                   Your Data
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
@@ -264,15 +264,15 @@ export default function TermsOfService() {
 
           {/* Disclaimers */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-foreground mb-8 pt-6">
+            <h2 className="text-lg font-medium text-foreground mb-4">
               Disclaimers
             </h2>
 
-            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6 mb-6">
-              <p className="text-sm text-yellow-800 dark:text-yellow-200 font-medium mb-2">
+            <div className="bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700 rounded-lg p-6 mb-6">
+              <p className="text-sm text-neutral-800 dark:text-neutral-200 font-medium mb-2">
                 IMPORTANT LEGAL NOTICE
               </p>
-              <p className="text-sm text-yellow-700 dark:text-yellow-300">
+              <p className="text-sm text-neutral-600 dark:text-neutral-300">
                 Analytics and scoring are based on publicly available GitHub
                 data and may not reflect complete development activity.
               </p>
@@ -292,7 +292,7 @@ export default function TermsOfService() {
 
           {/* Limitation of Liability */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-foreground mb-8 pt-6">
+            <h2 className="text-lg font-medium text-foreground mb-4">
               Limitation of Liability
             </h2>
 
@@ -314,13 +314,13 @@ export default function TermsOfService() {
 
           {/* Termination */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-foreground mb-8 pt-6">
+            <h2 className="text-lg font-medium text-foreground mb-4">
               Termination
             </h2>
 
             <div className="space-y-8">
               <div>
-                <h3 className="text-lg font-medium text-foreground mb-4">
+                <h3 className="text-base font-normal text-foreground mb-2">
                   By You
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
@@ -331,7 +331,7 @@ export default function TermsOfService() {
               </div>
 
               <div>
-                <h3 className="text-lg font-medium text-foreground mb-4">
+                <h3 className="text-base font-normal text-foreground mb-2">
                   By Us
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
@@ -345,7 +345,7 @@ export default function TermsOfService() {
 
           {/* Changes to Terms */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-foreground mb-8 pt-6">
+            <h2 className="text-lg font-medium text-foreground mb-4">
               Changes to These Terms
             </h2>
 
@@ -359,7 +359,7 @@ export default function TermsOfService() {
 
           {/* Contact Information */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-foreground mb-8 pt-6">
+            <h2 className="text-lg font-medium text-foreground mb-4">
               Contact Information
             </h2>
 

@@ -256,7 +256,7 @@ const ProfilePage = ({ params }: Props) => {
                 )}
 
                 {/* Popular Badge - Show if user has high view count (registered users) or high GitHub stats (all users) */}
-                {gitcordUser?.stats?.view_count > 200 && (
+                {gitcordUser?.stats?.view_count !== undefined && gitcordUser?.stats?.view_count > 200 && (
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>

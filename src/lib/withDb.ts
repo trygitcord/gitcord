@@ -5,6 +5,7 @@ import User from "@/models/user";
 import UserStats from "@/models/userStats";
 import UserPremium from "@/models/userPremium";
 import Message from "@/models/message";
+import Feedback from "@/models/feedback";
 
 let connectionPromise: Promise<typeof mongoose> | null = null;
 
@@ -14,6 +15,7 @@ const getModels = () => {
     UserStats,
     UserPremium,
     Message,
+    Feedback,
   };
 };
 

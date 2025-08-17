@@ -2,22 +2,22 @@
 
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { useRouter } from "next/navigation";
 import { Search, ArrowRight } from "lucide-react";
 
 function SearchUserInput() {
   const [value, setValue] = useState("");
-  const router = useRouter();
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && value.trim()) {
-      router.push(`/user/${value.trim()}`);
+      window.open(`/user/${value.trim()}`, '_blank');
+      setValue("");
     }
   };
 
   const handleSearch = () => {
     if (value.trim()) {
-      router.push(`/user/${value.trim()}`);
+      window.open(`/user/${value.trim()}`, '_blank');
+      setValue("");
     }
   };
 

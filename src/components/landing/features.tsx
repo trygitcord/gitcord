@@ -6,12 +6,12 @@ import { cn } from "@/lib/utils";
 
 export function Features() {
   return (
-    <div id="features">
+    <div id="features" className="scroll-mt-20">
       <div className="flex flex-col items-center justify-center max-w-[750px] mx-auto py-16">
-        <h2 className="mb-3 text-3xl font-semibold md:mb-4 lg:mb-6 lg:text-4xl text-center">
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-3 bg-gradient-to-r from-foreground via-foreground/80 to-foreground bg-clip-text text-transparent text-center">
           Powerful Features for Developers
         </h2>
-        <p className="text-muted-foreground lg:text-lg text-center">
+        <p className="text-sm sm:text-base text-muted-foreground text-center">
           Transform how you track, analyze, and showcase your GitHub
           contributions with our comprehensive developer platform.
         </p>

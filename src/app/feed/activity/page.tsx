@@ -1,12 +1,20 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
-import { GitCommit, GitPullRequest, AlertCircle } from "lucide-react";
+import { GitCommit, GitPullRequest, AlertCircle, SlidersHorizontal } from "lucide-react";
 import { useUserProfile } from "@/hooks/useMyApiQueries";
 import { useUserEvents } from "@/hooks/useGitHubQueries";
 import Link from "next/link";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 enum RecentActivityType {
   Issue = "IssuesEvent",
@@ -206,6 +214,9 @@ function renderActivityCard(event: GitHubEvent, expanded: boolean) {
 }
 
 function ActivityPage() {
+  const searchParams = useSearchParams();
+  const filterParam = searchParams.get('filter');
+  
   useEffect(() => {
     document.title = "Feed | Activity";
   }, []);
@@ -220,11 +231,13 @@ function ActivityPage() {
     data: userEventsData,
     isLoading: userEventsLoading,
     error: userEventsError,
-  } = useUserEvents(userData?.username);
+  } = useUserEvents(userData?.username || null);
 
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
   const [activeFilter, setActiveFilter] = useState<RecentActivityType | "all">(
-    "all"
+    filterParam && Object.values(RecentActivityType).includes(filterParam as RecentActivityType) 
+      ? filterParam as RecentActivityType 
+      : "all"
   );
 
   if (
@@ -246,12 +259,7 @@ function ActivityPage() {
               Track all recent actions and updates in one place.
             </p>
           </div>
-          <div className="flex gap-2">
-            <Skeleton className="h-8 w-16 rounded-lg" />
-            <Skeleton className="h-8 w-24 rounded-lg" />
-            <Skeleton className="h-8 w-28 rounded-lg" />
-            <Skeleton className="h-8 w-24 rounded-lg" />
-          </div>
+          <Skeleton className="h-8 w-32 rounded-lg" />
         </div>
         <div className="w-full h-[calc(100vh-12rem)] overflow-y-auto mt-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
           <div className="flex flex-col gap-4">
@@ -304,51 +312,18 @@ function ActivityPage() {
             Track all recent actions and updates in one place.
           </p>
         </div>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setActiveFilter("all")}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              activeFilter === "all"
-                ? "bg-[#5BC898] text-white"
-                : "bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700"
-            }`}
-          >
-            All
-          </button>
-          <button
-            onClick={() => setActiveFilter(RecentActivityType.Commit)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
-              activeFilter === RecentActivityType.Commit
-                ? "bg-[#5BC898] text-white"
-                : "bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700"
-            }`}
-          >
-            <GitCommit className="w-4 h-4" />
-            Commits
-          </button>
-          <button
-            onClick={() => setActiveFilter(RecentActivityType.PullRequest)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
-              activeFilter === RecentActivityType.PullRequest
-                ? "bg-purple-500 text-white"
-                : "bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700"
-            }`}
-          >
-            <GitPullRequest className="w-4 h-4" />
-            Pull Requests
-          </button>
-          <button
-            onClick={() => setActiveFilter(RecentActivityType.Issue)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
-              activeFilter === RecentActivityType.Issue
-                ? "bg-yellow-400 text-white"
-                : "bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700"
-            }`}
-          >
-            <AlertCircle className="w-4 h-4" />
-            Issues
-          </button>
-        </div>
+        <Select value={activeFilter} onValueChange={(value) => setActiveFilter(value as RecentActivityType | "all")}>
+          <SelectTrigger className="w-32">
+            <SlidersHorizontal />
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value={RecentActivityType.Commit}>Commits</SelectItem>
+            <SelectItem value={RecentActivityType.PullRequest}>Pull Requests</SelectItem>
+            <SelectItem value={RecentActivityType.Issue}>Issues</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       <div className="w-full h-[calc(100vh-12rem)] overflow-y-auto mt-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
         {shownEvents.length === 0 ? (
@@ -384,4 +359,10 @@ function ActivityPage() {
   );
 }
 
-export default ActivityPage;
+export default function Page() {
+  return (
+    <Suspense>
+      <ActivityPage />
+    </Suspense>
+  );
+}

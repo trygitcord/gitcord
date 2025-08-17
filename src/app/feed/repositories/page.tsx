@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState, useCallback } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Star,
@@ -9,12 +10,21 @@ import {
   Clock,
   ChevronLeft,
   ChevronRight,
-  Crown,
+  Search,
+  SlidersHorizontal,
 } from "lucide-react";
 import Link from "next/link";
-import { usePrivateRepositories } from "@/hooks/useGitHubQueries";
+import { useUserRepositories } from "@/hooks/useGitHubQueries";
 import { useUserProfile } from "@/hooks/useMyApiQueries";
 import ProjectHealthChart from "@/components/shared/ProjectHealthChart";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 // Repository interface based on the usage in the component
 interface Repository {
@@ -96,30 +106,55 @@ function calculateHealthScore(repo: Repository) {
   return Math.max(0, Math.min(100, totalScore));
 }
 
+type SortType = "updated" | "stars" | "forks" | "watchers";
+
 function Repositories() {
-  // All useState hooks first
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  // Initialize state from URL params
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
+  const [sortBy, setSortBy] = useState<SortType>(
+    (searchParams.get("sort") as SortType) || "updated"
+  );
 
   // Custom hooks (slice hooks) second
+  const { data: profile } = useUserProfile();
+
+  // Get username from profile
+  const username = profile?.username;
+
   const {
     data: reposData,
     isLoading: reposLoading,
     error: reposError,
-  } = usePrivateRepositories();
-
-  const {
-    data: userData,
-    isLoading: userLoading,
-    error: userError,
-  } = useUserProfile();
+  } = useUserRepositories(username || null);
 
   useEffect(() => {
     document.title = "Feed | Repositories";
   }, []);
 
+  // Function to update URL with current filters
+  const updateURL = useCallback((search: string, sort: SortType) => {
+    const params = new URLSearchParams();
+    if (search) params.set("search", search);
+    if (sort !== "updated") params.set("sort", sort);
+    
+    const queryString = params.toString();
+    const newURL = queryString ? `?${queryString}` : window.location.pathname;
+    router.replace(newURL, { scroll: false });
+  }, [router]);
+
+  // Reset page when search or sort changes
+  useEffect(() => {
+    setCurrentPage(1);
+    updateURL(searchQuery, sortBy);
+  }, [searchQuery, sortBy, updateURL]);
+
   const reposPerPage = 12; // 3x3 grid için
 
-  if (reposLoading || userLoading || !reposData || !userData) {
+  if (reposLoading || !reposData) {
     return (
       <div className="w-full h-full">
         <div className="mb-4">
@@ -139,7 +174,7 @@ function Repositories() {
     );
   }
 
-  if (reposError || userError) {
+  if (reposError) {
     return (
       <div className="w-full h-full">
         <div className="mb-4">
@@ -152,34 +187,43 @@ function Repositories() {
         </div>
         <div className="flex items-center justify-center h-64">
           <p className="text-red-500">
-            Error loading repositories:{" "}
-            {reposError?.message || userError?.message || "Unknown error"}
+            Error loading repositories: {reposError?.message || "Unknown error"}
           </p>
         </div>
       </div>
     );
   }
 
-  // Filter repositories based on user premium status
-  const isPremium = userData.premium?.isPremium || false;
+  // Filter and search repositories
+  const filteredRepos = reposData
+    .filter((repo: Repository) => {
+      return repo.visibility === "public";
+    })
+    .filter((repo: Repository) => {
+      if (!searchQuery) return true;
+      return (
+        repo.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (repo.description &&
+          repo.description.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+    });
 
-  const filteredRepos = reposData.filter((repo: Repository) => {
-    // Public repositories are always visible
-    if (repo.visibility === "public") {
-      return true;
+  // Sort repositories
+  const sortedRepos = [...filteredRepos].sort((a, b) => {
+    switch (sortBy) {
+      case "stars":
+        return b.stargazers_count - a.stargazers_count;
+      case "forks":
+        return b.forks_count - a.forks_count;
+      case "watchers":
+        return b.watchers_count - a.watchers_count;
+      case "updated":
+      default:
+        return (
+          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+        );
     }
-    // Private repositories are only visible to premium users
-    if (repo.visibility === "private") {
-      return isPremium;
-    }
-    return false;
   });
-
-  // Sort repositories by updated_at time
-  const sortedRepos = [...filteredRepos].sort(
-    (a, b) =>
-      new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-  );
 
   // Pagination logic
   const indexOfLastRepo = currentPage * reposPerPage;
@@ -201,82 +245,115 @@ function Repositories() {
 
   return (
     <div className="w-full h-full flex flex-col">
-      <div className="mb-4">
-        <h1 className="text-lg font-medium flex items-center gap-2">
-          Repositories
-        </h1>
-        <p className="text-neutral-500 text-sm dark:text-neutral-400">
-          Explore all repositories and their activities.
-          {!isPremium && (
-            <span className="block mt-1 text-xs text-[#5BC898] dark:text-[#5BC898]">
-              Upgrade to Premium to view private repositories
-            </span>
-          )}
-        </p>
+      <div className="flex justify-between items-start mb-4">
+        <div>
+          <h1 className="text-lg font-medium flex items-center gap-2">
+            Repositories
+          </h1>
+          <p className="text-neutral-500 text-sm dark:text-neutral-400">
+            Explore your public repositories and their activities.
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 h-4 w-4" />
+            <Input
+              placeholder="Search repositories..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 w-64"
+            />
+          </div>
+          <Select
+            value={sortBy}
+            onValueChange={(value) => setSortBy(value as SortType)}
+          >
+            <SelectTrigger className="w-40">
+              <SlidersHorizontal className="h-4 w-4" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="updated">Recently</SelectItem>
+              <SelectItem value="stars">Most Stars</SelectItem>
+              <SelectItem value="forks">Most Forks</SelectItem>
+              <SelectItem value="watchers">Most Watchers</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       <div className="flex-1 overflow-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-rows-4 gap-4 h-full">
-          {currentRepos.map((repo: Repository) => (
-            <Link
-              key={repo.id}
-              href={`/feed/repositories/${repo.name}`}
-              className="group h-full"
-            >
-              {" "}
-              {/* Silinebilir bug olursa -Harun */}
-              <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-4 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors h-full relative">
-                <span className="absolute top-12 right-4 z-10 ">
-                  <ProjectHealthChart
-                    score={calculateHealthScore(repo)}
-                    size={40}
-                  />
-                </span>
-                <div className="flex flex-col h-full">
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="text-neutral-800 dark:text-neutral-200 font-medium group-hover:text-[#5BC898] transition-colors">
-                      {repo.name}
-                    </h3>
-                    <div className="flex items-center gap-1">
-                      {repo.visibility === "private" && isPremium && (
-                        <Crown className="w-4 h-4 text-[#5BC898]" />
-                      )}
-                      <span className="text-xs px-2 py-1 rounded-full bg-neutral-200 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400">
-                        {repo.visibility}
-                      </span>
-                    </div>
-                  </div>
-                  <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4 line-clamp-2 mr-16">
-                    {repo.description || "No description provided."}
-                  </p>
-                  <div className="mt-auto">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4 text-sm text-neutral-500 dark:text-neutral-400">
-                        <div className="flex items-center gap-1">
-                          <Star className="w-4 h-4" />
-                          <span>{repo.stargazers_count}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <GitFork className="w-4 h-4" />
-                          <span>{repo.forks_count}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Eye className="w-4 h-4" />
-                          <span>{repo.watchers_count}</span>
-                        </div>
+        {currentRepos.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-64 text-center">
+            <div className="text-neutral-400 dark:text-neutral-500 text-lg mb-2">
+              {searchQuery ? "No repositories found" : "No public repositories"}
+            </div>
+            <p className="text-neutral-500 dark:text-neutral-400 text-sm">
+              {searchQuery
+                ? `Try adjusting your search terms or filter options`
+                : "You don't have any public repositories yet"}
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {currentRepos.map((repo: Repository) => (
+              <Link
+                key={repo.id}
+                href={`/feed/repositories/${repo.name}`}
+                className="group"
+              >
+                {" "}
+                {/* Silinebilir bug olursa -Harun */}
+                <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-4 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors h-40 relative">
+                  <span className="absolute top-12 right-4 z-10 ">
+                    <ProjectHealthChart
+                      score={calculateHealthScore(repo)}
+                      size={40}
+                    />
+                  </span>
+                  <div className="flex flex-col h-full">
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className="text-neutral-800 dark:text-neutral-200 font-medium group-hover:text-[#5BC898] transition-colors">
+                        {repo.name}
+                      </h3>
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs px-2 py-1 rounded-full bg-neutral-200 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400">
+                          {repo.visibility}
+                        </span>
                       </div>
+                    </div>
+                    <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4 line-clamp-2 mr-16">
+                      {repo.description || "No description provided."}
+                    </p>
+                    <div className="mt-auto">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4 text-sm text-neutral-500 dark:text-neutral-400">
+                          <div className="flex items-center gap-1">
+                            <Star className="w-4 h-4" />
+                            <span>{repo.stargazers_count}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <GitFork className="w-4 h-4" />
+                            <span>{repo.forks_count}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Eye className="w-4 h-4" />
+                            <span>{repo.watchers_count}</span>
+                          </div>
+                        </div>
 
-                      <div className="flex items-center gap-1 text-xs text-neutral-400 dark:text-neutral-500">
-                        <Clock className="w-3 h-3" />
+                        <div className="flex items-center gap-1 text-xs text-neutral-400 dark:text-neutral-500">
+                          <Clock className="w-3 h-3" />
 
-                        <span>Updated {timeAgo(repo.updated_at)}</span>
+                          <span>Updated {timeAgo(repo.updated_at)}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Pagination Controls */}
@@ -305,4 +382,10 @@ function Repositories() {
   );
 }
 
-export default Repositories;
+export default function Page() {
+  return (
+    <Suspense>
+      <Repositories />
+    </Suspense>
+  );
+}
