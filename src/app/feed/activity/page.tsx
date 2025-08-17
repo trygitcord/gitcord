@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
@@ -231,7 +231,7 @@ function ActivityPage() {
     data: userEventsData,
     isLoading: userEventsLoading,
     error: userEventsError,
-  } = useUserEvents(userData?.username);
+  } = useUserEvents(userData?.username || null);
 
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
   const [activeFilter, setActiveFilter] = useState<RecentActivityType | "all">(
@@ -359,4 +359,10 @@ function ActivityPage() {
   );
 }
 
-export default ActivityPage;
+export default function Page() {
+  return (
+    <Suspense>
+      <ActivityPage />
+    </Suspense>
+  );
+}

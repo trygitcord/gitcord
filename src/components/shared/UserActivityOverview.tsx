@@ -18,7 +18,7 @@ function UserActivityOverview() {
     data: userEventsData,
     isLoading: userEventsLoading,
     error: userEventsError,
-  } = useUserEvents(userData?.username);
+  } = useUserEvents(userData?.username || null);
 
   const counts = useMemo(() => {
     const tempCounts = {

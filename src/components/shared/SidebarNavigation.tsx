@@ -10,7 +10,6 @@ import {
   Inbox,
   User,
   LineChart,
-  Crown,
   Trophy,
   FileText,
   Activity,

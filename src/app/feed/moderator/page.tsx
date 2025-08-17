@@ -4,6 +4,17 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useUserProfile } from "@/hooks/useMyApiQueries";
+
+// Define the User type from the API response
+interface User {
+  id: string;
+  name: string;
+  username: string;
+  email: string;
+  avatar_url: string;
+  isModerator: boolean;
+  bio?: string;
+}
 import {
   useGetUsers,
   useGetUserDetails,
@@ -21,10 +32,8 @@ import {
   Mail,
   KeyRound,
   Search,
-  Filter,
   Eye,
   UserCheck,
-  Star,
   Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -110,7 +119,7 @@ export default function ModeratorPage() {
   const deleteCode = useDeleteCode();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isUserDetailModalOpen, setIsUserDetailModalOpen] = useState(false);
   const [feedbackPage, setFeedbackPage] = useState(1);
   const { data: feedbacksData, isLoading: feedbacksLoading } = useGetFeedbacks(

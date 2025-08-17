@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { Suspense, useEffect, useState, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -129,7 +129,7 @@ function Repositories() {
     data: reposData,
     isLoading: reposLoading,
     error: reposError,
-  } = useUserRepositories(username);
+  } = useUserRepositories(username || null);
 
   useEffect(() => {
     document.title = "Feed | Repositories";
@@ -382,4 +382,10 @@ function Repositories() {
   );
 }
 
-export default Repositories;
+export default function Page() {
+  return (
+    <Suspense>
+      <Repositories />
+    </Suspense>
+  );
+}

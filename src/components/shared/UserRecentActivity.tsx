@@ -58,7 +58,7 @@ function UserRecentActivity() {
     data: userEventsData,
     isLoading: userEventsLoading,
     error: userEventsError,
-  } = useUserEvents(userData?.username);
+  } = useUserEvents(userData?.username || null);
 
   if (
     userLoading ||

@@ -94,7 +94,7 @@ export function Testimonials({
                   </div>
                   <div className="py-3 px-0">
                     <p className="text-neutral-100 text-sm leading-relaxed break-words">
-                      "{testimonial.text}"
+                      &quot;{testimonial.text}&quot;
                     </p>
                   </div>
                   {!isFeedbackCard && (

@@ -106,7 +106,7 @@ function SettingsPage() {
             </p>
             <div className="flex items-center gap-2">
               <p className="text-sm">{userData.name}</p>
-              <ShareProfileButton username={userData.username} />
+              <ShareProfileButton username={userData.username || undefined} />
             </div>
             <p className="text-sm text-neutral-600 dark:text-neutral-400">
               {userData.email}

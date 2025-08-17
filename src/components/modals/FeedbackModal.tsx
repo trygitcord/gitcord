@@ -59,6 +59,7 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
       onClose();
     } catch (error) {
       // Error is handled by the hook
+      console.error("Failed to submit feedback:", error);
     }
   };
 

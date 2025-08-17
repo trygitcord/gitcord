@@ -4,13 +4,11 @@ import { useEffect, useState, useCallback } from "react";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TrendingUp, GitBranch, Users } from "lucide-react";
-import { ResponsiveContainer, Tooltip } from "recharts";
 import { AnimatedHatchedPatternAreaChart } from "@/components/charts/AnimatedHatchedPatternAreaChart";
 import { GlowingLineChart } from "@/components/charts/GlowingLineChart";
 import { GradientBarChart } from "@/components/charts/GradientBarChart";
@@ -134,9 +132,9 @@ export default function AnalyticsPage() {
 
   // Load data with new hooks
   const { data: repos, isLoading: reposLoading } =
-    useUserRepositories(username);
-  const { data: events, isLoading: eventsLoading } = useUserEvents(username);
-  const { data: orgs, isLoading: orgsLoading } = useUserOrganizations(username);
+    useUserRepositories(username || null);
+  const { data: events, isLoading: eventsLoading } = useUserEvents(username || null);
+  const { data: orgs, isLoading: orgsLoading } = useUserOrganizations(username || null);
 
   // Check if all data is loading
   const dataLoading = reposLoading || eventsLoading || orgsLoading;

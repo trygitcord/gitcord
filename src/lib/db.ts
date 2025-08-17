@@ -44,7 +44,6 @@ export const connect = async () => {
   try {
     const mongoose = await cached.promise;
     cached.conn = mongoose;
-    console.log("Connected to MongoDB");
   } catch (e) {
     cached.promise = null;
     console.error("MongoDB connection error:", e);

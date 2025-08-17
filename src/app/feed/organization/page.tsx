@@ -38,7 +38,7 @@ function Organizations() {
     data: orgsData,
     isLoading: orgsLoading,
     error: orgsError,
-  } = useUserOrganizations(userData?.username);
+  } = useUserOrganizations(userData?.username || null);
 
   if (userLoading || orgsLoading) {
     return (
