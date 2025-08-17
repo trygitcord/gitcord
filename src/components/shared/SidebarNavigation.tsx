@@ -527,7 +527,7 @@ export function SidebarNavigation() {
         <div className="space-y-2">
           <button
             onClick={() => setFeedbackModalOpen(true)}
-            className="flex items-center gap-2 w-full p-2 rounded-md transition-all duration-150 ease-out text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white hover:shadow-sm border border-transparent"
+            className="flex items-center gap-2 w-full p-2 rounded-md transition-all duration-150 ease-out text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white hover:shadow-sm border border-transparent cursor-pointer"
           >
             <MessageSquare className="w-4 h-4" />
             <span className="text-sm">Give us feedback</span>

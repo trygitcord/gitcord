@@ -151,7 +151,7 @@ export default function ContactPage() {
                   <div className="flex justify-center">
                     <button
                       onClick={handleGetStarted}
-                      className="w-full rounded-lg px-5 py-2 bg-neutral-800 text-white shadow hover:cursor-pointer transition-colors duration-200 sm:w-auto flex items-center justify-center hover:bg-neutral-900"
+                      className="w-full rounded-lg px-5 py-2 bg-gradient-to-b from-neutral-800 to-neutral-900 text-white shadow hover:cursor-pointer transition-colors duration-200 sm:w-auto flex items-center justify-center hover:from-neutral-700 hover:to-neutral-800"
                     >
                       <span className="text-sm">
                         Get Started Free{" "}
