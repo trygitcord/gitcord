@@ -203,6 +203,7 @@ const menuItems = [
   { name: "Features", href: "/#features" },
   { name: "Preview", href: "/#preview" },
   { name: "Reviews", href: "/#reviews" },
+  { name: "Team", href: "/team" },
   { name: "FAQ", href: "/#faq" },
 ];
 
