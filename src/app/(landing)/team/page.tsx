@@ -8,11 +8,10 @@ import { HeroHeader } from "@/components/landing/hero";
 import { Footer } from "@/components/landing/footer-section";
 import { AnimatedGroup } from "@/components/ui/animated-group";
 
-interface Contributor {
+interface Stargazer {
   login: string;
   avatar_url: string;
   html_url: string;
-  contributions: number;
 }
 
 const transitionVariants = {
@@ -57,15 +56,15 @@ const teamMembers = [
 ];
 
 export default function TeamPage() {
-  const [contributors, setContributors] = useState<Contributor[]>([]);
+  const [stargazers, setStargazers] = useState<Stargazer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchContributors = async () => {
+    const fetchStargazers = async () => {
       try {
         const response = await fetch(
-          "https://api.github.com/repos/lumi-work/gitcord/contributors"
+          "https://api.github.com/repos/lumi-work/gitcord/stargazers"
         );
 
         if (!response.ok) {
@@ -78,26 +77,24 @@ export default function TeamPage() {
 
         // Ensure data is an array
         if (Array.isArray(data)) {
-          setContributors(data);
+          setStargazers(data);
         } else {
           console.error("Expected array but got:", data);
           setError("Invalid data format received from GitHub API");
-          setContributors([]);
+          setStargazers([]);
         }
       } catch (error) {
-        console.error("Error fetching contributors:", error);
+        console.error("Error fetching stargazers:", error);
         setError(
-          error instanceof Error
-            ? error.message
-            : "Failed to fetch contributors"
+          error instanceof Error ? error.message : "Failed to fetch stargazers"
         );
-        setContributors([]);
+        setStargazers([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchContributors();
+    fetchStargazers();
   }, []);
 
   return (
@@ -218,25 +215,25 @@ export default function TeamPage() {
                           GitHub API rate limit reached. Please try again later.
                         </p>
                       </div>
-                    ) : contributors.length > 0 ? (
+                    ) : stargazers.length > 0 ? (
                       <div className="flex flex-wrap justify-center gap-2">
-                        {contributors.slice(0, 16).map((contributor, index) => (
+                        {stargazers.slice(0, 16).map((stargazer, index) => (
                           <a
                             key={index}
-                            href={contributor.html_url}
+                            href={stargazer.html_url}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="group"
-                            title={`${contributor.login}`}
+                            title={`${stargazer.login}`}
                           >
-                            <Avatar className="h-8 w-8 transition-all duration-200 group-hover:scale-110">
+                            <Avatar className="h-10 w-10 transition-all duration-200 group-hover:scale-110">
                               <AvatarImage
-                                src={contributor.avatar_url}
-                                alt={contributor.login}
+                                src={stargazer.avatar_url}
+                                alt={stargazer.login}
                                 className="object-cover"
                               />
                               <AvatarFallback className="bg-muted text-xs">
-                                {contributor.login.slice(0, 2).toUpperCase()}
+                                {stargazer.login.slice(0, 2).toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
                           </a>
