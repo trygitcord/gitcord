@@ -78,26 +78,29 @@ export function HeroSection() {
             <div className="mx-auto max-w-7xl px-6">
               <div className="text-center sm:mx-auto lg:mr-auto lg:mt-0">
                 <AnimatedGroup variants={transitionVariants}>
-                  <Link
-                    href="/#preview"
-                    className="mt-6 hover:bg-background dark:hover:border-t-border bg-muted group mx-auto flex w-fit items-center gap-4 rounded-full border p-1 pl-3.5 shadow-md shadow-black/5 transition-all duration-300 dark:border-t-white/5 dark:shadow-zinc-950"
-                  >
-                    <span className="text-sm">
-                      All your data, one dashboard
+                  <div className="mt-6 mx-auto flex w-fit items-center gap-4 rounded-full bg-gradient-to-r from-[#49F9AA]/10 to-[#49F9AA]/20 dark:from-[#49F9AA]/5 dark:to-[#49F9AA]/10 border border-[#49F9AA]/30 dark:border-[#49F9AA]/20 p-1 pl-3.5 shadow-md shadow-black/5 transition-all duration-300 group">
+                    <div className="w-2 h-2 rounded-full bg-[#49F9AA] animate-pulse"></div>
+                    <span className="text-sm text-[#49F9AA] dark:text-[#49F9AA]/90 cursor-pointer">
+                      Backed by{" "}
+                      <span className="font-semibold text-[#49F9AA] dark:text-[#49F9AA] group-hover:text-[#49F9AA]/80 dark:group-hover:text-[#49F9AA]/70 transition-colors duration-300">
+                        <Link href="https://dataprism.app" target="_blank">
+                          Dataprism
+                        </Link>
+                      </span>
                     </span>
-                    <span className="dark:border-background block h-4 w-0.5 border-l bg-white dark:bg-zinc-700"></span>
+                    <span className="dark:border-background block h-4 w-0.5 border-l bg-[#49F9AA]/40 dark:bg-[#49F9AA]/30"></span>
 
-                    <div className="bg-background group-hover:bg-muted size-6 overflow-hidden rounded-full duration-500">
+                    <div className="bg-background group-hover:bg-[#49F9AA]/5 dark:group-hover:bg-[#49F9AA]/10 size-6 overflow-hidden rounded-full duration-500 ">
                       <div className="flex w-12 -translate-x-1/2 duration-500 ease-in-out group-hover:translate-x-0">
                         <span className="flex size-6">
-                          <ArrowRight className="m-auto size-3" />
+                          <ArrowRight className="m-auto size-3 text-[#49F9AA]" />
                         </span>
                         <span className="flex size-6">
-                          <ArrowRight className="m-auto size-3" />
+                          <ArrowRight className="m-auto size-3 text-[#49F9AA]" />
                         </span>
                       </div>
                     </div>
-                  </Link>
+                  </div>
 
                   <h1 className="mt-10 max-w-4xl font-semibold mx-auto text-balance text-7xl md:text-7xl lg:mt-10 xl:text-[5.25rem]">
                     Track smarter Code <span ref={smarterRef}>better.</span>

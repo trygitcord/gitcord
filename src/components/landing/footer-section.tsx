@@ -117,6 +117,7 @@ export function Footer() {
           <div className="flex items-center gap-6 text-sm text-muted-foreground/80">
             <span>Built by developers, for developers</span>
           </div>
+
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-4 text-sm text-muted-foreground/70">
               <Link
