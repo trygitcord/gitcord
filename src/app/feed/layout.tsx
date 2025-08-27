@@ -4,7 +4,7 @@ import "@/styles/globals.css";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { SidebarNavigation } from "@/components/shared/SidebarNavigation";
 import { Poppins } from "next/font/google";
-import Breadcrumb from "@/components/shared/Path";
+import BreadcrumbNav from "@/components/shared/Path";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -33,7 +33,7 @@ export default function DashboardLayout({
           <main className="w-full h-screen dark:bg-neutral-950">
             <SidebarTrigger />
             <div className="p-8 w-full h-[calc(100vh-4rem)]">
-              <Breadcrumb />
+              <BreadcrumbNav />
               {children}
             </div>
           </main>
