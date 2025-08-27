@@ -16,7 +16,7 @@ export default function BreadcrumbNav() {
 
       return (
         <div key={href} className="flex items-center">
-          <ChevronRight className="w-3.5 h-2 text-neutral-500 mx-1.5" />
+          <ChevronRight className="w-4 h-4 text-neutral-500 mx-1.5" />
           {isLast ? (
             <span className="text-neutral-100 font-medium capitalize text-sm bg-neutral-800/50 px-2 py-1 rounded-md">
               {decodeURIComponent(segment)}
@@ -37,7 +37,7 @@ export default function BreadcrumbNav() {
   };
 
   return (
-    <nav className="mb-8" aria-label="Breadcrumb">
+    <nav className="mb-5" aria-label="Breadcrumb">
       <div className="flex items-center">
         <Link
           href="/feed"
