@@ -3,12 +3,6 @@
 import React, { use, useEffect } from "react";
 import { Separator } from "@/components/ui/separator";
 import { MapPin, LinkIcon, Calendar, Eye } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import GithubAnalyticsWidget from "@/components/shared/GithubAnalyticsWidget";
 import Image from "next/image";
 import ContributionGraph from "@/components/shared/ContributionGraph";
@@ -187,118 +181,16 @@ const ProfilePage = ({ params }: Props) => {
                 <div className="text-xl font-bold text-neutral-100 flex items-center gap-2">
                   {githubUser.name || githubUser.login}
                 </div>
-                <div className="text-sm text-neutral-400">
-                  @{githubUser.login}
+                <div className="text-sm">
+                  <Link
+                    href={`https://github.com/${githubUser.login}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-neutral-400 hover:text-neutral-200 hover:underline"
+                  >
+                    @{githubUser.login}
+                  </Link>
                 </div>
-              </div>
-              <div className="flex items-center">
-                {/* Gitcord Member Badge - Show if user is registered in Gitcord */}
-                {gitcordUser && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <div className="p-0.5 rounded-full text-neutral-950 transition-colors">
-                          <Image
-                            src="/gitcordMember.svg"
-                            alt="Gitcord Logo"
-                            width={22}
-                            height={22}
-                          />
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Gitcord Member</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
-
-                {/* Moderator Badge - Show if user is registered and is moderator */}
-                {gitcordUser?.isModerator && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <div className="p-0.5 rounded-full text-[#ED4245] transition-colors">
-                          <Image
-                            src="/gitcordModerator.svg"
-                            alt="Moderator"
-                            width={22}
-                            height={22}
-                          />
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Moderator</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
-
-                {/* Premium Badge - Show if user is registered and has premium */}
-                {gitcordUser?.premium?.isPremium && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <div className="p-0.5 rounded-full text-[#FEE75C] transition-colors">
-                          <Image
-                            src="/gitcordPremium.svg"
-                            alt="Premium"
-                            width={22}
-                            height={22}
-                          />
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Premium</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
-
-                {/* Popular Badge - Show if user has high view count (registered users) or high GitHub stats (all users) */}
-                {gitcordUser?.stats?.view_count !== undefined && gitcordUser?.stats?.view_count > 200 && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <div className="p-0.5 rounded-full transition-colors">
-                          <Image
-                            src="/gitcordHype.svg"
-                            alt="Popular"
-                            width={22}
-                            height={22}
-                          />
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Hype!!</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
-
-                {/* GitHub Verified Badge - Show for users with verified email or high activity */}
-                {(githubUser.followers >= 50 ||
-                  githubUser.public_repos >= 15) && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <div className="p-0.5 rounded-full text-blue-500 transition-colors">
-                          <svg
-                            className="w-5 h-5"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-                          </svg>
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>GitHub Verified</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
               </div>
             </div>
 
@@ -323,6 +215,108 @@ const ProfilePage = ({ params }: Props) => {
                   {githubUser.following}
                 </div>
                 <div className="text-xs text-neutral-400">Following</div>
+              </div>
+            </div>
+
+            <Separator className="bg-neutral-800" />
+
+            {/* Roles */}
+            <div className="grid gap-2">
+              <div className="text-xs font-bold uppercase text-neutral-100">
+                Roles
+              </div>
+              <div className="flex items-center gap-2 flex-wrap cursor-pointer">
+                {(() => {
+                  const roles: Array<{
+                    label: string;
+                    color: string;
+                    ring: string;
+                    text: string;
+                    glow: string;
+                    dot: string;
+                  }> = [];
+
+                  if (gitcordUser) {
+                    roles.push({
+                      label: "Gitcord Member",
+                      color: "bg-emerald-500/15",
+                      ring: "ring-emerald-500/30",
+                      text: "text-emerald-300",
+                      glow: "shadow-[0_0_20px_rgba(16,185,129,0.25)]",
+                      dot: "bg-emerald-400",
+                    });
+                  }
+
+                  if (gitcordUser?.isModerator) {
+                    roles.push({
+                      label: "Moderator",
+                      color: "bg-red-500/15",
+                      ring: "ring-red-500/30",
+                      text: "text-red-300",
+                      glow: "shadow-[0_0_20px_rgba(239,68,68,0.25)]",
+                      dot: "bg-red-400",
+                    });
+                  }
+
+                  if (
+                    githubUser.followers >= 50 ||
+                    githubUser.public_repos >= 15
+                  ) {
+                    roles.push({
+                      label: "GitHub Verified",
+                      color: "bg-blue-500/15",
+                      ring: "ring-blue-500/30",
+                      text: "text-blue-300",
+                      glow: "shadow-[0_0_20px_rgba(59,130,246,0.25)]",
+                      dot: "bg-blue-400",
+                    });
+                  }
+
+                  if (gitcordUser?.premium?.isPremium) {
+                    roles.push({
+                      label: "Premium",
+                      color: "bg-yellow-500/15",
+                      ring: "ring-yellow-500/30",
+                      text: "text-yellow-200",
+                      glow: "shadow-[0_0_20px_rgba(234,179,8,0.25)]",
+                      dot: "bg-yellow-400",
+                    });
+                  }
+
+                  if (
+                    gitcordUser?.stats?.view_count !== undefined &&
+                    gitcordUser?.stats?.view_count > 200
+                  ) {
+                    roles.push({
+                      label: "Hype",
+                      color: "bg-fuchsia-500/15",
+                      ring: "ring-fuchsia-500/30",
+                      text: "text-fuchsia-300",
+                      glow: "shadow-[0_0_20px_rgba(217,70,239,0.25)]",
+                      dot: "bg-fuchsia-400",
+                    });
+                  }
+
+                  if (roles.length === 0) {
+                    return (
+                      <span className="text-sm text-neutral-500">No roles</span>
+                    );
+                  }
+
+                  return roles.map((role) => (
+                    <span
+                      key={role.label}
+                      className={
+                        `inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium ` +
+                        `${role.color} ${role.text} ring-1 ${role.ring} backdrop-blur-sm border border-neutral-800/60 ` +
+                        `hover:brightness-110 transition shadow-sm ${role.glow}`
+                      }
+                    >
+                      <span className={`h-2 w-2 rounded-full ${role.dot}`} />
+                      {role.label}
+                    </span>
+                  ));
+                })()}
               </div>
             </div>
 
