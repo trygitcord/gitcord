@@ -59,7 +59,6 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-
 function UserActivityChart() {
   const [timeFilter, setTimeFilter] = useState<"7" | "14" | "30">("7");
   const { data: userData, isLoading: userLoading } = useUserProfile();
@@ -140,38 +139,47 @@ function UserActivityChart() {
         })()
       : [];
 
-
   return (
-    <div className="w-full h-full bg-neutral-50 rounded-xl px-3 sm:px-6 py-3 sm:py-4 dark:bg-neutral-900">
+    <div className="w-full h-full bg-white dark:bg-black rounded-2xl border border-neutral-200 dark:border-neutral-800 px-6 py-6">
       <div className="h-full flex flex-col">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 sm:gap-4">
-            <div className="bg-neutral-100 rounded-lg p-1.5 sm:p-2 dark:bg-neutral-800">
-              <ChartColumnBig className="text-neutral-800 w-4 h-4 sm:w-6 sm:h-6 dark:text-neutral-300" />
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-4">
+            <div className="bg-neutral-100 rounded-lg p-2 dark:bg-neutral-900">
+              <ChartColumnBig className="text-black w-6 h-6 dark:text-white" />
             </div>
             <div>
-              <h2 className="text-neutral-800 text-base sm:text-xl font-medium dark:text-neutral-200">
+              <h2 className="text-black text-xl font-semibold dark:text-white">
                 Activity
               </h2>
-              <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
                 Your stats by day
               </p>
             </div>
           </div>
-          <Select value={timeFilter} onValueChange={(value: "7" | "14" | "30") => setTimeFilter(value)}>
-            <SelectTrigger className="w-[130px] h-8 text-xs cursor-pointer">
+          <Select
+            value={timeFilter}
+            onValueChange={(value: "7" | "14" | "30") => setTimeFilter(value)}
+          >
+            <SelectTrigger className="w-[130px] h-8 text-xs cursor-pointer border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black text-black dark:text-white">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800">
               <SelectItem value="7">Last 7 days</SelectItem>
               <SelectItem value="14">Last 14 days</SelectItem>
               <SelectItem value="30">Last 30 days</SelectItem>
             </SelectContent>
           </Select>
         </div>
-        <div className="flex-1 flex items-end mt-2 sm:mt-4">
-          <ChartContainer config={chartConfig} className="w-full h-[220px] sm:h-[240px]">
-            <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 10, left: 10, bottom: 20 }}>
+        <div className="flex-1 flex items-end mt-2">
+          <ChartContainer
+            config={chartConfig}
+            className="w-full h-[220px] sm:h-[240px]"
+          >
+            <BarChart
+              accessibilityLayer
+              data={chartData}
+              margin={{ top: 20, right: 10, left: 10, bottom: 20 }}
+            >
               <XAxis
                 dataKey="date"
                 tickLine={false}
@@ -181,13 +189,14 @@ function UserActivityChart() {
                   const date = new Date(value);
                   return date.toLocaleDateString("en-US", { weekday: "short" });
                 }}
+                stroke="#888"
               />
               <ChartTooltip
                 cursor={false}
                 content={<ChartTooltipContent indicator="dashed" />}
               />
-              <Bar dataKey="commits" fill="var(--color-commits)" radius={4} />
-              <Bar dataKey="pullRequests" fill="var(--color-pullRequests)" radius={4} />
+              <Bar dataKey="commits" fill="#111" radius={4} />
+              <Bar dataKey="pullRequests" fill="#888" radius={4} />
             </BarChart>
           </ChartContainer>
         </div>

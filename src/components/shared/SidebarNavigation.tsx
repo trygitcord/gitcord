@@ -198,15 +198,17 @@ export function SidebarNavigation() {
   }, [repositoryInfo, pathname, isExpanded]);
 
   return (
-    <Sidebar className="p-4 border-r-2 border-r-neutral-200 dark:bg-neutral-950 dark:border-r-neutral-800 overflow-hidden">
-      <SidebarContent className="dark:bg-neutral-950 overflow-hidden">
+    <Sidebar className="bg-white dark:bg-black border-r border-neutral-200 dark:border-neutral-800 min-h-screen p-4">
+      <SidebarContent className="bg-white dark:bg-black">
         <SidebarGroup>
-          <Link href="/feed/dashboard" className="flex items-center gap-3">
+          <Link href="/feed/dashboard" className="flex items-center gap-3 mb-4">
             <Image src={Logo} width={28} height={28} alt="Logo" />
             <div className="flex items-center gap-2">
-              <h1 className="font-medium">Gitcord</h1>
+              <h1 className="font-medium text-black dark:text-white">
+                Gitcord
+              </h1>
               {versionData && (
-                <span className="px-2 py-1 text-xs font-mono bg-neutral-900 text-neutral-100 rounded-full dark:bg-neutral-800 dark:text-neutral-200">
+                <span className="px-2 py-1 text-xs font-mono bg-black text-white rounded-full dark:bg-white dark:text-black">
                   {versionData.version}
                 </span>
               )}
@@ -214,12 +216,13 @@ export function SidebarNavigation() {
           </Link>
         </SidebarGroup>
 
-        <SidebarGroupLabel>Main</SidebarGroupLabel>
+        <SidebarGroupLabel className="text-neutral-400 uppercase tracking-wider text-xs px-2 pt-2 pb-1">
+          Main
+        </SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
             {mainItems.map((item) => {
               const isActive = item.live && pathname === item.url;
-              // Badge only for Inbox
               const showInboxBadge = item.title === "Inbox" && unreadCount > 0;
               return (
                 <SidebarMenuItem key={item.title}>
@@ -227,20 +230,14 @@ export function SidebarNavigation() {
                     {item.live ? (
                       <Link
                         href={item.url}
-                        className={`flex items-center gap-2 w-full p-2 rounded-md transition-all duration-150 ease-out  border border-transparent ${
+                        className={`flex items-center gap-2 w-full p-3 rounded-xl transition-all duration-150 border border-transparent text-base font-medium ${
                           isActive
-                            ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border-neutral-100 dark:border-neutral-800 shadow-sm"
-                            : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white hover:shadow-sm"
+                            ? "bg-white text-black dark:bg-black dark:text-white border-neutral-200 dark:border-neutral-800 shadow-sm"
+                            : "text-neutral-600 hover:bg-white hover:text-black dark:text-neutral-400 dark:hover:bg-black dark:hover:text-white hover:shadow-sm"
                         } relative`}
                       >
-                        <item.icon
-                          className={`${isActive ? "text-[#5BC898]" : ""}`}
-                        />
-                        <span
-                          className={`${
-                            isActive ? "text-[#5BC898]" : ""
-                          } flex-1 flex items-center gap-2`}
-                        >
+                        <item.icon className={`w-5 h-5`} />
+                        <span className={`flex-1 flex items-center gap-2`}>
                           {item.title}
                           {showInboxBadge && (
                             <span className="bg-gray-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">
@@ -248,7 +245,6 @@ export function SidebarNavigation() {
                             </span>
                           )}
                         </span>
-
                         {!item.live && (
                           <span className="text-xs text-neutral-400 dark:text-neutral-500 ml-1">
                             Soon
@@ -257,7 +253,7 @@ export function SidebarNavigation() {
                       </Link>
                     ) : (
                       <button
-                        className="flex items-center gap-2 w-full p-2 rounded-md transition-all duration-200 ease-in-out text-neutral-400 cursor-not-allowed"
+                        className="flex items-center gap-2 w-full p-3 rounded-xl transition-all duration-200 text-neutral-400 cursor-not-allowed"
                         disabled
                       >
                         <item.icon />
@@ -276,7 +272,9 @@ export function SidebarNavigation() {
           </SidebarMenu>
         </SidebarGroupContent>
 
-        <SidebarGroupLabel>Data & Content</SidebarGroupLabel>
+        <SidebarGroupLabel className="text-neutral-400 uppercase tracking-wider text-xs px-2 pt-4 pb-1">
+          Data & Content
+        </SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
             {dataItems.map((item) => {
@@ -286,188 +284,20 @@ export function SidebarNavigation() {
                   (item.title === "Organization" &&
                     pathname.includes("/organization/") &&
                     !pathname.includes("/repository/")));
-
-              return (
-                <React.Fragment key={item.title}>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild>
-                      {item.live ? (
-                        <Link
-                          href={item.url}
-                          className={`flex items-center gap-2 w-full p-2 rounded-md transition-all duration-150 ease-out  border border-transparent ${
-                            isActive
-                              ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border-neutral-100 dark:border-neutral-800 shadow-sm"
-                              : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white hover:shadow-sm"
-                          }`}
-                        >
-                          <item.icon
-                            className={`${isActive ? "text-[#5BC898]" : ""}`}
-                          />
-                          <span
-                            className={`${isActive ? "text-[#5BC898]" : ""}`}
-                          >
-                            {item.title}
-                          </span>
-                          {!item.live && (
-                            <span className="text-xs text-neutral-400 dark:text-neutral-500 ml-1">
-                              Soon
-                            </span>
-                          )}
-                        </Link>
-                      ) : (
-                        <button
-                          className="flex items-center gap-2 w-full p-2 rounded-md transition-all duration-200 ease-in-out text-neutral-400 cursor-not-allowed"
-                          disabled
-                        >
-                          <item.icon />
-                          <span>{item.title}</span>
-                          <span className="text-xs text-neutral-400 dark:text-neutral-500 ml-1">
-                            Soon
-                          </span>
-                        </button>
-                      )}
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-
-                  {/* Repository Sub-Menu appears right after Repositories */}
-                  {item.title === "Repositories" && repositoryInfo && (
-                    <div className="ml-4 border-l border-neutral-200 dark:border-neutral-700 pl-2">
-                      <SidebarMenuItem>
-                        <SidebarMenuButton asChild>
-                          <button
-                            onClick={() =>
-                              toggleExpanded(repositoryInfo.repositoryId)
-                            }
-                            className={`flex items-center gap-2 py-1.5 px-3 rounded-md transition-all duration-150 ease-out  text-sm border border-transparent ${
-                              pathname.startsWith(
-                                `/feed/repositories/${repositoryInfo.repositoryId}`
-                              ) ||
-                              pathname.startsWith(
-                                `/feed/organization/${repositoryInfo.owner}/repository/${repositoryInfo.repo}`
-                              )
-                                ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border-neutral-100 dark:border-neutral-800 shadow-sm"
-                                : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-500 dark:hover:bg-neutral-800 dark:hover:text-white hover:shadow-sm"
-                            }`}
-                          >
-                            <Book
-                              className={`w-4 h-4 ${
-                                pathname.startsWith(
-                                  `/feed/repositories/${repositoryInfo.repositoryId}`
-                                ) ||
-                                pathname.startsWith(
-                                  `/feed/organization/${repositoryInfo.owner}/repository/${repositoryInfo.repo}`
-                                )
-                                  ? "text-[#5BC898]"
-                                  : ""
-                              }`}
-                            />
-                            <span
-                              className={`${
-                                pathname.startsWith(
-                                  `/feed/repositories/${repositoryInfo.repositoryId}`
-                                ) ||
-                                pathname.startsWith(
-                                  `/feed/organization/${repositoryInfo.owner}/repository/${repositoryInfo.repo}`
-                                )
-                                  ? "text-[#5BC898]"
-                                  : ""
-                              } flex-1 truncate`}
-                            >
-                              {repoData?.name || repositoryInfo.repo}
-                            </span>
-                          </button>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-
-                      {/* Repository Sub Items */}
-                      {isExpanded(repositoryInfo.repositoryId) && (
-                        <div className="ml-4 border-l border-neutral-200 dark:border-neutral-700 space-y-1 py-1 pl-2">
-                          {(() => {
-                            // Determine if this is an organization repository
-                            const isOrgRepo =
-                              pathname.includes("/organization/");
-                            const baseUrl = isOrgRepo
-                              ? `/feed/organization/${repositoryInfo.owner}/repository/${repositoryInfo.repo}`
-                              : `/feed/repositories/${repositoryInfo.repositoryId}`;
-
-                            return [
-                              {
-                                title: "Overview",
-                                icon: FileText,
-                                url: baseUrl,
-                              },
-                              {
-                                title: "Activity",
-                                icon: Activity,
-                                url: `${baseUrl}/activity`,
-                              },
-                            ];
-                          })().map((subItem) => {
-                            const isSubActive = pathname === subItem.url;
-
-                            return (
-                              <SidebarMenuItem key={subItem.title}>
-                                <SidebarMenuButton asChild>
-                                  <Link
-                                    href={subItem.url}
-                                    className={`flex items-center gap-2 py-1.5 px-3 rounded-md transition-all duration-150 ease-out  text-sm border border-transparent ${
-                                      isSubActive
-                                        ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border-neutral-100 dark:border-neutral-800 shadow-sm"
-                                        : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-500 dark:hover:bg-neutral-800 dark:hover:text-white hover:shadow-sm"
-                                    }`}
-                                  >
-                                    <subItem.icon
-                                      className={`w-4 h-4 flex-shrink-0 ${
-                                        isSubActive ? "text-[#5BC898]" : ""
-                                      }`}
-                                    />
-                                    <span
-                                      className={`${
-                                        isSubActive ? "text-[#5BC898]" : ""
-                                      } flex-1 truncate`}
-                                    >
-                                      {subItem.title}
-                                    </span>
-                                  </Link>
-                                </SidebarMenuButton>
-                              </SidebarMenuItem>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </React.Fragment>
-              );
-            })}
-          </SidebarMenu>
-        </SidebarGroupContent>
-
-        <SidebarGroupLabel>Account</SidebarGroupLabel>
-        <SidebarGroupContent>
-          <SidebarMenu>
-            {profileItems.map((item) => {
-              const isActive = item.live && pathname === item.url;
-              const url = item.title === "Profile" ? profileUrl : item.url;
               return (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     {item.live ? (
                       <Link
-                        href={url}
-                        target={item.title === "Profile" ? "_blank" : undefined}
-                        className={`flex items-center gap-2 w-full p-2 rounded-md transition-all duration-150 ease-out  border border-transparent ${
+                        href={item.url}
+                        className={`flex items-center gap-2 w-full p-3 rounded-xl transition-all duration-150 border border-transparent text-base font-medium ${
                           isActive
-                            ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border-neutral-100 dark:border-neutral-800 shadow-sm"
-                            : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white hover:shadow-sm"
+                            ? "bg-white text-black dark:bg-black dark:text-white border-neutral-200 dark:border-neutral-800 shadow-sm"
+                            : "text-neutral-600 hover:bg-white hover:text-black dark:text-neutral-400 dark:hover:bg-black dark:hover:text-white hover:shadow-sm"
                         }`}
                       >
-                        <item.icon
-                          className={`${isActive ? "text-[#5BC898]" : ""}`}
-                        />
-                        <span className={`${isActive ? "text-[#5BC898]" : ""}`}>
-                          {item.title}
-                        </span>
+                        <item.icon className={`w-5 h-5`} />
+                        <span className={``}>{item.title}</span>
                         {!item.live && (
                           <span className="text-xs text-neutral-400 dark:text-neutral-500 ml-1">
                             Soon
@@ -476,7 +306,7 @@ export function SidebarNavigation() {
                       </Link>
                     ) : (
                       <button
-                        className="flex items-center gap-2 w-full p-2 rounded-md transition-all duration-200 ease-in-out text-neutral-400 cursor-not-allowed"
+                        className="flex items-center gap-2 w-full p-3 rounded-xl transition-all duration-200 text-neutral-400 cursor-not-allowed"
                         disabled
                       >
                         <item.icon />
@@ -490,31 +320,68 @@ export function SidebarNavigation() {
                 </SidebarMenuItem>
               );
             })}
+          </SidebarMenu>
+        </SidebarGroupContent>
 
+        <SidebarGroupLabel className="text-neutral-400 uppercase tracking-wider text-xs px-2 pt-4 pb-1">
+          Account
+        </SidebarGroupLabel>
+        <SidebarGroupContent>
+          <SidebarMenu>
+            {profileItems.map((item) => {
+              const isActive = item.live && pathname === item.url;
+              const url = item.title === "Profile" ? profileUrl : item.url;
+              return (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    {item.live ? (
+                      <Link
+                        href={url}
+                        target={item.title === "Profile" ? "_blank" : undefined}
+                        className={`flex items-center gap-2 w-full p-3 rounded-xl transition-all duration-150 border border-transparent text-base font-medium ${
+                          isActive
+                            ? "bg-white text-black dark:bg-black dark:text-white border-neutral-200 dark:border-neutral-800 shadow-sm"
+                            : "text-neutral-600 hover:bg-white hover:text-black dark:text-neutral-400 dark:hover:bg-black dark:hover:text-white hover:shadow-sm"
+                        }`}
+                      >
+                        <item.icon className={`w-5 h-5`} />
+                        <span className={``}>{item.title}</span>
+                        {!item.live && (
+                          <span className="text-xs text-neutral-400 dark:text-neutral-500 ml-1">
+                            Soon
+                          </span>
+                        )}
+                      </Link>
+                    ) : (
+                      <button
+                        className="flex items-center gap-2 w-full p-3 rounded-xl transition-all duration-200 text-neutral-400 cursor-not-allowed"
+                        disabled
+                      >
+                        <item.icon />
+                        <span>{item.title}</span>
+                        <span className="text-xs text-neutral-400 dark:text-neutral-500 ml-1">
+                          Soon
+                        </span>
+                      </button>
+                    )}
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              );
+            })}
             {/* Moderator Menu Item - Only visible for moderators */}
             {profile?.isModerator && (
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <Link
                     href="/feed/moderator"
-                    className={`flex items-center gap-2 w-full p-2 rounded-md transition-all duration-150 ease-out  border border-transparent ${
+                    className={`flex items-center gap-2 w-full p-3 rounded-xl transition-all duration-150 border border-transparent text-base font-medium ${
                       pathname === "/feed/moderator"
-                        ? "bg-neutral-50 text-neutral-600 dark:bg-neutral-800 dark:text-white border-neutral-100 dark:border-neutral-800 shadow-sm"
-                        : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white hover:shadow-sm"
+                        ? "bg-white text-black dark:bg-black dark:text-white border-neutral-200 dark:border-neutral-800 shadow-sm"
+                        : "text-neutral-600 hover:bg-white hover:text-black dark:text-neutral-400 dark:hover:bg-black dark:hover:text-white hover:shadow-sm"
                     }`}
                   >
-                    <Shield
-                      className={`${
-                        pathname === "/feed/moderator" ? "text-[#5BC898]" : ""
-                      }`}
-                    />
-                    <span
-                      className={`${
-                        pathname === "/feed/moderator" ? "text-[#5BC898]" : ""
-                      }`}
-                    >
-                      Moderator
-                    </span>
+                    <Shield className={`w-5 h-5`} />
+                    <span className={``}>Moderator</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -523,10 +390,10 @@ export function SidebarNavigation() {
         </SidebarGroupContent>
       </SidebarContent>
       <SidebarFooter>
-        <div className="space-y-2">
+        <div className="space-y-2 px-2 pb-4 bg-black">
           <button
             onClick={() => setFeedbackModalOpen(true)}
-            className="flex items-center gap-2 w-full p-2 rounded-md transition-all duration-150 ease-out text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white hover:shadow-sm border border-transparent cursor-pointer"
+            className="flex items-center gap-2 w-full p-3 rounded-xl transition-all duration-150 text-neutral-600 hover:bg-neutral-100 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white cursor-pointer"
           >
             <MessageSquare className="w-4 h-4" />
             <span className="text-sm">Give us feedback</span>

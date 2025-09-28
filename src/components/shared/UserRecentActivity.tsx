@@ -74,25 +74,25 @@ function UserRecentActivity() {
     );
 
   return (
-    <div className="w-full h-full bg-neutral-50 rounded-xl px-4 sm:px-6 py-4 dark:bg-neutral-900">
+    <div className="w-full h-full bg-white dark:bg-black rounded-2xl border border-neutral-200 dark:border-neutral-800 px-6 py-6">
       <div>
-        <div className="flex items-center w-full h-full gap-3 sm:gap-4 justify-between">
-          <div className="flex items-center gap-3 sm:gap-4">
-            <div className="bg-neutral-100 rounded-lg p-2 dark:bg-neutral-800">
-              <FileChartColumn className="text-neutral-800 w-5 h-5 sm:w-6 sm:h-6 dark:text-neutral-300" />
+        <div className="flex items-center w-full h-full gap-4 justify-between mb-4">
+          <div className="flex items-center gap-4">
+            <div className="bg-neutral-100 rounded-lg p-2 dark:bg-neutral-900">
+              <FileChartColumn className="text-black w-6 h-6 dark:text-white" />
             </div>
             <div>
-              <h2 className="text-neutral-800 text-lg sm:text-xl font-medium dark:text-neutral-200">
+              <h2 className="text-black text-xl font-semibold dark:text-white">
                 Recent Activities
               </h2>
-              <p className="text-xs sm:text-sm text-neutral-500">
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
                 Your recent activities
               </p>
             </div>
           </div>
           <Link
             href="/feed/activity"
-            className="text-xs text-neutral-600 dark:text-neutral-400 hover:text-[#5BC898] dark:hover:text-[#5BC898] transition-colors"
+            className="text-xs text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white transition-colors border-b border-transparent hover:border-black dark:hover:border-white pb-0.5"
           >
             View Details
           </Link>

@@ -36,14 +36,14 @@ export default function BreadcrumbNav() {
   };
 
   return (
-    <nav className="mb-5" aria-label="Breadcrumb">
-      <div className="flex items-center">
+    <nav className="mb-5 bg-black" aria-label="Breadcrumb">
+      <div className="w-full flex items-center bg-black dark:bg-[#111] px-6 py-3 rounded-xl">
         <Link
           href="/feed"
-          className="flex items-center gap-2 text-[#49F9AA] hover:text-[#49F9AA]/80 transition-all duration-200 font-medium text-sm group"
+          className="flex items-center gap-2 text-white hover:text-neutral-300 transition-all duration-200 font-medium text-sm group"
         >
-          <div className="p-1.5 rounded-md group-hover:bg-[#49F9AA]/10 transition-colors duration-200">
-            <Home className="w-3.5 h-3.5" />
+          <div className="p-1.5 rounded-md group-hover:bg-neutral-800 transition-colors duration-200">
+            <Home className="w-3.5 h-3.5 text-white" />
           </div>
           <span>Gitcord</span>
         </Link>
