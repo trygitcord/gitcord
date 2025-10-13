@@ -17,7 +17,7 @@ function UserProfileOverview() {
 
   if (error || !userData) {
     return (
-      <div className="w-full bg-neutral-50 rounded-xl dark:bg-neutral-900 p-6">
+      <div className="w-full bg-neutral-50 rounded-none dark:bg-neutral-900 p-6">
         <div className="text-center text-neutral-500 dark:text-neutral-400">
           Failed to load profile data
         </div>
@@ -26,7 +26,7 @@ function UserProfileOverview() {
   }
 
   return (
-    <div className="w-full h-full bg-neutral-50 rounded-xl dark:bg-neutral-900">
+    <div className="w-full h-full bg-neutral-50 rounded-none dark:bg-neutral-900">
       <div className="p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
           {/* Avatar Section */}
@@ -57,12 +57,12 @@ function UserProfileOverview() {
                 </div>
                 <div className="flex flex-wrap justify-center sm:justify-start gap-2">
                   {userData.isModerator && (
-                    <span className="px-2 py-1 text-xs font-medium bg-neutral-100 text-neutral-700 rounded-full dark:bg-neutral-800 dark:text-neutral-300">
+                    <span className="px-2 py-1 text-xs font-medium bg-neutral-100 text-neutral-700 rounded-none dark:bg-neutral-800 dark:text-neutral-300">
                       Moderator
                     </span>
                   )}
                   {userData.premium?.isPremium && (
-                    <span className="px-2 py-1 text-xs font-medium bg-neutral-100 text-neutral-700 rounded-full flex items-center gap-1 dark:bg-neutral-800 dark:text-neutral-300">
+                    <span className="px-2 py-1 text-xs font-medium bg-neutral-100 text-neutral-700 rounded-none flex items-center gap-1 dark:bg-neutral-800 dark:text-neutral-300">
                       <Crown className="w-3 h-3 text-[#5BC898]" />
                       Premium
                     </span>
@@ -95,16 +95,19 @@ function UserProfileOverview() {
                 <span className="font-medium text-neutral-700 dark:text-neutral-200">
                   {githubUser?.followers || 0}
                 </span>
-                <span className="text-neutral-500 dark:text-neutral-400">Followers</span>
+                <span className="text-neutral-500 dark:text-neutral-400">
+                  Followers
+                </span>
               </div>
               <div className="flex items-center gap-1">
                 <span className="font-medium text-neutral-700 dark:text-neutral-200">
                   {githubUser?.following || 0}
                 </span>
-                <span className="text-neutral-500 dark:text-neutral-400">Following</span>
+                <span className="text-neutral-500 dark:text-neutral-400">
+                  Following
+                </span>
               </div>
             </div>
-
           </div>
         </div>
       </div>

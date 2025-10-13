@@ -59,7 +59,6 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-
 function UserActivityChart() {
   const [timeFilter, setTimeFilter] = useState<"7" | "14" | "30">("7");
   const { data: userData, isLoading: userLoading } = useUserProfile();
@@ -140,9 +139,8 @@ function UserActivityChart() {
         })()
       : [];
 
-
   return (
-    <div className="w-full h-full bg-neutral-50 rounded-xl px-3 sm:px-6 py-3 sm:py-4 dark:bg-neutral-900">
+    <div className="w-full h-full bg-neutral-50 rounded-none px-3 sm:px-6 py-3 sm:py-4 dark:bg-neutral-900">
       <div className="h-full flex flex-col">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-4">
@@ -158,7 +156,10 @@ function UserActivityChart() {
               </p>
             </div>
           </div>
-          <Select value={timeFilter} onValueChange={(value: "7" | "14" | "30") => setTimeFilter(value)}>
+          <Select
+            value={timeFilter}
+            onValueChange={(value: "7" | "14" | "30") => setTimeFilter(value)}
+          >
             <SelectTrigger className="w-[130px] h-8 text-xs cursor-pointer">
               <SelectValue />
             </SelectTrigger>
@@ -170,8 +171,15 @@ function UserActivityChart() {
           </Select>
         </div>
         <div className="flex-1 flex items-end mt-2 sm:mt-4">
-          <ChartContainer config={chartConfig} className="w-full h-[220px] sm:h-[240px]">
-            <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 10, left: 10, bottom: 20 }}>
+          <ChartContainer
+            config={chartConfig}
+            className="w-full h-[220px] sm:h-[240px]"
+          >
+            <BarChart
+              accessibilityLayer
+              data={chartData}
+              margin={{ top: 20, right: 10, left: 10, bottom: 20 }}
+            >
               <XAxis
                 dataKey="date"
                 tickLine={false}
@@ -187,7 +195,11 @@ function UserActivityChart() {
                 content={<ChartTooltipContent indicator="dashed" />}
               />
               <Bar dataKey="commits" fill="var(--color-commits)" radius={4} />
-              <Bar dataKey="pullRequests" fill="var(--color-pullRequests)" radius={4} />
+              <Bar
+                dataKey="pullRequests"
+                fill="var(--color-pullRequests)"
+                radius={4}
+              />
             </BarChart>
           </ChartContainer>
         </div>

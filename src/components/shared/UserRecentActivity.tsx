@@ -74,7 +74,7 @@ function UserRecentActivity() {
     );
 
   return (
-    <div className="w-full h-full bg-neutral-50 rounded-xl px-4 sm:px-6 py-4 dark:bg-neutral-900">
+    <div className="w-full h-full bg-neutral-50 rounded-none px-4 sm:px-6 py-4 dark:bg-neutral-900">
       <div>
         <div className="flex items-center w-full h-full gap-3 sm:gap-4 justify-between">
           <div className="flex items-center gap-3 sm:gap-4">
@@ -293,7 +293,7 @@ function MessageCard({ events }: { events: GitHubEvent[] }) {
           return (
             <div
               key={idx}
-              className="p-2 rounded-lg bg-neutral-50 dark:bg-neutral-900 border border-dashed border-neutral-200 dark:border-neutral-800 text-neutral-400 text-center"
+              className="p-2 rounded-none bg-neutral-50 dark:bg-neutral-900 border border-dashed border-neutral-200 dark:border-neutral-800 text-neutral-400 text-center"
             >
               Aktivite yok
             </div>
@@ -304,7 +304,7 @@ function MessageCard({ events }: { events: GitHubEvent[] }) {
         return (
           <div
             key={idx}
-            className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors overflow-x-auto whitespace-nowrap"
+            className="p-2 rounded-none hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors overflow-x-auto whitespace-nowrap"
           >
             {card}
           </div>

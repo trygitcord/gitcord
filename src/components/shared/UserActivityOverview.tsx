@@ -103,7 +103,7 @@ function Card({
   filterType: string;
 }) {
   return (
-    <div className="w-full h-full bg-neutral-50 rounded-xl col-span-1 px-4 sm:px-6 py-4 dark:bg-neutral-900">
+    <div className="w-full h-full bg-neutral-50 rounded-none col-span-1 px-4 sm:px-6 py-4 dark:bg-neutral-900">
       <div className="flex items-center justify-between w-full">
         <div className="bg-neutral-100 rounded-lg p-2 dark:bg-neutral-800">
           {icon}
