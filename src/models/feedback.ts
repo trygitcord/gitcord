@@ -6,6 +6,7 @@ export interface FeedbackType {
   username: string;
   message: string;
   consentGiven: boolean;
+  type?: "bug" | "feature" | "request";
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -30,6 +31,11 @@ const feedbackSchema = new Schema<FeedbackType>(
       type: Boolean,
       required: true,
       default: true,
+    },
+    type: {
+      type: String,
+      enum: ["bug", "feature", "request"],
+      required: false,
     },
   },
   {

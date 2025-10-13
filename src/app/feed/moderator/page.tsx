@@ -81,6 +81,23 @@ import { CodeType } from "@/models/code";
 import { useGetFeedbacks, useDeleteFeedback } from "@/hooks/useFeedbackQueries";
 import { getRelativeTime } from "@/lib/time-utils";
 
+// BADGE renk fonksiyonu
+const getTypeBadgeData = (type?: string) => {
+  if (type === "bug")
+    return { color: "bg-red-100 text-red-700 border-red-200", label: "Bug" };
+  if (type === "feature")
+    return {
+      color: "bg-blue-100 text-blue-700 border-blue-200",
+      label: "Feature",
+    };
+  if (type === "request")
+    return {
+      color: "bg-yellow-100 text-yellow-700 border-yellow-200",
+      label: "Request",
+    };
+  return { color: "bg-gray-100 text-gray-700 border-gray-200", label: "Other" };
+};
+
 export default function ModeratorPage() {
   const router = useRouter();
   const { status: sessionStatus } = useSession();
@@ -127,7 +144,9 @@ export default function ModeratorPage() {
     10
   );
   const deleteFeedback = useDeleteFeedback();
-  const [deletingFeedbackId, setDeletingFeedbackId] = useState<string | null>(null);
+  const [deletingFeedbackId, setDeletingFeedbackId] = useState<string | null>(
+    null
+  );
 
   useEffect(() => {
     // If not authenticated, redirect to home
@@ -204,12 +223,13 @@ export default function ModeratorPage() {
   // Email masking is now handled server-side for security
   // No need for client-side masking
 
-
-  const filteredUsers = usersData?.data.users.filter(user => 
-    user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email?.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
+  const filteredUsers =
+    usersData?.data.users.filter(
+      (user) =>
+        user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    ) || [];
 
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-4">
@@ -280,7 +300,9 @@ export default function ModeratorPage() {
               <Send className="w-4 h-4" />
               Send Message
             </CardTitle>
-            <CardDescription className="text-xs">Send a message to a specific user</CardDescription>
+            <CardDescription className="text-xs">
+              Send a message to a specific user
+            </CardDescription>
           </CardHeader>
           <CardContent className="pt-0">
             <Button
@@ -333,7 +355,9 @@ export default function ModeratorPage() {
           <div className="space-y-4 py-3">
             {/* User Selection */}
             <div className="space-y-2">
-              <Label htmlFor="user-select" className="text-sm">Select Recipient</Label>
+              <Label htmlFor="user-select" className="text-sm">
+                Select Recipient
+              </Label>
               <Select value={selectedUserId} onValueChange={setSelectedUserId}>
                 <SelectTrigger id="user-select" className="w-full">
                   <SelectValue placeholder="Choose a user or select all users" />
@@ -446,7 +470,9 @@ export default function ModeratorPage() {
             {/* Message Form */}
             <div className="space-y-3">
               <div className="space-y-1">
-                <Label htmlFor="subject" className="text-sm">Subject</Label>
+                <Label htmlFor="subject" className="text-sm">
+                  Subject
+                </Label>
                 <Input
                   id="subject"
                   placeholder="Enter message subject"
@@ -459,7 +485,9 @@ export default function ModeratorPage() {
               </div>
 
               <div className="space-y-1">
-                <Label htmlFor="content" className="text-sm">Message Content</Label>
+                <Label htmlFor="content" className="text-sm">
+                  Message Content
+                </Label>
                 <Textarea
                   id="content"
                   placeholder="Type your message here..."
@@ -475,7 +503,11 @@ export default function ModeratorPage() {
           </div>
 
           <DialogFooter className="gap-2">
-            <Button variant="outline" size="sm" onClick={() => setIsSendModalOpen(false)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsSendModalOpen(false)}
+            >
               Cancel
             </Button>
             <Button
@@ -764,14 +796,17 @@ export default function ModeratorPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
               {filteredUsers.map((user) => (
-                <Card key={user.id} className="hover:shadow-sm transition-shadow duration-150 hover:border-neutral-300">
+                <Card
+                  key={user.id}
+                  className="hover:shadow-sm transition-shadow duration-150 hover:border-neutral-300"
+                >
                   <CardContent className="p-3">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center space-x-2 flex-1">
                         <div className="relative">
                           <Avatar className="h-8 w-8">
-                            <AvatarImage 
-                              src={user.avatar_url} 
+                            <AvatarImage
+                              src={user.avatar_url}
                               className="blur-[1px] hover:blur-none transition-all duration-200"
                             />
                             <AvatarFallback className="text-xs">
@@ -805,7 +840,7 @@ export default function ModeratorPage() {
                         <Eye className="w-3 h-3" />
                       </Button>
                     </div>
-                    
+
                     <div className="mt-2 flex items-center justify-between">
                       <span className="text-xs text-neutral-400 truncate">
                         {user.email || "No email"}
@@ -826,7 +861,9 @@ export default function ModeratorPage() {
 
           {!usersLoading && filteredUsers.length === 0 && (
             <div className="text-center text-neutral-500 py-8">
-              {searchTerm ? "No users found matching search criteria." : "No users found."}
+              {searchTerm
+                ? "No users found matching search criteria."
+                : "No users found."}
             </div>
           )}
         </CardContent>
@@ -844,7 +881,6 @@ export default function ModeratorPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-0">
-
           {/* Feedbacks List */}
           {feedbacksLoading ? (
             <div className="space-y-3">
@@ -868,13 +904,17 @@ export default function ModeratorPage() {
           ) : (
             <div className="space-y-3">
               {feedbacksData?.data?.feedbacks?.map((feedback) => (
-                <Card key={feedback._id} className="hover:shadow-sm transition-shadow duration-150">
+                <Card
+                  key={feedback._id}
+                  className="hover:shadow-sm transition-shadow duration-150"
+                >
                   <CardContent className="p-4">
                     <div className="flex items-start gap-3">
                       <Avatar className="h-10 w-10 flex-shrink-0">
                         <AvatarImage src={feedback.user?.avatar_url} />
                         <AvatarFallback className="text-sm">
-                          {(feedback.user?.username || feedback.username)[0]?.toUpperCase()}
+                          {(feedback.user?.username ||
+                            feedback.username)[0]?.toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0 max-w-full overflow-hidden">
@@ -887,7 +927,14 @@ export default function ModeratorPage() {
                               @{feedback.user?.username || feedback.username}
                             </span>
                           </div>
-                          <span className="text-xs text-neutral-400">
+                          <span
+                            className={`text-xs border rounded px-2 py-0.5 ml-2 ${
+                              getTypeBadgeData(feedback.type).color
+                            }`}
+                          >
+                            {getTypeBadgeData(feedback.type).label}
+                          </span>
+                          <span className="text-xs text-neutral-400 ml-3">
                             {getRelativeTime(feedback.createdAt)}
                           </span>
                         </div>
@@ -900,9 +947,18 @@ export default function ModeratorPage() {
                           variant="outline"
                           size="sm"
                           className="h-8 w-8 p-0 bg-neutral-100 hover:bg-neutral-200 border-neutral-200 hover:border-neutral-300 text-neutral-600 hover:text-neutral-700 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:border-neutral-700 dark:hover:border-neutral-600 dark:text-neutral-400 dark:hover:text-neutral-300 cursor-pointer"
-                          disabled={deleteFeedback.isPending && deletingFeedbackId === feedback._id}
+                          disabled={
+                            deleteFeedback.isPending &&
+                            deletingFeedbackId === feedback._id
+                          }
                           onClick={() => {
-                            if (window.confirm(`Are you sure you want to delete this feedback from @${feedback.user?.username || feedback.username}?`)) {
+                            if (
+                              window.confirm(
+                                `Are you sure you want to delete this feedback from @${
+                                  feedback.user?.username || feedback.username
+                                }?`
+                              )
+                            ) {
                               setDeletingFeedbackId(feedback._id);
                               deleteFeedback.mutate(feedback._id, {
                                 onSettled: () => setDeletingFeedbackId(null),
@@ -910,7 +966,8 @@ export default function ModeratorPage() {
                             }
                           }}
                         >
-                          {deleteFeedback.isPending && deletingFeedbackId === feedback._id ? (
+                          {deleteFeedback.isPending &&
+                          deletingFeedbackId === feedback._id ? (
                             <Loader2 className="w-4 h-4 animate-spin" />
                           ) : (
                             <Trash2 className="w-4 h-4" />
@@ -925,32 +982,36 @@ export default function ModeratorPage() {
           )}
 
           {/* Pagination */}
-          {feedbacksData?.data?.pagination && feedbacksData.data.pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between mt-4 pt-4 border-t">
-              <div className="text-sm text-neutral-500">
-                Page {feedbacksData.data.pagination.page} of {feedbacksData.data.pagination.totalPages}
-                ({feedbacksData.data.pagination.total} total)
+          {feedbacksData?.data?.pagination &&
+            feedbacksData.data.pagination.totalPages > 1 && (
+              <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                <div className="text-sm text-neutral-500">
+                  Page {feedbacksData.data.pagination.page} of{" "}
+                  {feedbacksData.data.pagination.totalPages}(
+                  {feedbacksData.data.pagination.total} total)
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={feedbackPage === 1}
+                    onClick={() => setFeedbackPage(feedbackPage - 1)}
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={
+                      feedbackPage === feedbacksData.data.pagination.totalPages
+                    }
+                    onClick={() => setFeedbackPage(feedbackPage + 1)}
+                  >
+                    Next
+                  </Button>
+                </div>
               </div>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={feedbackPage === 1}
-                  onClick={() => setFeedbackPage(feedbackPage - 1)}
-                >
-                  Previous
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={feedbackPage === feedbacksData.data.pagination.totalPages}
-                  onClick={() => setFeedbackPage(feedbackPage + 1)}
-                >
-                  Next
-                </Button>
-              </div>
-            </div>
-          )}
+            )}
         </CardContent>
       </Card>
 
@@ -961,7 +1022,9 @@ export default function ModeratorPage() {
             <KeyRound className="w-4 h-4" />
             Create Code
           </CardTitle>
-          <CardDescription className="text-xs">Create a new code for users</CardDescription>
+          <CardDescription className="text-xs">
+            Create a new code for users
+          </CardDescription>
         </CardHeader>
         <CardContent className="pt-0">
           <Button
@@ -976,7 +1039,10 @@ export default function ModeratorPage() {
       </Card>
 
       {/* User Detail Modal */}
-      <Dialog open={isUserDetailModalOpen} onOpenChange={setIsUserDetailModalOpen}>
+      <Dialog
+        open={isUserDetailModalOpen}
+        onOpenChange={setIsUserDetailModalOpen}
+      >
         <DialogContent className="max-w-3xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -984,7 +1050,7 @@ export default function ModeratorPage() {
               User Details
             </DialogTitle>
           </DialogHeader>
-          
+
           {selectedUser && (
             <div className="space-y-6 py-4">
               <div className="flex items-start gap-4">
@@ -1049,11 +1115,13 @@ export default function ModeratorPage() {
                   </div>
                   <div>
                     <span className="text-neutral-500">Moderator:</span>
-                    <span className={`ml-2 px-2 py-1 rounded text-xs ${
-                      selectedUser.isModerator 
-                        ? 'bg-neutral-600 text-white' 
-                        : 'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300'
-                    }`}>
+                    <span
+                      className={`ml-2 px-2 py-1 rounded text-xs ${
+                        selectedUser.isModerator
+                          ? "bg-neutral-600 text-white"
+                          : "bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
+                      }`}
+                    >
                       {selectedUser.isModerator ? "Yes" : "No"}
                     </span>
                   </div>
@@ -1065,12 +1133,14 @@ export default function ModeratorPage() {
                   </div>
                 </div>
               </div>
-
             </div>
           )}
-          
+
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsUserDetailModalOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setIsUserDetailModalOpen(false)}
+            >
               Close
             </Button>
             {selectedUser && (
@@ -1099,73 +1169,84 @@ export default function ModeratorPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
-        {codesLoading ? (
-          <div className="flex justify-center py-6">
-            <Loader2 className="w-5 h-5 animate-spin text-neutral-500" />
-          </div>
-        ) : codesData?.data?.length === 0 ? (
-          <div className="text-center text-neutral-500 py-6 text-sm">
-            No codes found.
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-xs border">
-              <thead>
-                <tr className="bg-neutral-50 dark:bg-neutral-800">
-                  <th className="px-3 py-2 text-left font-medium">Code</th>
-                  <th className="px-3 py-2 text-left font-medium">Credit</th>
-                  <th className="px-3 py-2 text-left font-medium">Premium</th>
-                  <th className="px-3 py-2 text-left font-medium">Premium Days</th>
-                  <th className="px-3 py-2 text-left font-medium">Usage Limit</th>
-                  <th className="px-3 py-2 text-left font-medium">Used</th>
-                  <th className="px-3 py-2 text-left font-medium">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {codesData?.data?.map((code: CodeType) => (
-                  <tr key={code._id} className="border-b hover:bg-neutral-50/50 dark:hover:bg-neutral-800/50">
-                    <td className="px-3 py-2 font-mono text-xs">{code.code}</td>
-                    <td className="px-3 py-2">{code.credit}</td>
-                    <td className="px-3 py-2">{code.premium ? "Yes" : "No"}</td>
-                    <td className="px-3 py-2">{code.premiumDays}</td>
-                    <td className="px-3 py-2">{code.usageLimit}</td>
-                    <td className="px-3 py-2">{code.usedCount}</td>
-                    <td className="px-3 py-2">
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        className="h-7 px-2 text-xs"
-                        disabled={
-                          !code._id ||
-                          (deleteCode.isPending && deletingId === code._id)
-                        }
-                        onClick={() => {
-                          if (
-                            code._id &&
-                            window.confirm(
-                              `Are you sure you want to delete code '${code.code}'?`
-                            )
-                          ) {
-                            setDeletingId(code._id);
-                            deleteCode.mutate(code._id, {
-                              onSettled: () => setDeletingId(null),
-                            });
-                          }
-                        }}
-                      >
-                        {deleteCode.isPending && deletingId === code._id ? (
-                          <Loader2 className="w-3 h-3 animate-spin" />
-                        ) : (
-                          "Delete"
-                        )}
-                      </Button>
-                    </td>
+          {codesLoading ? (
+            <div className="flex justify-center py-6">
+              <Loader2 className="w-5 h-5 animate-spin text-neutral-500" />
+            </div>
+          ) : codesData?.data?.length === 0 ? (
+            <div className="text-center text-neutral-500 py-6 text-sm">
+              No codes found.
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-xs border">
+                <thead>
+                  <tr className="bg-neutral-50 dark:bg-neutral-800">
+                    <th className="px-3 py-2 text-left font-medium">Code</th>
+                    <th className="px-3 py-2 text-left font-medium">Credit</th>
+                    <th className="px-3 py-2 text-left font-medium">Premium</th>
+                    <th className="px-3 py-2 text-left font-medium">
+                      Premium Days
+                    </th>
+                    <th className="px-3 py-2 text-left font-medium">
+                      Usage Limit
+                    </th>
+                    <th className="px-3 py-2 text-left font-medium">Used</th>
+                    <th className="px-3 py-2 text-left font-medium">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                </thead>
+                <tbody>
+                  {codesData?.data?.map((code: CodeType) => (
+                    <tr
+                      key={code._id}
+                      className="border-b hover:bg-neutral-50/50 dark:hover:bg-neutral-800/50"
+                    >
+                      <td className="px-3 py-2 font-mono text-xs">
+                        {code.code}
+                      </td>
+                      <td className="px-3 py-2">{code.credit}</td>
+                      <td className="px-3 py-2">
+                        {code.premium ? "Yes" : "No"}
+                      </td>
+                      <td className="px-3 py-2">{code.premiumDays}</td>
+                      <td className="px-3 py-2">{code.usageLimit}</td>
+                      <td className="px-3 py-2">{code.usedCount}</td>
+                      <td className="px-3 py-2">
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          className="h-7 px-2 text-xs"
+                          disabled={
+                            !code._id ||
+                            (deleteCode.isPending && deletingId === code._id)
+                          }
+                          onClick={() => {
+                            if (
+                              code._id &&
+                              window.confirm(
+                                `Are you sure you want to delete code '${code.code}'?`
+                              )
+                            ) {
+                              setDeletingId(code._id);
+                              deleteCode.mutate(code._id, {
+                                onSettled: () => setDeletingId(null),
+                              });
+                            }
+                          }}
+                        >
+                          {deleteCode.isPending && deletingId === code._id ? (
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                          ) : (
+                            "Delete"
+                          )}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

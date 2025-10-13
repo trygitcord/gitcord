@@ -13,7 +13,7 @@ export const POST = withDb(
       }
 
       const body = await request.json();
-      const { message, consentGiven } = body;
+      const { message, consentGiven, type } = body;
 
       if (!message || typeof message !== "string" || !message.trim()) {
         return NextResponse.json(
@@ -45,6 +45,12 @@ export const POST = withDb(
         );
       }
 
+      // Validate type
+      const validTypes = ["bug", "feature", "request"];
+      if (type && !validTypes.includes(type)) {
+        return NextResponse.json({ error: "Invalid feedback type" }, { status: 400 });
+      }
+
       const user = await models.User.findById(session.user.id);
       if (!user) {
         return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -69,6 +75,7 @@ export const POST = withDb(
         username: user.username,
         message: trimmedMessage,
         consentGiven,
+        type,
       });
 
       return NextResponse.json({

@@ -16,6 +16,13 @@ import { CheckedState } from "@radix-ui/react-checkbox";
 import { useSubmitFeedback } from "@/hooks/useFeedbackQueries";
 import { useUserProfile } from "@/hooks/useMyApiQueries";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 interface FeedbackModalProps {
   isOpen: boolean;
@@ -27,6 +34,13 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
   const { data: profile } = useUserProfile();
   const [message, setMessage] = useState("");
   const [consentGiven, setConsentGiven] = useState<CheckedState>(true);
+  const [feedbackType, setFeedbackType] = useState<
+    "bug" | "feature" | "request"
+  >();
+  const bugTemplate = `Root Cause of the Issue:\nBrowser Used:\nLocation of the Error:\n[Page] > [Specify Area] > [Impacted Element]\nApp Version: Displayed Top Left`;
+  const typeTemplates = {
+    bug: `Root Cause of the Issue:\nBrowser Used:\nLocation of the Error:\n[Page] > [Specify Area] > [Impacted Element]\nApp Version: Displayed Top Left`,
+  };
   const submitFeedback = useSubmitFeedback();
 
   // Reset message when modal closes
@@ -35,6 +49,12 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
       setMessage("");
     }
   }, [isOpen]);
+
+  // Textarea'nın placeholder'ı seçime göre belirleniyor
+  const messagePlaceholder =
+    feedbackType === "bug"
+      ? bugTemplate
+      : "Share your thoughts, suggestions, or report issues... (minimum 10 characters)";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,8 +74,10 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
       await submitFeedback.mutateAsync({
         message: trimmedMessage,
         consentGiven: consentGiven === true,
+        type: feedbackType,
       });
       setMessage("");
+      setFeedbackType(undefined);
       onClose();
     } catch (error) {
       // Error is handled by the hook
@@ -72,7 +94,32 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
         <DialogHeader>
           <DialogTitle>Give us feedback</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-6 w-full overflow-hidden">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-6 w-full overflow-hidden"
+        >
+          <div className="space-y-3">
+            <Label
+              htmlFor="feedback-type"
+              className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+            >
+              Feedback Category
+            </Label>
+            <Select
+              value={feedbackType}
+              onValueChange={(v) => setFeedbackType(v as any)}
+            >
+              <SelectTrigger id="feedback-type" className="w-full">
+                <SelectValue placeholder="Select Feedback Type (Bug, Feature, Request)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="bug">🐞 Bug</SelectItem>
+                <SelectItem value="feature">✨ Feature</SelectItem>
+                <SelectItem value="request">📬 Request</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="space-y-3">
             <Label
               htmlFor="username"
@@ -121,7 +168,7 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
             <div className="w-full">
               <Textarea
                 id="message"
-                placeholder="Share your thoughts, suggestions, or report issues... (minimum 10 characters)"
+                placeholder={messagePlaceholder}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 rows={8}
@@ -132,13 +179,13 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                 }`}
                 required
                 maxLength={1000}
-                style={{ 
-                  wordWrap: 'break-word', 
-                  overflowWrap: 'break-word',
-                  width: '100%',
-                  maxWidth: '100%',
-                  boxSizing: 'border-box',
-                  overflow: 'hidden'
+                style={{
+                  wordWrap: "break-word",
+                  overflowWrap: "break-word",
+                  width: "100%",
+                  maxWidth: "100%",
+                  boxSizing: "border-box",
+                  overflow: "hidden",
                 }}
               />
             </div>

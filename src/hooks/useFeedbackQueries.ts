@@ -16,6 +16,7 @@ export interface FeedbackItem {
     name: string;
     username: string;
   } | null;
+  type?: "bug" | "feature" | "request";
 }
 
 interface FeedbackResponse {
@@ -34,6 +35,7 @@ interface FeedbackResponse {
 interface SubmitFeedbackData {
   message: string;
   consentGiven: boolean;
+  type?: "bug" | "feature" | "request";
 }
 
 export const useSubmitFeedback = () => {
