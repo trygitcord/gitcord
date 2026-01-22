@@ -6,6 +6,7 @@ import SessionProvider from "@/components/providers/SessionProvider";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { Toaster } from "sonner";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next"
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -28,10 +29,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={poppins.className} suppressHydrationWarning>
-      <head>
-        <Script defer src="https://assets.onedollarstats.com/stonks.js" />
-      </head>
       <body suppressHydrationWarning>
+        <Analytics />
         <SessionProvider>
           <QueryProvider>
             <ThemeProvider
