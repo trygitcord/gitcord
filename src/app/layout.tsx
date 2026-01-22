@@ -5,7 +5,6 @@ import { ThemeProvider } from "next-themes";
 import SessionProvider from "@/components/providers/SessionProvider";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { Toaster } from "sonner";
-import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next"
 
 const poppins = Poppins({
